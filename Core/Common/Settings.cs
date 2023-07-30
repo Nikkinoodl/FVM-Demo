@@ -126,18 +126,18 @@ namespace Core.Common
                     var withBlock = writer;
                     withBlock.WriteStartDocument();
                     withBlock.WriteStartElement("settings");
-                    withBlock.WriteElementString("width", "1000");
-                    withBlock.WriteElementString("height", "600");
-                    withBlock.WriteElementString("scale", "500");
-                    withBlock.WriteElementString("layers", "4");
-                    withBlock.WriteElementString("cellheight", "40");
+                    withBlock.WriteElementString("width", "2");
+                    withBlock.WriteElementString("height", "2");
+                    withBlock.WriteElementString("scale", "0.2");
+                    withBlock.WriteElementString("layers", "1");
+                    withBlock.WriteElementString("cellheight", "0.2");
                     withBlock.WriteElementString("cellfactor", "0.95");
                     withBlock.WriteElementString("nodetrade", "4");
                     withBlock.WriteElementString("expansionpower", "0.3");
                     withBlock.WriteElementString("offset", "2");
                     withBlock.WriteElementString("smoothingcycles", "8");
                     withBlock.WriteElementString("filename", @"C:\users\simon\OneDrive\documents\Apps\Airfoil.csv");
-                    //withBlock.WriteElementString("gridtype", "1");
+                    withBlock.WriteElementString("gridtype", "1");
                     withBlock.WriteEndElement();
                     withBlock.WriteEndDocument();
                     withBlock.Close();
@@ -164,7 +164,7 @@ namespace Core.Common
                 _offset = childnode.SelectSingleNode("offset").InnerText;
                 _smoothingcycles = childnode.SelectSingleNode("smoothingcycles").InnerText;
                 _filename = childnode.SelectSingleNode("filename").InnerText;
-               // _gridtype = childnode.SelectSingleNode("gridtype").InnerText;
+                _gridtype = (GridType)Enum.Parse(typeof(GridType), childnode.SelectSingleNode("gridtype").InnerText);
             }
         }
 

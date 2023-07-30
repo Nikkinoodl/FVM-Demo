@@ -6,6 +6,7 @@
     /// </summary>
     public class Farfield : Settings
     {
+        #region public properties
 
         // Properties that are calculated from other properties in the space
         public int NodesOnBoundary(string side, int numnodes)
@@ -45,6 +46,10 @@
             return h;
         }
 
+        #endregion
+
+        #region public methods
+
         public void ValidateNodeTrade(int numnodes)
         {
             if (Nodetrade > (numnodes - 4) / (double)4)
@@ -63,5 +68,7 @@
                 //MsgBox(MeshConstants.MSGOFFSET);
             }
         }
+
+        #endregion
     }
 }
