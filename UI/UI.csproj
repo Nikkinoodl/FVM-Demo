@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenTK" Version="4.7.7" />
+    <PackageReference Include="OpenTK.Graphics" Version="4.7.7" />
+    <PackageReference Include="OpenTK.Mathematics" Version="4.7.7" />
+    <PackageReference Include="OxyPlot.Core" Version="2.1.2" />
+    <PackageReference Include="OxyPlot.WindowsForms" Version="2.1.2" />
+    <PackageReference Include="SimpleInjector" Version="5.4.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CFD\CFD.csproj" />
+    <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="..\Mesh\Mesh.vbproj" />
+    <ProjectReference Include="..\OpenTK.WinForms\OpenTK.WinForms.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="PMCollection.cs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+
+</Project>
