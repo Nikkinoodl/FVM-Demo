@@ -26,6 +26,9 @@ Namespace Services
             'these are used to set boundary conditions and simplify cfd calcs
             factory.AddBorderCells(farfield)
 
+            'Add border cells around airfoil, if present
+            factory.AddAirfoilBorderCells(farfield)
+
         End Sub
 
         Public Sub CreateBorderCellsSquare(farfield As Farfield) Implements IBorderCellBuilder.CreateBorderCellsSquare

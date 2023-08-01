@@ -42,6 +42,7 @@ Namespace Logic
                 'Add zero-height border cells for setting boundary conditions
                 cellBuilder.CreateBorderCells(farfield)
 
+
                 'Find adjoining cell and face for each edge
                 meshprecalc.FindAdjoiningCells()
 

@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using Core.Common;
+using System.Numerics;
 
 namespace Core.Domain
 
@@ -113,6 +114,11 @@ namespace Core.Domain
         /// Identifies if this cell is a zero-height border cell used to set boundary conditions
         /// </summary>
         public bool BorderCell { get; set; }
+
+        /// <summary>
+        /// Identifies the type of border cell, so that it is easier to set boundary conditions by type
+        /// </summary>
+        public BorderType? BorderCellType { get; set; }
 
     }
 }

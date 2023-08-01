@@ -373,7 +373,7 @@ namespace CFDSolv
             split.Logic(farfield);
 
             // Repaint
-           
+
             EventCompletion();
         }
 
@@ -560,6 +560,11 @@ namespace CFDSolv
             Button1.Enabled = true;
             Button5.Enabled = true;
             Button6.Enabled = true;
+
+        }
+
+        private void Label4_Click(object sender, EventArgs e)
+        {
 
         }
 

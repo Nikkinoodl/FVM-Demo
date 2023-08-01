@@ -56,9 +56,21 @@
         WindTunnel
     };
 
+    /// <summary>
+    /// Identifies the type of mesh that is constructed
+    /// </summary>
     public enum GridType
     {
         Triangles,
         Rectangles
+    }
+
+    /// <summary>
+    /// Identifies the type of border cell
+    /// </summary>
+    public enum BorderType
+    {
+        Farfield,
+        Airfoil
     }
 }

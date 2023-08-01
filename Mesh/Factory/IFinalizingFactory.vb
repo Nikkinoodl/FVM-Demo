@@ -16,5 +16,11 @@ Namespace Factories
         ''' <param name="farfield"></param>
         Sub AddBorderCellsSquare(farfield As Farfield)
 
+        ''' <summary>
+        ''' Wraps an airfoil surface with a layer of zero height cells that have only one edge
+        ''' </summary>
+        ''' <param name="farfield"></param>
+        Sub AddAirfoilBorderCells(farfield As Farfield)
+
     End Interface
 End Namespace

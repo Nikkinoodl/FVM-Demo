@@ -98,6 +98,13 @@ namespace Core.Interfaces
         List<Cell> BoundaryCell();
 
         /// <summary>
+        /// Returns a list of cells that have an edge on the airfoil surface
+        /// note that zero-height border cells are not included
+        /// </summary>
+        /// <returns></returns>
+        List<Cell> SurfaceCell();
+
+        /// <summary>
         /// Returns a list of all grid cells except zero-height border cells
         /// </summary>
         /// <returns>List(Cell)</returns>
@@ -160,6 +167,12 @@ namespace Core.Interfaces
         /// <param name="farfield"></param>
         /// <returns>List of Cell</returns>
         List<Cell> GetElementsByBoundary(string edge, Farfield farfield);
+
+        /// <summary>
+        /// Returns a list of the zero-height border cells which lie on the airfoil surface
+        /// </summary>
+        /// <returns></returns>
+        List<Cell> GetAirfoilSurfaceElements();
 
         /// <summary>
         /// Finds the longest side of a cell

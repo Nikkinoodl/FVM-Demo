@@ -38,42 +38,62 @@ namespace CFD
             //main loop timesteps
             for (float t = 0; t < calc.Tmax; t += calc.Dt)
             {
-                //momentum (parallel foreach loops (U, V treated separately) appear to cause unpredictability in results)
-                foreach (Cell p in _data.CalcCells())
+                Parallel.Invoke(() =>
                 {
-                    float convectionU = 0;
-                    float diffusionU = 0;
-                    float convectionV = 0;
-                    float diffusionV = 0;
-
-                    //Loop through the cell edges.
-                    foreach (Edge e in p.Edges)
+                    //U momentum 
+                    foreach (Cell p in _data.CalcCells())
                     {
-                        //U
-                        //interpolate for face values using weighting (ignore any numerical diffusion perpendicular to face normal)
-                        float phiIpU = _data.CellList[e.AdjoiningCell].Vel.X * e.W + p.Vel.X * (1 - e.W);
+                        float convectionU = 0;
+                        float diffusionU = 0;
 
-                        //diffusion calculated as nu * div.grad(phi) boundary geometry is taken into account
-                        diffusionU += (_data.CellList[e.AdjoiningCell].Vel.X - p.Vel.X) * e.Lk;
+                        //Loop through the cell edges.
+                        foreach (Edge e in p.Edges)
+                        {
+                            //U
+                            //interpolate for face values using weighting (ignore any numerical diffusion perpendicular to face normal)
+                            float phiIpU = _data.CellList[e.AdjoiningCell].Vel.X * e.W + p.Vel.X * (1 - e.W);
 
-                        //calculate convection terms using Green-Gauss without interpolating velocity as div.(U phi)
-                        convectionU += Vector2.Dot(p.Vel * phiIpU, e.N) * e.L;
+                            //diffusion calculated as nu * div.grad(phi) boundary geometry is taken into account
+                            diffusionU += (_data.CellList[e.AdjoiningCell].Vel.X - p.Vel.X) * e.Lk;
 
-                        //V
-                        //interpolate for face values using weighting (ignore any numerical diffusion perpendicular to face normal)
-                        float phiIpV = _data.CellList[e.AdjoiningCell].Vel.Y * e.W + p.Vel.Y * (1 - e.W);
+                            //calculate convection terms using Green-Gauss without interpolating velocity as div.(U phi)
+                            convectionU += Vector2.Dot(p.Vel * phiIpU, e.N) * e.L;
 
-                        //diffusion calculated as nu * div.grad(phi) boundary geometry is taken into account
-                        diffusionV += (_data.CellList[e.AdjoiningCell].Vel.Y - p.Vel.Y) * e.Lk;
+                        }
 
-                        //calculate convection terms using Green-Gauss without interpolating velocity as div.(U phi)
-                        convectionV += Vector2.Dot(p.Vel * phiIpV, e.N) * e.L;
+                        //predictor step uStar and Vstar. We divide by area here so it is only done in one place.
+                        p.VelStar = new Vector2(p.Vel.X + (diffusionU * fluid.Nu - convectionU) * calc.Dt * p.AreaI, p.VelStar.Y);
+
                     }
+                },
+                () =>
+                {
+                    //V momentum
+                    foreach (Cell p in _data.CalcCells())
+                    {
+                        float convectionV = 0;
+                        float diffusionV = 0;
 
-                    //predictor step uStar and Vstar. We divide by area here so it is only done in one place.
-                    p.VelStar = new Vector2(p.Vel.X + (diffusionU * fluid.Nu - convectionU) * calc.Dt * p.AreaI, p.Vel.Y + (diffusionV * fluid.Nu - convectionV) * calc.Dt * p.AreaI);
+                        //Loop through the cell edges.
+                        foreach (Edge e in p.Edges)
+                        {
 
-                }
+                            //V
+                            //interpolate for face values using weighting (ignore any numerical diffusion perpendicular to face normal)
+                            float phiIpV = _data.CellList[e.AdjoiningCell].Vel.Y * e.W + p.Vel.Y * (1 - e.W);
+
+                            //diffusion calculated as nu * div.grad(phi) boundary geometry is taken into account
+                            diffusionV += (_data.CellList[e.AdjoiningCell].Vel.Y - p.Vel.Y) * e.Lk;
+
+                            //calculate convection terms using Green-Gauss without interpolating velocity as div.(U phi)
+                            convectionV += Vector2.Dot(p.Vel * phiIpV, e.N) * e.L;
+                        }
+
+                        //predictor step uStar and Vstar. We divide by area here so it is only done in one place.
+                        p.VelStar = new Vector2(p.VelStar.X, p.Vel.Y + (diffusionV * fluid.Nu - convectionV) * calc.Dt * p.AreaI);
+
+                    }
+                });
 
                 //Pressure calculations//
                 //PPE:  del p = (rho/dt) * divergence_vel_star calculated with central differencing
@@ -100,7 +120,7 @@ namespace CFD
                     //all cells (including borders) need P clone
                     Parallel.ForEach(_data.CellList, cell => { cell.PN = cell.P; });
 
-                    //the calc for p is the exact equivalent of the calc for p in a difference equation on a regular grid
+                    //on a regular grid, the calc for p is the exact equivalent of the calc for p in a difference equation 
                     Parallel.ForEach(_data.CalcCells(), p =>
                     {
                         float pTerm = 0;

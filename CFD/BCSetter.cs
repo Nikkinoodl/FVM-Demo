@@ -65,10 +65,20 @@ namespace CFD
                 }
 
             }
+
+            //set conditions on the airfoil surface, if present
+            List<Cell> airfoilCells = _data.GetAirfoilSurfaceElements();
+
+            foreach (Cell s in airfoilCells)
+            {
+                s.Vel = Vector2.Zero;
+            }
+
+
         }
 
         /// <summary>
-        /// Sets Neumann boundary conditions around the farfield edge (and airfoil if required).
+        /// Sets Neumann boundary conditions around the farfield edge and airfoil, if present.
         /// </summary>
         /// <param name="calc"></param>
         public void NeumannConditions(Farfield farfield, CalcDomain calc)
@@ -115,6 +125,17 @@ namespace CFD
                             c.P = _data.CellList[e.AdjoiningCell].P;
                         }
                     }
+                }
+            }
+
+            //set conditions on the airfoil surface, if present
+            List<Cell> airfoilCells = _data.GetAirfoilSurfaceElements();
+
+            foreach (Cell s in airfoilCells)
+            {
+                foreach (Edge e in s.Edges)
+                {
+                    s.P = _data.CellList[e.AdjoiningCell].P;
                 }
             }
         }

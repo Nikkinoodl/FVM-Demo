@@ -1,4 +1,5 @@
 ﻿
+using Core.Common;
 using Core.DataCollections;
 
 namespace Core.Domain
@@ -10,7 +11,7 @@ namespace Core.Domain
     {
 
         #region Constructor
-        public BorderCell(int this_id, int v1, int v2, Edge edge1)
+        public BorderCell(int this_id, int v1, int v2, Edge edge1, BorderType borderType = BorderType.Farfield)
         {
             Id = this_id;
             V1 = v1;
@@ -18,6 +19,7 @@ namespace Core.Domain
             R = edge1.R;
             Complete = false;
             BorderCell = true;
+            BorderCellType = borderType;
             Edge1 = edge1;
             Edges = new List<Edge>
             {

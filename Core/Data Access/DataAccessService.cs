@@ -196,11 +196,27 @@ namespace Core.Data
         {
 
             var thislist = from cell in CellList
-                            .Where(c => c.Edges.Any(e => e.SideType == SideType.boundary))
+                           .Where(c => c.Edges.Any(e => e.SideType == SideType.boundary))
                            select cell;
 
             return thislist.ToList();
         }
+
+        /// <summary>
+        /// Returns a list of cells that have an edge on the airfoil surface
+        /// note that zero-height border cells are not included
+        /// </summary>
+        /// <returns></returns>
+        public List<Cell> SurfaceCell()
+        {
+
+            var thislist = from cell in CellList
+                           .Where(c => c.Edges.Any(e => e.SideType == SideType.surface))
+                           select cell;
+
+            return thislist.ToList();
+        }
+
 
         /// <summary>
         /// Returns a list of all nodes that are either on the boundary of the farfield or on the surface of the airfoil
@@ -445,6 +461,7 @@ namespace Core.Data
         {
             var basequery = from cell in CellList
                             where cell.BorderCell == true
+                            where cell.BorderCellType == BorderType.Farfield
                             select cell;
 
             var filterquery = basequery.Where(t =>
@@ -481,6 +498,22 @@ namespace Core.Data
             return filterquery.ToList();
         }
 
+
+        /// <summary>
+        /// Returns a list of the zero-height border cells which lie on the airfoil surface
+        /// </summary>
+        /// <returns></returns>
+        public List<Cell> GetAirfoilSurfaceElements()
+        {
+
+            var basequery = from cell in CellList
+                            where cell.BorderCell == true
+                            where cell.BorderCellType == BorderType.Airfoil
+                            select cell;
+
+            return basequery.ToList();
+        }
+
         /// <summary>
         /// Finds the longest side of a cell
         /// </summary>
@@ -488,6 +521,7 @@ namespace Core.Data
         /// <returns>Edge</returns>
         public Edge FindLongestSide(int t)
         {
+
             Edge e = (from c in CellList[t].Edges
                       orderby c.L descending
                       select c).First();
@@ -502,6 +536,7 @@ namespace Core.Data
         /// <returns>Edge</returns>
         public Edge FindLongestSide(Cell t)
         {
+
             Edge e = (from c in t.Edges
                      orderby c.L descending
                      select c).First();
@@ -516,6 +551,7 @@ namespace Core.Data
         /// <returns>Cell</returns>
         public Cell TopLeft(Farfield farfield)
         {
+
             Cell result = (from c in GetElementsByBoundary("top", farfield)
                            orderby c.R.X ascending
                            select c).First();
@@ -530,6 +566,7 @@ namespace Core.Data
         /// <returns>Cell</returns>
         public Cell TopRight(Farfield farfield)
         {
+
             Cell result = (from c in GetElementsByBoundary("top", farfield)
                            orderby c.R.X descending
                            select c).First();

@@ -11,6 +11,7 @@
         private void InitializeComponent()
         {
             Panel1 = new Panel();
+            comboBox1 = new ComboBox();
             button10 = new Button();
             Label7 = new Label();
             Button9 = new Button();
@@ -46,7 +47,10 @@
             Label11 = new Label();
             OpenFileDialog1 = new OpenFileDialog();
             GlControl = new OpenTK.WinForms.GLControl();
-            comboBox1 = new ComboBox();
+            label12 = new Label();
+            label13 = new Label();
+            label14 = new Label();
+            label15 = new Label();
             Panel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -54,6 +58,10 @@
             // 
             Panel1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             Panel1.BorderStyle = BorderStyle.FixedSingle;
+            Panel1.Controls.Add(label15);
+            Panel1.Controls.Add(label14);
+            Panel1.Controls.Add(label13);
+            Panel1.Controls.Add(label12);
             Panel1.Controls.Add(comboBox1);
             Panel1.Controls.Add(button10);
             Panel1.Controls.Add(Label7);
@@ -94,9 +102,17 @@
             Panel1.Size = new Size(322, 848);
             Panel1.TabIndex = 0;
             // 
+            // comboBox1
+            // 
+            comboBox1.FormattingEnabled = true;
+            comboBox1.Location = new Point(158, 383);
+            comboBox1.Name = "comboBox1";
+            comboBox1.Size = new Size(143, 28);
+            comboBox1.TabIndex = 37;
+            // 
             // button10
             // 
-            button10.Location = new Point(213, 573);
+            button10.Location = new Point(211, 631);
             button10.Name = "button10";
             button10.Size = new Size(96, 28);
             button10.TabIndex = 36;
@@ -116,7 +132,7 @@
             // 
             // Button9
             // 
-            Button9.Location = new Point(213, 477);
+            Button9.Location = new Point(212, 565);
             Button9.Name = "Button9";
             Button9.Size = new Size(97, 28);
             Button9.TabIndex = 33;
@@ -127,7 +143,7 @@
             // Label10
             // 
             Label10.AutoSize = true;
-            Label10.Location = new Point(14, 628);
+            Label10.Location = new Point(12, 691);
             Label10.Margin = new Padding(4, 0, 4, 0);
             Label10.Name = "Label10";
             Label10.Size = new Size(49, 20);
@@ -136,12 +152,12 @@
             // 
             // Button1
             // 
-            Button1.Location = new Point(12, 441);
+            Button1.Location = new Point(160, 461);
             Button1.Margin = new Padding(4);
             Button1.Name = "Button1";
-            Button1.Size = new Size(97, 28);
+            Button1.Size = new Size(143, 28);
             Button1.TabIndex = 2;
-            Button1.Text = "Build";
+            Button1.Text = "Airfoil";
             Button1.UseVisualStyleBackColor = true;
             Button1.Click += Button1_Click;
             // 
@@ -150,7 +166,7 @@
             TextBoxStatus.BackColor = SystemColors.Control;
             TextBoxStatus.BorderStyle = BorderStyle.None;
             TextBoxStatus.CausesValidation = false;
-            TextBoxStatus.Location = new Point(12, 672);
+            TextBoxStatus.Location = new Point(10, 735);
             TextBoxStatus.Margin = new Padding(4);
             TextBoxStatus.Name = "TextBoxStatus";
             TextBoxStatus.ReadOnly = true;
@@ -160,9 +176,9 @@
             // 
             // Button8
             // 
-            Button8.Location = new Point(12, 573);
+            Button8.Location = new Point(12, 631);
             Button8.Name = "Button8";
-            Button8.Size = new Size(95, 28);
+            Button8.Size = new Size(87, 28);
             Button8.TabIndex = 32;
             Button8.Text = "CFD";
             Button8.UseVisualStyleBackColor = true;
@@ -170,10 +186,10 @@
             // 
             // Button2
             // 
-            Button2.Location = new Point(117, 477);
+            Button2.Location = new Point(12, 565);
             Button2.Margin = new Padding(4);
             Button2.Name = "Button2";
-            Button2.Size = new Size(87, 28);
+            Button2.Size = new Size(97, 28);
             Button2.TabIndex = 25;
             Button2.Text = "Delaunay";
             Button2.UseVisualStyleBackColor = true;
@@ -189,7 +205,7 @@
             // 
             // Button3
             // 
-            Button3.Location = new Point(12, 477);
+            Button3.Location = new Point(12, 529);
             Button3.Margin = new Padding(4);
             Button3.Name = "Button3";
             Button3.Size = new Size(97, 28);
@@ -208,7 +224,7 @@
             // 
             // Button4
             // 
-            Button4.Location = new Point(117, 441);
+            Button4.Location = new Point(116, 529);
             Button4.Margin = new Padding(4);
             Button4.Name = "Button4";
             Button4.Size = new Size(87, 28);
@@ -219,10 +235,10 @@
             // 
             // Button7
             // 
-            Button7.Location = new Point(213, 441);
+            Button7.Location = new Point(116, 565);
             Button7.Margin = new Padding(4);
             Button7.Name = "Button7";
-            Button7.Size = new Size(96, 28);
+            Button7.Size = new Size(89, 28);
             Button7.TabIndex = 31;
             Button7.Text = "Redistrib";
             Button7.UseVisualStyleBackColor = true;
@@ -240,12 +256,12 @@
             // 
             // Button6
             // 
-            Button6.Location = new Point(12, 386);
+            Button6.Location = new Point(12, 461);
             Button6.Margin = new Padding(4);
             Button6.Name = "Button6";
-            Button6.Size = new Size(129, 28);
+            Button6.Size = new Size(134, 28);
             Button6.TabIndex = 30;
-            Button6.Text = "Empty Space";
+            Button6.Text = "No Airfoil";
             Button6.UseVisualStyleBackColor = true;
             Button6.Click += Button6_Click;
             // 
@@ -256,7 +272,7 @@
             Button5.Name = "Button5";
             Button5.Size = new Size(129, 28);
             Button5.TabIndex = 29;
-            Button5.Text = "Open File";
+            Button5.Text = "Open Airfoil File";
             Button5.UseVisualStyleBackColor = true;
             Button5.Click += Button5_Click;
             // 
@@ -307,12 +323,13 @@
             // Label4
             // 
             Label4.AutoSize = true;
-            Label4.Location = new Point(30, 73);
+            Label4.Location = new Point(49, 73);
             Label4.Margin = new Padding(4, 0, 4, 0);
             Label4.Name = "Label4";
-            Label4.Size = new Size(111, 20);
+            Label4.Size = new Size(89, 20);
             Label4.TabIndex = 15;
-            Label4.Text = "Airfoil Scale/px";
+            Label4.Text = "Airfoil Scale";
+            Label4.Click += Label4_Click;
             // 
             // TextBoxLayers
             // 
@@ -325,12 +342,12 @@
             // Label5
             // 
             Label5.AutoSize = true;
-            Label5.Location = new Point(56, 137);
+            Label5.Location = new Point(36, 137);
             Label5.Margin = new Padding(4, 0, 4, 0);
             Label5.Name = "Label5";
-            Label5.Size = new Size(83, 20);
+            Label5.Size = new Size(102, 20);
             Label5.TabIndex = 16;
-            Label5.Text = "Cell Height";
+            Label5.Text = "Cell Height/m";
             // 
             // TextBoxExpansionPower
             // 
@@ -430,13 +447,44 @@
             GlControl.TabIndex = 22;
             GlControl.Text = "GlControl";
             // 
-            // comboBox1
+            // label12
             // 
-            comboBox1.FormattingEnabled = true;
-            comboBox1.Location = new Point(160, 386);
-            comboBox1.Name = "comboBox1";
-            comboBox1.Size = new Size(143, 28);
-            comboBox1.TabIndex = 37;
+            label12.AutoSize = true;
+            label12.Location = new Point(67, 386);
+            label12.Name = "label12";
+            label12.Size = new Size(72, 20);
+            label12.TabIndex = 38;
+            label12.Text = "Grid Type";
+            // 
+            // label13
+            // 
+            label13.AutoSize = true;
+            label13.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            label13.Location = new Point(12, 437);
+            label13.Name = "label13";
+            label13.Size = new Size(83, 20);
+            label13.TabIndex = 39;
+            label13.Text = "Start Build";
+            // 
+            // label14
+            // 
+            label14.AutoSize = true;
+            label14.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            label14.Location = new Point(12, 505);
+            label14.Name = "label14";
+            label14.Size = new Size(72, 20);
+            label14.TabIndex = 40;
+            label14.Text = "Optimize";
+            // 
+            // label15
+            // 
+            label15.AutoSize = true;
+            label15.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            label15.Location = new Point(12, 608);
+            label15.Name = "label15";
+            label15.Size = new Size(65, 20);
+            label15.TabIndex = 41;
+            label15.Text = "Commit";
             // 
             // Form2
             // 
@@ -456,35 +504,35 @@
             ResumeLayout(false);
         }
 
-        private System.Windows.Forms.Panel Panel1;
-        private System.Windows.Forms.TextBox TextBoxLayers;
-        private System.Windows.Forms.TextBox TextBoxScale;
-        private System.Windows.Forms.TextBox TextBoxHeight;
-        private System.Windows.Forms.TextBox TextBoxWidth;
-        private System.Windows.Forms.TextBox TextBoxCellFactor;
-        private System.Windows.Forms.TextBox TextBoxCellHeight;
-        private System.Windows.Forms.Label Label11;
-        private System.Windows.Forms.Label Label10;
-        private System.Windows.Forms.Label Label9;
-        private System.Windows.Forms.Label Label8;
-        private System.Windows.Forms.Label Label7;
-        private System.Windows.Forms.Label Label6;
-        private System.Windows.Forms.Label Label5;
-        private System.Windows.Forms.Label Label4;
-        private System.Windows.Forms.Label Label3;
-        private System.Windows.Forms.Label Label2;
-        private System.Windows.Forms.Label Label1;
-        private System.Windows.Forms.TextBox TextBoxOffset;
-        private System.Windows.Forms.TextBox TextBoxExpansionPower;
-        private System.Windows.Forms.TextBox TextBoxNodeTrade;
-        private System.Windows.Forms.TextBox TextBoxStatus;
-        private System.Windows.Forms.TextBox TextBoxSmoothingCycles;
+        private Panel Panel1;
+        private TextBox TextBoxLayers;
+        private TextBox TextBoxScale;
+        private TextBox TextBoxHeight;
+        private TextBox TextBoxWidth;
+        private TextBox TextBoxCellFactor;
+        private TextBox TextBoxCellHeight;
+        private Label Label11;
+        private Label Label10;
+        private Label Label9;
+        private Label Label8;
+        private Label Label7;
+        private Label Label6;
+        private Label Label5;
+        private Label Label4;
+        private Label Label3;
+        private Label Label2;
+        private Label Label1;
+        private TextBox TextBoxOffset;
+        private TextBox TextBoxExpansionPower;
+        private TextBox TextBoxNodeTrade;
+        private TextBox TextBoxStatus;
+        private TextBox TextBoxSmoothingCycles;
         private Button Button1;
         private Button Button2;
         private Button Button3;
         private Button Button4;
-        private System.Windows.Forms.OpenFileDialog OpenFileDialog1;
-        private System.Windows.Forms.TextBox TextBoxFileName;
+        private OpenFileDialog OpenFileDialog1;
+        private TextBox TextBoxFileName;
         private Button Button5;
         private Button Button6;
         private Button Button7;
@@ -496,5 +544,9 @@
         private Button Button9;
         private Button button10;
         private ComboBox comboBox1;
+        private Label label13;
+        private Label label12;
+        private Label label15;
+        private Label label14;
     }
 }
