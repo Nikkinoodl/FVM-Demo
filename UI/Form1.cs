@@ -22,10 +22,6 @@ namespace CFDSolv
 
             InitializeComponent();
 
-            //Get values for combo box and make a default selection
-            comboBox1.DataSource = Enum.GetValues(typeof(CalcType));
-            comboBox1.SelectedItem = CalcType.LidCavity;
-
             _farfield = farfield;
 
             textBox1.Text = "0.001";    //dt
@@ -104,7 +100,6 @@ namespace CFDSolv
             {
                 Tmax = float.Parse(textBox2.Text),
                 Dt = float.Parse(textBox1.Text),
-                CalcType = (CalcType)comboBox1.SelectedItem,
                 Piter = int.Parse(textBox4.Text)
             };
 
@@ -209,21 +204,8 @@ namespace CFDSolv
         private void button3_Click(object sender, EventArgs e)
         {
 
-            // call the logic layer - here we finalize the grid before we can proceed to a CFD solution
-            // the first line gets the object by type from the container
-
-            //if (textBox9.Text != null)  //we must have a length provided
-            //{
-            //    double scale = _farfield.Width / double.Parse(textBox9.Text);  //scales airfoil to given size
-
-            //    Finalize finalize = Program.container.GetInstance<Finalize>();
-            //    finalize.Logic(_farfield, scale);
-            //}
-
-            double scale = 1.0;
-
             Finalize finalize = Program.container.GetInstance<Finalize>();
-            finalize.Logic(_farfield, scale);
+            finalize.Logic(_farfield);
 
             StatusMessage(MeshConstants.MSGPRECALC);
 

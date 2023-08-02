@@ -31,50 +31,14 @@ namespace CFD
         public void DirichletConditions(Farfield farfield, CalcDomain calc, Fluid fluid)
         {
 
-            if (calc.CalcType == CalcType.LidCavity)
+            //set the lid conditions (all cell variables have already been zeroed)
+            List<Cell> lidCells = _data.GetElementsByBoundary("top", farfield);
+
+            foreach (Cell t in lidCells)
             {
-
-                //set the lid conditions (all cell variables have already been zeroed)
-                List<Cell> lidCells = _data.GetElementsByBoundary("top", farfield);
-
-                foreach (Cell t in lidCells)
-                {
-                    t.Vel = new Vector2(fluid.InletU, 0);
-                    t.P = fluid.InletP;
-                }
+                t.Vel = new Vector2(fluid.InletU, 0);
+                t.P = fluid.InletP;
             }
-            else if (calc.CalcType == CalcType.WindTunnel)
-            {
-
-                //Set inlet conditions.
-                List<Cell> inletCells = _data.GetElementsByBoundary("left", farfield);
-
-                foreach (Cell t in inletCells)
-                {
-                    t.Vel = new Vector2((float)fluid.InletU, 0);
-                    t.P = fluid.InletP;
-                }
-
-                //Set outlet conditions.
-                List<Cell> outletCells = _data.GetElementsByBoundary("right", farfield);
-
-                foreach (Cell t in outletCells)
-                {
-                    t.Vel = new Vector2((float)fluid.InletU, 0);
-                    t.P = fluid.InletP;
-                }
-
-            }
-
-            //set conditions on the airfoil surface, if present
-            List<Cell> airfoilCells = _data.GetAirfoilSurfaceElements();
-
-            foreach (Cell s in airfoilCells)
-            {
-                s.Vel = Vector2.Zero;
-            }
-
-
         }
 
         /// <summary>
@@ -89,53 +53,20 @@ namespace CFD
 
             List<Cell> borderCells;
 
-            if (calc.CalcType == CalcType.LidCavity)
+            string[] borders = { "left", "bottom", "right" };
+
+            foreach (string b in borders)
             {
-                string[] borders = { "left", "bottom", "right" };
+                //select all zero-height border cells on the farfield boundary
+                borderCells = _data.GetElementsByBoundary(b, farfield);
 
-                foreach (string b in borders)
+                //then match the pressure to the adjoining cell, forcing gradP to be zero
+                foreach (Cell c in borderCells)
                 {
-                    //select all zero-height border cells on the farfield boundary
-                    borderCells = _data.GetElementsByBoundary(b, farfield);
-
-                    //then match the pressure to the adjoining cell, forcing gradP to be zero
-                    foreach (Cell c in borderCells)
+                    foreach (Edge e in c.Edges)
                     {
-                        foreach (Edge e in c.Edges)
-                        {
-                            c.P = _data.CellList[e.AdjoiningCell].P;
-                        }
+                        c.P = _data.CellList[e.AdjoiningCell].P;
                     }
-                }
-            }
-            else if (calc.CalcType == CalcType.WindTunnel)
-            {
-                string[] borders = { "top", "bottom" };
-
-                foreach (string b in borders)
-                {
-                    //select all zero-height border cells on the farfield boundary
-                    borderCells = _data.GetElementsByBoundary(b, farfield);
-
-                    //then match the pressure to the adjoining cell, forcing gradP to be zero
-                    foreach (Cell c in borderCells)
-                    {
-                        foreach (Edge e in c.Edges)
-                        {
-                            c.P = _data.CellList[e.AdjoiningCell].P;
-                        }
-                    }
-                }
-            }
-
-            //set conditions on the airfoil surface, if present
-            List<Cell> airfoilCells = _data.GetAirfoilSurfaceElements();
-
-            foreach (Cell s in airfoilCells)
-            {
-                foreach (Edge e in s.Edges)
-                {
-                    s.P = _data.CellList[e.AdjoiningCell].P;
                 }
             }
         }

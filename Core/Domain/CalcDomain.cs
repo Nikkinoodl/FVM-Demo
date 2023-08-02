@@ -15,7 +15,7 @@ namespace Core.Domain
         public float Dt { get; set; } = 0.001F;
 
         /// <summary>
-        /// The scenario being modelled
+        /// The scenario being modelled (not used)
         /// </summary>
         public CalcType CalcType { get; set; } = CalcType.LidCavity;
 

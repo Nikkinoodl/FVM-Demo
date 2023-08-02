@@ -8,20 +8,18 @@ Namespace Logic
         Private ReadOnly setter As IStatusSetter
         Private ReadOnly calculator As ICellCalculator
         Private ReadOnly meshprecalc As IMeshPrecalc
-        Private ReadOnly validator As IValidator
 
         Public Sub New(cellBuilder As IBorderCellBuilder, setter As IStatusSetter, calculator As ICellCalculator,
-                       meshprecalc As IMeshPrecalc, validator As IValidator)
+                       meshprecalc As IMeshPrecalc)
 
             Me.cellBuilder = cellBuilder
             Me.setter = setter
             Me.calculator = calculator
             Me.meshprecalc = meshprecalc
-            Me.validator = validator
 
         End Sub
 
-        Public Sub Logic(farfield As Farfield, scale As Double)
+        Public Sub Logic(farfield As Farfield)
 
             If farfield.Gridtype = GridType.Triangles Then
 
@@ -41,7 +39,6 @@ Namespace Logic
 
                 'Add zero-height border cells for setting boundary conditions
                 cellBuilder.CreateBorderCells(farfield)
-
 
                 'Find adjoining cell and face for each edge
                 meshprecalc.FindAdjoiningCells()
@@ -67,9 +64,6 @@ Namespace Logic
 
                 'Find adjoining cell and face for each edge
                 meshprecalc.FindAdjoiningCellsSquare()
-
-                'Check edges for naming errors
-                validator.InspectEdges()
 
             End If
 

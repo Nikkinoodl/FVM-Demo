@@ -40,14 +40,13 @@ namespace CFDSolv
             container.Register<Redistribute>();
             container.Register<Smooth>();
             container.Register<Split>();
-            container.Register<Build>();
+            //container.Register<Build>();
             container.Register<ResetData>();
             container.Register<Finalize>();
             container.Register<CFDLogic>();
 
             //Mesh building services
             container.Register<IInitializer, Initializer>();
-            container.Register<IAirfoilNodeReader, AirfoilNodeReader>();
             container.Register<ICellSorter, CellSorter>();
             container.Register<IStatusSetter, StatusSetter>();
             container.Register<ICellCalculator, CellCalculator>();
@@ -56,12 +55,9 @@ namespace CFDSolv
             container.Register<IGridSmoother, GridSmoother>();
             container.Register<IEmptySpaceBuilder, EmptySpaceBuilder>();
             container.Register<IDelaunay, Delaunay>();
-            container.Register<IScaler, Scaler>();
             container.Register<IRedistributor, Redistributor>();
-            container.Register<IGridBuilder, GridBuilder>();
             container.Register<IBorderCellBuilder, BorderCellBuilder>();
             container.Register<IMeshPrecalc, MeshPrecalc>();
-            container.Register<IValidator, Validator>();
 
             //CFD services
             container.Register<IBCSetter, BCSetter>();
@@ -74,9 +70,6 @@ namespace CFDSolv
             //data layer
             container.Register<IDataPreparer, DataPreparer>();
             container.Register<IDataAccessService, DataAccessService>();
-
-            //Verify
-            //container.Verify();
 
         }
     }

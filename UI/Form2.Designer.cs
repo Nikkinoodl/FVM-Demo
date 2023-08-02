@@ -11,12 +11,14 @@
         private void InitializeComponent()
         {
             Panel1 = new Panel();
+            label15 = new Label();
+            label14 = new Label();
+            label13 = new Label();
+            label12 = new Label();
             comboBox1 = new ComboBox();
             button10 = new Button();
-            Label7 = new Label();
             Button9 = new Button();
             Label10 = new Label();
-            Button1 = new Button();
             TextBoxStatus = new TextBox();
             Button8 = new Button();
             Button2 = new Button();
@@ -27,30 +29,11 @@
             Button7 = new Button();
             Label3 = new Label();
             Button6 = new Button();
-            Button5 = new Button();
             Label2 = new Label();
-            TextBoxScale = new TextBox();
-            TextBoxOffset = new TextBox();
-            Label1 = new Label();
-            TextBoxNodeTrade = new TextBox();
-            Label4 = new Label();
-            TextBoxLayers = new TextBox();
-            Label5 = new Label();
-            TextBoxExpansionPower = new TextBox();
-            Label6 = new Label();
-            TextBoxCellHeight = new TextBox();
-            TextBoxCellFactor = new TextBox();
-            Label8 = new Label();
             TextBoxSmoothingCycles = new TextBox();
-            Label9 = new Label();
-            TextBoxFileName = new TextBox();
             Label11 = new Label();
             OpenFileDialog1 = new OpenFileDialog();
             GlControl = new OpenTK.WinForms.GLControl();
-            label12 = new Label();
-            label13 = new Label();
-            label14 = new Label();
-            label15 = new Label();
             Panel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -64,10 +47,8 @@
             Panel1.Controls.Add(label12);
             Panel1.Controls.Add(comboBox1);
             Panel1.Controls.Add(button10);
-            Panel1.Controls.Add(Label7);
             Panel1.Controls.Add(Button9);
             Panel1.Controls.Add(Label10);
-            Panel1.Controls.Add(Button1);
             Panel1.Controls.Add(TextBoxStatus);
             Panel1.Controls.Add(Button8);
             Panel1.Controls.Add(Button2);
@@ -78,23 +59,8 @@
             Panel1.Controls.Add(Button7);
             Panel1.Controls.Add(Label3);
             Panel1.Controls.Add(Button6);
-            Panel1.Controls.Add(Button5);
             Panel1.Controls.Add(Label2);
-            Panel1.Controls.Add(TextBoxScale);
-            Panel1.Controls.Add(TextBoxOffset);
-            Panel1.Controls.Add(Label1);
-            Panel1.Controls.Add(TextBoxNodeTrade);
-            Panel1.Controls.Add(Label4);
-            Panel1.Controls.Add(TextBoxLayers);
-            Panel1.Controls.Add(Label5);
-            Panel1.Controls.Add(TextBoxExpansionPower);
-            Panel1.Controls.Add(Label6);
-            Panel1.Controls.Add(TextBoxCellHeight);
-            Panel1.Controls.Add(TextBoxCellFactor);
-            Panel1.Controls.Add(Label8);
             Panel1.Controls.Add(TextBoxSmoothingCycles);
-            Panel1.Controls.Add(Label9);
-            Panel1.Controls.Add(TextBoxFileName);
             Panel1.Controls.Add(Label11);
             Panel1.Location = new Point(1328, 6);
             Panel1.Margin = new Padding(4);
@@ -102,37 +68,66 @@
             Panel1.Size = new Size(322, 848);
             Panel1.TabIndex = 0;
             // 
+            // label15
+            // 
+            label15.AutoSize = true;
+            label15.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            label15.Location = new Point(19, 468);
+            label15.Name = "label15";
+            label15.Size = new Size(82, 20);
+            label15.TabIndex = 41;
+            label15.Text = "3. Commit";
+            // 
+            // label14
+            // 
+            label14.AutoSize = true;
+            label14.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            label14.Location = new Point(19, 258);
+            label14.Name = "label14";
+            label14.Size = new Size(89, 20);
+            label14.TabIndex = 40;
+            label14.Text = "2. Optimize";
+            // 
+            // label13
+            // 
+            label13.AutoSize = true;
+            label13.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            label13.Location = new Point(19, 150);
+            label13.Name = "label13";
+            label13.Size = new Size(100, 20);
+            label13.TabIndex = 39;
+            label13.Text = "1. Start Build";
+            // 
+            // label12
+            // 
+            label12.AutoSize = true;
+            label12.Location = new Point(20, 76);
+            label12.Name = "label12";
+            label12.Size = new Size(72, 20);
+            label12.TabIndex = 38;
+            label12.Text = "Grid Type";
+            // 
             // comboBox1
             // 
             comboBox1.FormattingEnabled = true;
-            comboBox1.Location = new Point(158, 383);
+            comboBox1.Location = new Point(111, 73);
             comboBox1.Name = "comboBox1";
             comboBox1.Size = new Size(143, 28);
             comboBox1.TabIndex = 37;
             // 
             // button10
             // 
-            button10.Location = new Point(211, 631);
+            button10.Location = new Point(18, 612);
             button10.Name = "button10";
-            button10.Size = new Size(96, 28);
+            button10.Size = new Size(106, 28);
             button10.TabIndex = 36;
             button10.Text = "RESET";
             button10.UseVisualStyleBackColor = true;
             button10.Click += button10_Click;
             // 
-            // Label7
-            // 
-            Label7.AutoSize = true;
-            Label7.Location = new Point(58, 233);
-            Label7.Margin = new Padding(4, 0, 4, 0);
-            Label7.Name = "Label7";
-            Label7.Size = new Size(85, 20);
-            Label7.TabIndex = 18;
-            Label7.Text = "Node trade";
-            // 
             // Button9
             // 
-            Button9.Location = new Point(212, 565);
+            Button9.Location = new Point(19, 505);
             Button9.Name = "Button9";
             Button9.Size = new Size(97, 28);
             Button9.TabIndex = 33;
@@ -150,17 +145,6 @@
             Label10.TabIndex = 22;
             Label10.Text = "Status";
             // 
-            // Button1
-            // 
-            Button1.Location = new Point(160, 461);
-            Button1.Margin = new Padding(4);
-            Button1.Name = "Button1";
-            Button1.Size = new Size(143, 28);
-            Button1.TabIndex = 2;
-            Button1.Text = "Airfoil";
-            Button1.UseVisualStyleBackColor = true;
-            Button1.Click += Button1_Click;
-            // 
             // TextBoxStatus
             // 
             TextBoxStatus.BackColor = SystemColors.Control;
@@ -176,9 +160,9 @@
             // 
             // Button8
             // 
-            Button8.Location = new Point(12, 631);
+            Button8.Location = new Point(123, 505);
             Button8.Name = "Button8";
-            Button8.Size = new Size(87, 28);
+            Button8.Size = new Size(97, 28);
             Button8.TabIndex = 32;
             Button8.Text = "CFD";
             Button8.UseVisualStyleBackColor = true;
@@ -186,7 +170,7 @@
             // 
             // Button2
             // 
-            Button2.Location = new Point(12, 565);
+            Button2.Location = new Point(19, 374);
             Button2.Margin = new Padding(4);
             Button2.Name = "Button2";
             Button2.Size = new Size(97, 28);
@@ -197,7 +181,7 @@
             // 
             // TextBoxHeight
             // 
-            TextBoxHeight.Location = new Point(160, 38);
+            TextBoxHeight.Location = new Point(113, 39);
             TextBoxHeight.Margin = new Padding(4);
             TextBoxHeight.Name = "TextBoxHeight";
             TextBoxHeight.Size = new Size(68, 27);
@@ -205,7 +189,7 @@
             // 
             // Button3
             // 
-            Button3.Location = new Point(12, 529);
+            Button3.Location = new Point(19, 338);
             Button3.Margin = new Padding(4);
             Button3.Name = "Button3";
             Button3.Size = new Size(97, 28);
@@ -216,7 +200,7 @@
             // 
             // TextBoxWidth
             // 
-            TextBoxWidth.Location = new Point(160, 4);
+            TextBoxWidth.Location = new Point(113, 5);
             TextBoxWidth.Margin = new Padding(4);
             TextBoxWidth.Name = "TextBoxWidth";
             TextBoxWidth.Size = new Size(68, 27);
@@ -224,7 +208,7 @@
             // 
             // Button4
             // 
-            Button4.Location = new Point(116, 529);
+            Button4.Location = new Point(123, 338);
             Button4.Margin = new Padding(4);
             Button4.Name = "Button4";
             Button4.Size = new Size(87, 28);
@@ -235,7 +219,7 @@
             // 
             // Button7
             // 
-            Button7.Location = new Point(116, 565);
+            Button7.Location = new Point(123, 374);
             Button7.Margin = new Padding(4);
             Button7.Name = "Button7";
             Button7.Size = new Size(89, 28);
@@ -247,7 +231,7 @@
             // Label3
             // 
             Label3.AutoSize = true;
-            Label3.Location = new Point(65, 38);
+            Label3.Location = new Point(18, 39);
             Label3.Margin = new Padding(4, 0, 4, 0);
             Label3.Name = "Label3";
             Label3.Size = new Size(73, 20);
@@ -256,173 +240,37 @@
             // 
             // Button6
             // 
-            Button6.Location = new Point(12, 461);
+            Button6.Location = new Point(19, 174);
             Button6.Margin = new Padding(4);
             Button6.Name = "Button6";
             Button6.Size = new Size(134, 28);
             Button6.TabIndex = 30;
-            Button6.Text = "No Airfoil";
+            Button6.Text = "Build Grid";
             Button6.UseVisualStyleBackColor = true;
             Button6.Click += Button6_Click;
-            // 
-            // Button5
-            // 
-            Button5.Location = new Point(10, 327);
-            Button5.Margin = new Padding(4);
-            Button5.Name = "Button5";
-            Button5.Size = new Size(129, 28);
-            Button5.TabIndex = 29;
-            Button5.Text = "Open Airfoil File";
-            Button5.UseVisualStyleBackColor = true;
-            Button5.Click += Button5_Click;
             // 
             // Label2
             // 
             Label2.AutoSize = true;
-            Label2.Location = new Point(70, 4);
+            Label2.Location = new Point(23, 5);
             Label2.Margin = new Padding(4, 0, 4, 0);
             Label2.Name = "Label2";
             Label2.Size = new Size(68, 20);
             Label2.TabIndex = 0;
             Label2.Text = "Width/m";
             // 
-            // TextBoxScale
-            // 
-            TextBoxScale.Location = new Point(160, 73);
-            TextBoxScale.Margin = new Padding(4);
-            TextBoxScale.Name = "TextBoxScale";
-            TextBoxScale.Size = new Size(68, 27);
-            TextBoxScale.TabIndex = 3;
-            // 
-            // TextBoxOffset
-            // 
-            TextBoxOffset.Location = new Point(160, 265);
-            TextBoxOffset.Margin = new Padding(4);
-            TextBoxOffset.Name = "TextBoxOffset";
-            TextBoxOffset.Size = new Size(68, 27);
-            TextBoxOffset.TabIndex = 9;
-            // 
-            // Label1
-            // 
-            Label1.AutoSize = true;
-            Label1.Location = new Point(91, 105);
-            Label1.Margin = new Padding(4, 0, 4, 0);
-            Label1.Name = "Label1";
-            Label1.Size = new Size(50, 20);
-            Label1.TabIndex = 4;
-            Label1.Text = "Layers";
-            // 
-            // TextBoxNodeTrade
-            // 
-            TextBoxNodeTrade.Location = new Point(160, 233);
-            TextBoxNodeTrade.Margin = new Padding(4);
-            TextBoxNodeTrade.Name = "TextBoxNodeTrade";
-            TextBoxNodeTrade.Size = new Size(68, 27);
-            TextBoxNodeTrade.TabIndex = 7;
-            // 
-            // Label4
-            // 
-            Label4.AutoSize = true;
-            Label4.Location = new Point(49, 73);
-            Label4.Margin = new Padding(4, 0, 4, 0);
-            Label4.Name = "Label4";
-            Label4.Size = new Size(89, 20);
-            Label4.TabIndex = 15;
-            Label4.Text = "Airfoil Scale";
-            Label4.Click += Label4_Click;
-            // 
-            // TextBoxLayers
-            // 
-            TextBoxLayers.Location = new Point(160, 105);
-            TextBoxLayers.Margin = new Padding(4);
-            TextBoxLayers.Name = "TextBoxLayers";
-            TextBoxLayers.Size = new Size(68, 27);
-            TextBoxLayers.TabIndex = 4;
-            // 
-            // Label5
-            // 
-            Label5.AutoSize = true;
-            Label5.Location = new Point(36, 137);
-            Label5.Margin = new Padding(4, 0, 4, 0);
-            Label5.Name = "Label5";
-            Label5.Size = new Size(102, 20);
-            Label5.TabIndex = 16;
-            Label5.Text = "Cell Height/m";
-            // 
-            // TextBoxExpansionPower
-            // 
-            TextBoxExpansionPower.Location = new Point(160, 201);
-            TextBoxExpansionPower.Margin = new Padding(4);
-            TextBoxExpansionPower.Name = "TextBoxExpansionPower";
-            TextBoxExpansionPower.Size = new Size(68, 27);
-            TextBoxExpansionPower.TabIndex = 8;
-            // 
-            // Label6
-            // 
-            Label6.AutoSize = true;
-            Label6.Location = new Point(63, 169);
-            Label6.Margin = new Padding(4, 0, 4, 0);
-            Label6.Name = "Label6";
-            Label6.Size = new Size(78, 20);
-            Label6.TabIndex = 17;
-            Label6.Text = "Cell Factor";
-            // 
-            // TextBoxCellHeight
-            // 
-            TextBoxCellHeight.Location = new Point(160, 137);
-            TextBoxCellHeight.Margin = new Padding(4);
-            TextBoxCellHeight.Name = "TextBoxCellHeight";
-            TextBoxCellHeight.Size = new Size(68, 27);
-            TextBoxCellHeight.TabIndex = 5;
-            // 
-            // TextBoxCellFactor
-            // 
-            TextBoxCellFactor.Location = new Point(160, 169);
-            TextBoxCellFactor.Margin = new Padding(4);
-            TextBoxCellFactor.Name = "TextBoxCellFactor";
-            TextBoxCellFactor.Size = new Size(68, 27);
-            TextBoxCellFactor.TabIndex = 6;
-            // 
-            // Label8
-            // 
-            Label8.AutoSize = true;
-            Label8.Location = new Point(23, 204);
-            Label8.Margin = new Padding(4, 0, 4, 0);
-            Label8.Name = "Label8";
-            Label8.Size = new Size(120, 20);
-            Label8.TabIndex = 19;
-            Label8.Text = "Expansion Power";
-            // 
             // TextBoxSmoothingCycles
             // 
-            TextBoxSmoothingCycles.Location = new Point(160, 297);
+            TextBoxSmoothingCycles.Location = new Point(160, 288);
             TextBoxSmoothingCycles.Margin = new Padding(4);
             TextBoxSmoothingCycles.Name = "TextBoxSmoothingCycles";
             TextBoxSmoothingCycles.Size = new Size(68, 27);
             TextBoxSmoothingCycles.TabIndex = 23;
             // 
-            // Label9
-            // 
-            Label9.AutoSize = true;
-            Label9.Location = new Point(93, 265);
-            Label9.Margin = new Padding(4, 0, 4, 0);
-            Label9.Name = "Label9";
-            Label9.Size = new Size(49, 20);
-            Label9.TabIndex = 20;
-            Label9.Text = "Offset";
-            // 
-            // TextBoxFileName
-            // 
-            TextBoxFileName.Location = new Point(160, 330);
-            TextBoxFileName.Margin = new Padding(4);
-            TextBoxFileName.Name = "TextBoxFileName";
-            TextBoxFileName.Size = new Size(143, 27);
-            TextBoxFileName.TabIndex = 28;
-            // 
             // Label11
             // 
             Label11.AutoSize = true;
-            Label11.Location = new Point(19, 297);
+            Label11.Location = new Point(19, 288);
             Label11.Margin = new Padding(4, 0, 4, 0);
             Label11.Name = "Label11";
             Label11.Size = new Size(127, 20);
@@ -432,7 +280,6 @@
             // OpenFileDialog1
             // 
             OpenFileDialog1.FileName = "OpenFileDialog1";
-            OpenFileDialog1.FileOk += OpenFileDialog1_FileOk;
             // 
             // GlControl
             // 
@@ -446,45 +293,6 @@
             GlControl.Size = new Size(379, 254);
             GlControl.TabIndex = 22;
             GlControl.Text = "GlControl";
-            // 
-            // label12
-            // 
-            label12.AutoSize = true;
-            label12.Location = new Point(67, 386);
-            label12.Name = "label12";
-            label12.Size = new Size(72, 20);
-            label12.TabIndex = 38;
-            label12.Text = "Grid Type";
-            // 
-            // label13
-            // 
-            label13.AutoSize = true;
-            label13.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
-            label13.Location = new Point(12, 437);
-            label13.Name = "label13";
-            label13.Size = new Size(83, 20);
-            label13.TabIndex = 39;
-            label13.Text = "Start Build";
-            // 
-            // label14
-            // 
-            label14.AutoSize = true;
-            label14.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
-            label14.Location = new Point(12, 505);
-            label14.Name = "label14";
-            label14.Size = new Size(72, 20);
-            label14.TabIndex = 40;
-            label14.Text = "Optimize";
-            // 
-            // label15
-            // 
-            label15.AutoSize = true;
-            label15.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
-            label15.Location = new Point(12, 608);
-            label15.Name = "label15";
-            label15.Size = new Size(65, 20);
-            label15.TabIndex = 41;
-            label15.Text = "Commit";
             // 
             // Form2
             // 
@@ -505,35 +313,18 @@
         }
 
         private Panel Panel1;
-        private TextBox TextBoxLayers;
-        private TextBox TextBoxScale;
         private TextBox TextBoxHeight;
         private TextBox TextBoxWidth;
-        private TextBox TextBoxCellFactor;
-        private TextBox TextBoxCellHeight;
         private Label Label11;
         private Label Label10;
-        private Label Label9;
-        private Label Label8;
-        private Label Label7;
-        private Label Label6;
-        private Label Label5;
-        private Label Label4;
         private Label Label3;
         private Label Label2;
-        private Label Label1;
-        private TextBox TextBoxOffset;
-        private TextBox TextBoxExpansionPower;
-        private TextBox TextBoxNodeTrade;
         private TextBox TextBoxStatus;
         private TextBox TextBoxSmoothingCycles;
-        private Button Button1;
         private Button Button2;
         private Button Button3;
         private Button Button4;
         private OpenFileDialog OpenFileDialog1;
-        private TextBox TextBoxFileName;
-        private Button Button5;
         private Button Button6;
         private Button Button7;
         private Button Button8;

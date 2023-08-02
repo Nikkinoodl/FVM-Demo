@@ -52,8 +52,6 @@
             label6 = new Label();
             saveFileDialog1 = new SaveFileDialog();
             button2 = new Button();
-            comboBox1 = new ComboBox();
-            label7 = new Label();
             button3 = new Button();
             TextBoxStatus = new TextBox();
             textBox4 = new TextBox();
@@ -275,23 +273,6 @@
             button2.UseVisualStyleBackColor = true;
             button2.Click += button2_Click;
             // 
-            // comboBox1
-            // 
-            comboBox1.FormattingEnabled = true;
-            comboBox1.Location = new Point(1381, 165);
-            comboBox1.Name = "comboBox1";
-            comboBox1.Size = new Size(203, 28);
-            comboBox1.TabIndex = 37;
-            // 
-            // label7
-            // 
-            label7.AutoSize = true;
-            label7.Location = new Point(1292, 168);
-            label7.Name = "label7";
-            label7.Size = new Size(71, 20);
-            label7.TabIndex = 38;
-            label7.Text = "CFD Type";
-            // 
             // button3
             // 
             button3.Location = new Point(1361, 490);
@@ -313,7 +294,7 @@
             // 
             // textBox4
             // 
-            textBox4.Location = new Point(1386, 224);
+            textBox4.Location = new Point(1381, 212);
             textBox4.Name = "textBox4";
             textBox4.Size = new Size(125, 27);
             textBox4.TabIndex = 41;
@@ -321,7 +302,7 @@
             // label10
             // 
             label10.AutoSize = true;
-            label10.Location = new Point(1287, 227);
+            label10.Location = new Point(1282, 215);
             label10.Name = "label10";
             label10.Size = new Size(77, 20);
             label10.TabIndex = 42;
@@ -337,8 +318,6 @@
             Controls.Add(textBox4);
             Controls.Add(TextBoxStatus);
             Controls.Add(button3);
-            Controls.Add(label7);
-            Controls.Add(comboBox1);
             Controls.Add(button2);
             Controls.Add(label6);
             Controls.Add(label5);
@@ -392,8 +371,6 @@
         private RadioButton radioButton4;
         private SaveFileDialog saveFileDialog1;
         private Button button2;
-        private ComboBox comboBox1;
-        private Label label7;
         private Button button3;
         private TextBox TextBoxStatus;
         private TextBox textBox4;
