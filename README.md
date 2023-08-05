@@ -1,6 +1,6 @@
 # FVM-Demo
 
-This Windows Forms/C#/VB application uses the cell-centered finite volume method (FVM) to generate fluid flow simulations by solving the
+This Windows Forms/C#/VB/.NET 7 application uses the cell-centered finite volume method (FVM) to generate fluid flow simulations by solving the
 incompressible Navier-Stokes equations for a lid-cavity problem. 
 
 This application allows grids of different types to be generated (e.g. irregular triangles, equilateral triangles, rectangular) and uses the
