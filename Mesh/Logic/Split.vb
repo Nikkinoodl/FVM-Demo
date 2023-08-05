@@ -24,20 +24,34 @@ Namespace Logic
 
             If farfield.Gridtype = GridType.Triangles Then
 
-                'stage one of cell refinement
+                'simple cell refinement
                 splitter.SplitCells()
-
-                'stage two of cell refinement.
-                splitter.CleanOrphanNodes()
 
                 'calculate lengths, make sure all nodes on boundary have .boundary = True
                 checker.CheckBoundaryNodes(farfield)
                 calculator.CalculateLengths()
 
+            ElseIf farfield.Gridtype = GridType.RegularTriangles Then
+
+                'simple cell refinement
+                splitter.SplitCells()
+
+                'calculate lengths, make sure all nodes on boundary have .boundary = True
+                checker.CheckBoundaryNodes(farfield)
+                calculator.CalculateLengths()
+
+            ElseIf farfield.Gridtype = GridType.Equilateral Then
+
+                'divide up grid, preserving triangle shapes
+                splitter.DivideEquilateral()
+
+                'calculate lengths, make sure all nodes on boundary have .boundary = True
+                checker.CheckBoundaryNodes(farfield)
+                calculator.CalculateLengths()
 
             Else
 
-                'rectangular grids cells are split in one pass
+                'divide up rectangular grid elements
                 splitter.DivideRegularCells()
 
                 'calculate lengths, make sure all nodes on boundary have .boundary = True

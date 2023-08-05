@@ -2,17 +2,17 @@
     Public Interface ICellSplitter
 
         ''' <summary>
-        ''' Refines the mesh by splitting cells
+        ''' Refines the mesh by splitting triangular cells between the longest side and the opposing vertex
         ''' </summary>
         Sub SplitCells()
 
         ''' <summary>
-        ''' Completes the mesh splitting process
+        ''' Refines an equilateral triangle grid
         ''' </summary>
-        Sub CleanOrphanNodes()
+        Sub DivideEquilateral()
 
         ''' <summary>
-        ''' Refines a regular grid which comprises square cells
+        ''' Refines a rectangular grid
         ''' </summary>
         Sub DivideRegularCells()
 

@@ -8,13 +8,11 @@ Namespace Logic
         Private ReadOnly checker As IBoundaryNodeChecker
         Private ReadOnly calculator As ICellCalculator
         Private ReadOnly initializer As IInitializer
-        Private ReadOnly sorter As ICellSorter
 
-        Public Sub New(builder As IEmptySpaceBuilder, checker As IBoundaryNodeChecker, sorter As ICellSorter, calculator As ICellCalculator, initializer As IInitializer)
+        Public Sub New(builder As IEmptySpaceBuilder, checker As IBoundaryNodeChecker, calculator As ICellCalculator, initializer As IInitializer)
 
             Me.builder = builder
             Me.checker = checker
-            Me.sorter = sorter
             Me.calculator = calculator
             Me.initializer = initializer
 
@@ -31,7 +29,7 @@ Namespace Logic
             'calculate lengths, make sure all nodes on boundary have .boundary = True
             checker.CheckBoundaryNodes(farfield)
 
-            If farfield.Gridtype = GridType.Triangles Then
+            If farfield.Gridtype <> GridType.Rectangles Then
                 calculator.CalculateLengths()
             Else
                 calculator.CalculateLengthsSquares()

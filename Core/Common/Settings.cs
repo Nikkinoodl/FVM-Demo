@@ -22,14 +22,14 @@ namespace Core.Common
         // on read takes the string and converts to specific type
         // on write takes a specific type and converts to a string
         // 
-        public int Width
+        public float Width
         {
-            get => int.Parse(_width);
+            get => float.Parse(_width);
             set => _width = Convert.ToString(value);
         }
-        public int Height
+        public float Height
         {
-            get => int.Parse(_height);
+            get => float.Parse(_height);
             set => _height = Convert.ToString(value);
         }
         //public float Scale

@@ -17,7 +17,6 @@ namespace CFDSolv
 
         public Farfield Farfield { get { return farfield; } }
 
-
         private System.Windows.Forms.Timer _timer = null!;
         private float _angle = 0.0f;
 
@@ -37,61 +36,34 @@ namespace CFDSolv
             // initialize settings and read from settings.xml file
             settings.CreateSettings();
 
-            // Initial settings copied to public properties that will persist through the class
+            // Initial settings
             farfield.Height = settings.Height;
             farfield.Width = settings.Width;
-            //farfield.Scale = settings.Scale;
-            //farfield.Layers = settings.Layers;
-            //farfield.Cellheight = settings.Cellheight;
-            //farfield.Cellfactor = settings.Cellfactor;
-            //farfield.Nodetrade = settings.Nodetrade;
-            //farfield.Expansionpower = settings.Expansionpower;
-            //farfield.Offset = settings.Offset;
             farfield.Smoothingcycles = settings.Smoothingcycles;
-            //farfield.Filename = settings.Filename;
             farfield.Gridtype = settings.Gridtype;
 
             // populate text boxes with farfield settings
             TextBoxHeight.Text = farfield.Height.ToString();
             TextBoxWidth.Text = farfield.Width.ToString();
-            //TextBoxScale.Text = farfield.Scale.ToString();
-            //TextBoxLayers.Text = farfield.Layers.ToString();
-            //TextBoxCellHeight.Text = farfield.Cellheight.ToString();
-            //TextBoxCellFactor.Text = farfield.Cellfactor.ToString();
-            //TextBoxNodeTrade.Text = farfield.Nodetrade.ToString();
-            //TextBoxExpansionPower.Text = farfield.Expansionpower.ToString();
-            //TextBoxOffset.Text = farfield.Offset.ToString();
             TextBoxSmoothingCycles.Text = farfield.Smoothingcycles.ToString();
-            //TextBoxFileName.Text = farfield.Filename;
 
             WindowState = FormWindowState.Maximized;
             GL.ClearColor(Color4.White);
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
             GL.Ortho(0, farfield.Width, 0, farfield.Height, -1, 1);
-            GL.Viewport(0, 0, farfield.Width, farfield.Height);
+            GL.Viewport(0, 0, 1000, (int)(1000 * farfield.Height / farfield.Width));
 
             var ToolTip1 = new ToolTip();
             var ToolTip2 = new ToolTip();
-            var ToolTip3 = new ToolTip();
-            var ToolTip4 = new ToolTip();
-            var ToolTip5 = new ToolTip();
-            var ToolTip6 = new ToolTip();
-            var ToolTip7 = new ToolTip();
-            var ToolTip8 = new ToolTip();
-            var ToolTip9 = new ToolTip();
             var ToolTip10 = new ToolTip();
 
             ToolTip1.SetToolTip(TextBoxWidth, "The width of the farfield in meters");
             ToolTip2.SetToolTip(TextBoxHeight, "The height of the farfield in meters");
-            //ToolTip3.SetToolTip(TextBoxScale, "The amount by which to scale the airfoil");
-            //ToolTip4.SetToolTip(TextBoxLayers, "The number of layers of cells to create around the airfoil in the first pass");
-            //ToolTip5.SetToolTip(TextBoxCellHeight, "The initial cell layer height in meters");
-            //ToolTip6.SetToolTip(TextBoxCellFactor, "A factor used to fine-tune the layer height");
-            //ToolTip7.SetToolTip(TextBoxExpansionPower, "The amount by which to increase the height of subsequent layers: height = cellheight*cellfactor*layernumber^expansionpower");
-            //ToolTip8.SetToolTip(TextBoxNodeTrade, "Number of boundary nodes to reallocate between vertical/horizontal edges");
-            //ToolTip9.SetToolTip(TextBoxOffset, "Number of nodes to offsetp between layers - reduces the initial grid distortion");
             ToolTip10.SetToolTip(TextBoxSmoothingCycles, "Number of iterations of the smoothing routine");
+
+            //set buttons to default
+            ResetButtonStatus();
         }
 
         private void GlControl_Load(object? sender, EventArgs e)
@@ -199,7 +171,7 @@ namespace CFDSolv
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
             // Set size of Gl Control scaled to reasonable viewing size (used to display grid)
-            GL.Viewport(0, 0, 1000, 1000 * farfield.Height / farfield.Width);
+            GL.Viewport(0, 0, 1000, (int)(1000 * farfield.Height / farfield.Width));
 
             // Draw the Grid based on cells
             int? n1, n2, n3, n4;
@@ -257,27 +229,11 @@ namespace CFDSolv
             // case of error
             //farfield.Height = ValidateEntry<int>(ref TextBoxHeight, ref settings.Height);
             //farfield.Width = ValidateEntry<int>(ref TextBoxWidth, ref settings.Width);
-            //farfield.Scale = ValidateEntry<short>(ref TextBoxScale, ref settings.Scale);
-            //farfield.Layers = ValidateEntry<short>(ref TextBoxLayers, ref settings.Layers);
-            //farfield.Cellheight = ValidateEntry<short>(ref TextBoxCellHeight, ref settings.Cellheight);
-            //farfield.Cellfactor = ValidateEntry<double>(ref TextBoxCellFactor, ref settings.Cellfactor);
-            //farfield.Nodetrade = ValidateEntry<short>(ref TextBoxNodeTrade, ref settings.Nodetrade);
-            //farfield.Expansionpower = ValidateEntry<double>(ref TextBoxExpansionPower, ref settings.Expansionpower);
-            //farfield.Offset = ValidateEntry<short>(ref TextBoxOffset, ref settings.Offset);
             //farfield.Smoothingcycles = ValidateEntry<short>(ref TextBoxSmoothingCycles, ref settings.Smoothingcycles);
-            //farfield.Filename = TextBoxFileName.Text;
 
-            farfield.Height = int.Parse(TextBoxHeight.Text);
-            farfield.Width = int.Parse(TextBoxWidth.Text);
-            //farfield.Scale = float.Parse(TextBoxScale.Text);
-            //farfield.Layers = short.Parse(TextBoxLayers.Text);
-            //farfield.Cellheight = float.Parse(TextBoxCellHeight.Text);
-            //farfield.Cellfactor = double.Parse(TextBoxCellFactor.Text);
-            //farfield.Nodetrade = short.Parse(TextBoxNodeTrade.Text);
-            //farfield.Expansionpower = double.Parse(TextBoxExpansionPower.Text);
-            //farfield.Offset = short.Parse(TextBoxOffset.Text);
+            farfield.Height = float.Parse(TextBoxHeight.Text);
+            farfield.Width = float.Parse(TextBoxWidth.Text);
             farfield.Smoothingcycles = short.Parse(TextBoxSmoothingCycles.Text);
-            //farfield.Filename = TextBoxFileName.Text;
             farfield.Gridtype = (GridType)comboBox1.SelectedItem;
         }
 
@@ -286,58 +242,11 @@ namespace CFDSolv
             // set the GL control size
 
             GlControl.Width = 1000;
-            GlControl.Height = 1000 * farfield.Height / farfield.Width;
+            GlControl.Height = (int)(1000 * farfield.Height / farfield.Width);
         }
 
-        ///// <summary>
-        ///// Builds grid around an airfoil
-        ///// </summary>
-        ///// <param name="sender"></param>
-        ///// <param name="e"></param>
-        //private void Button1_Click(object sender, EventArgs e)
-        //{
-
-        //    StatusMessage(MeshConstants.MSGINITIALIZE);
-
-        //    // pull in any changed farfield values
-        //    UpdateFarfield();
-
-        //    //take this opportunity to save the settings
-        //    Settings.WriteSettings(farfield);
-
-        //    // set window drawing size
-        //    UpdateGLSize();
-
-        //    StatusMessage(MeshConstants.MSGCONSTRUCT);
-
-        //    // call the logic layer - here we initiate the actual work of building the grid
-        //    // the first line gets the object by type from the container
-        //    Build build = Program.container.GetInstance<Build>();
-        //    build.Logic(farfield);
-
-        //    // toggle the empty grid build button to prevent accidents
-        //    if (Button6.Enabled == false)
-        //    {
-        //        Button6.Enabled = true;
-        //    }
-        //    else
-        //    {
-        //        Button6.Enabled = false;
-        //    }
-
-        //    //Enable buttons for grid refinement
-        //    Button2.Enabled = true;
-        //    Button3.Enabled = true;
-        //    Button4.Enabled = true;
-        //    Button7.Enabled = true;
-        //    Button9.Enabled = true;
-
-        //    // Repaint
-        //    EventCompletion();
-        //}
-
         /// <summary>
-        ///  Runs delaunay triangulation on triangular grid
+        ///  Runs delaunay triangulation on an irregular triangular grid
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -347,7 +256,6 @@ namespace CFDSolv
             StatusMessage(MeshConstants.MSGDELAUNAY);
 
             // call the logic layer - here we initiate the grid optimization
-            // the first line gets the object by type from the container
             DelaunayLogic delaunayLogic = Program.container.GetInstance<DelaunayLogic>();
             delaunayLogic.Logic();
 
@@ -373,7 +281,6 @@ namespace CFDSolv
             split.Logic(farfield);
 
             // Repaint
-
             EventCompletion();
         }
 
@@ -391,45 +298,12 @@ namespace CFDSolv
             UpdateFarfield();
 
             // call the logic layer - here we initiate grid smoothing
-            // the first line gets the object by type from the container
             Smooth smooth = Program.container.GetInstance<Smooth>();
             smooth.Logic(farfield);
 
             // Repaint
             EventCompletion();
         }
-
-        ///// <summary>
-        ///// Initiates load of airfoil data from selected file when OK button is clicked
-        ///// </summary>
-        ///// <param name="sender"></param>
-        ///// <param name="e"></param>
-        //private void OpenFileDialog1_FileOk(object sender, CancelEventArgs e)
-        //{
-
-        //    Stream strm;
-        //    strm = OpenFileDialog1.OpenFile();
-        //    TextBoxFileName.Text = OpenFileDialog1.FileName.ToString();
-        //    if (!(strm == null))
-        //    {
-        //        // insert additionalcode to process the file data here
-        //        strm.Close();
-        //        MessageBox.Show(MeshConstants.MSGLOADED);
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Runs the open file dialog
-        ///// </summary>
-        ///// <param name="sender"></param>
-        ///// <param name="e"></param>
-        //private void Button5_Click(object sender, EventArgs e)
-        //{
-
-        //    OpenFileDialog1.Title = MeshConstants.DIALOGTITLE;
-        //    OpenFileDialog1.InitialDirectory = MeshConstants.FILELOCATION;
-        //    OpenFileDialog1.ShowDialog();
-        //}
 
         /// <summary>
         /// Builds grid for an empty space with no airfoil present
@@ -451,25 +325,25 @@ namespace CFDSolv
             UpdateGLSize();
 
             // call the logic layer - here we do the actual work of building the empty grid
-            // the first line gets the object by type from the container
             EmptySpace emptySpace = Program.container.GetInstance<EmptySpace>();
             emptySpace.Logic(farfield);
 
-            //// toggle the airfoil build button to prevent accidents
-            //if (Button1.Enabled == false)
-            //{
-            //    Button1.Enabled = true;
-            //}
-            //else
-            //{
-            //    Button1.Enabled = false;
-            //}
+            //Enable buttons irregular grids
+            if (farfield.Gridtype == GridType.Triangles)
+            {
+                Button2.Enabled = true;
+                Button4.Enabled = true;
+                Button7.Enabled = true;
+            }
+            else
+            {
+                Button2.Enabled = false;
+                Button4.Enabled = false;
+                Button7.Enabled = false;
+            }
 
-            //Enable buttons for grid refinement
-            Button2.Enabled = true;
+            //Enable for all grids
             Button3.Enabled = true;
-            Button4.Enabled = true;
-            Button7.Enabled = true;
             Button9.Enabled = true;
 
             // Repaint
@@ -477,7 +351,7 @@ namespace CFDSolv
         }
 
         /// <summary>
-        /// Redistributes nodes on edges of farfield - used for triangular grids
+        /// Redistributes nodes on edges of farfield - used for irregular grids
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -514,21 +388,19 @@ namespace CFDSolv
         private void Button9_Click(object sender, EventArgs e)
         {
             //At this point we don't want to make any more changes so disable buttons
-            //Button1.Enabled = false;
             Button2.Enabled = false;
             Button3.Enabled = false;
-            //Button4.Enabled = false;
-            //Button5.Enabled = false;
+            Button4.Enabled = false;
             Button6.Enabled = false;
             Button7.Enabled = false;
+            Button9.Enabled = false;
+
+            //Only allow CFD or RESET
+            Button8.Enabled = true;
+            button10.Enabled = true;
 
             //Message to indicate whether grid element is finalized
             StatusMessage(MeshConstants.MSGFINALIZED);
-
-            //For later:
-            //      Optionally save the nodes and cells (filesystem, database?)
-            //      Optionally change airfoil loader to also load grid details
-            //      Have the ability to replicate the farfield in any direction
         }
 
         /// <summary>
@@ -556,12 +428,25 @@ namespace CFDSolv
             ResetData resetData = Program.container.GetInstance<ResetData>();
             resetData.Logic();
 
-            //OK to re-enable buttons
-            //Button1.Enabled = true;
-            //Button5.Enabled = true;
-            Button6.Enabled = true;
+            //set buttons to default
+            ResetButtonStatus();
 
         }
+
+        private void ResetButtonStatus()
+        {
+            //defaut button availability
+            Button6.Enabled = true;
+            button10.Enabled = true;
+
+            Button2.Enabled = false;
+            Button3.Enabled = false;
+            Button4.Enabled = false;
+            Button7.Enabled = false;
+            Button8.Enabled = false;
+            Button9.Enabled = false;
+        }
+
 
         //private T ValidateEntry<T>(ref object value, ref object fallback)
         //{

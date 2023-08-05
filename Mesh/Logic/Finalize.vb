@@ -21,7 +21,7 @@ Namespace Logic
 
         Public Sub Logic(farfield As Farfield)
 
-            If farfield.Gridtype = GridType.Triangles Then
+            If farfield.Gridtype = GridType.Triangles Or farfield.Gridtype = GridType.Equilateral Or farfield.Gridtype = GridType.RegularTriangles Then
 
                 'Some changes to cells prior to starting CFD
                 'Find edge midpoints

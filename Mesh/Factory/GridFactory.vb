@@ -2,6 +2,7 @@
 Imports Core.Common
 Imports System.Numerics
 Imports System.Windows.Forms.VisualStyles
+Imports System.Security.AccessControl
 
 Namespace Factories
 
@@ -19,18 +20,6 @@ Namespace Factories
 
 #Region "Simple Create/Update/Replace Methods"
         ''' <summary>
-        ''' Add a new node which optionally lies on the boundary or airfoil surface (deprecated)
-        ''' </summary>
-        ''' <param name="this_id"></param>
-        ''' <param name="this_x"></param>
-        ''' <param name="this_y"></param>
-        ''' <param name="this_surface"></param>
-        ''' <param name="this_boundary"></param>
-        Public Sub RequestNode(this_id As Integer, this_x As Single, this_y As Single, this_surface As Boolean, this_boundary As Boolean) Implements IGridFactory.RequestNode
-            Dim newNode As New Node(this_id, this_x, this_y, this_surface, this_boundary)
-        End Sub
-
-        ''' <summary>
         ''' Add a new node which optionally lies on the boundary or airfoil surface
         ''' </summary>
         ''' <param name="this_id"></param>
@@ -42,16 +31,6 @@ Namespace Factories
         End Sub
 
         ''' <summary>
-        ''' Add a generic node which does not lie on the boundary or airfoil surface (deprecated)
-        ''' </summary>
-        ''' <param name="this_id"></param>
-        ''' <param name="this_x"></param>
-        ''' <param name="this_y"></param>
-        Public Sub AddNode(this_id As Integer, this_x As Single, this_y As Single) Implements IGridFactory.AddNode
-            Dim newNode As New Node(this_id, this_x, this_y, False, False)
-        End Sub
-
-        ''' <summary>
         ''' Adds a generic node which does not lie on the boundary or airfoil surface
         ''' </summary>
         ''' <param name="this_id"></param>
@@ -60,7 +39,6 @@ Namespace Factories
         Public Sub AddNode(this_id As Integer, thisPosition As Vector2) Implements IGridFactory.AddNode
             Dim newNode As New Node(this_id, thisPosition)
         End Sub
-
 
         ''' <summary>
         ''' Add a node on the boundary of the farfield
@@ -196,7 +174,17 @@ Namespace Factories
         End Sub
 
         ''' <summary>
-        ''' Creates the first set of triangular grid cells in a mesh when no airfoil is present
+        ''' Adds a node at the center of the farfield top boundary
+        ''' </summary>
+        ''' <param name="farfield"></param>
+        Public Sub AddTopBoundaryNode(farfield As Farfield) Implements IGridFactory.AddTopBoundaryNode
+
+            AddBoundaryNode(4, farfield.Width / 2, farfield.Height)
+
+        End Sub
+
+        ''' <summary>
+        ''' Creates the first set of irregular triangular grid cells in a mesh when no airfoil is present
         ''' </summary>
         Public Sub SetupEmptySpaceCells() Implements IGridFactory.SetupEmptySpaceCells
 
@@ -206,6 +194,20 @@ Namespace Factories
             AddCell(1, 4, 1, 3, SideType.none, SideType.none, SideType.boundary)
             AddCell(2, 1, 5, 3, SideType.boundary, SideType.none, SideType.none)
             AddCell(3, 1, 2, 5, SideType.boundary, SideType.none, SideType.boundary)
+
+        End Sub
+
+        ''' <summary>
+        ''' Creates the first cells in an equilateral triangle mesh when no airfoil is present
+        ''' </summary>
+        Public Sub SetupRegularTriangleCells() Implements IGridFactory.SetupRegularTriangleCells
+
+            'Note that nodes are always assigned to vertices in a clockwise arrangement,
+            'starting with the left-most side
+
+            AddCell(0, 0, 1, 4, SideType.boundary, SideType.none, SideType.boundary)
+            AddCell(1, 0, 4, 3, SideType.none, SideType.boundary, SideType.none)
+            AddCell(2, 3, 4, 2, SideType.boundary, SideType.boundary, SideType.none)
 
         End Sub
 

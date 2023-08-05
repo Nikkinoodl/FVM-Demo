@@ -61,8 +61,10 @@
     /// </summary>
     public enum GridType
     {
-        Triangles,
-        Rectangles
+        Triangles,          //triangles, irregular
+        RegularTriangles,   //triangles, regular
+        Equilateral,        //triangles, equilateral
+        Rectangles          //rectangular
     }
 
     /// <summary>

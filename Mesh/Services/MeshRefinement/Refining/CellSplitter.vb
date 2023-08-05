@@ -18,7 +18,7 @@ Namespace Services
         End Sub
 
         ''' <summary>
-        ''' Refines the mesh by dividing triangular cells
+        ''' Refines the mesh by splitting triangular cells between the longest side and the opposing vertex
         ''' </summary>
         Public Sub SplitCells() Implements ICellSplitter.SplitCells
 
@@ -96,12 +96,15 @@ Namespace Services
 
             Next
 
+            'Complete the cell splitting prcess
+            CleanOrphanNodes()
+
         End Sub
 
         ''' <summary>
-        ''' 'Finds triangular cells that have an orphan node on one edge and splits them at the orphan node
+        ''' Refines a grid by preserving equilateral triangles
         ''' </summary>
-        Public Sub CleanOrphanNodes() Implements ICellSplitter.CleanOrphanNodes
+        Public Sub DivideEquilateral() Implements ICellSplitter.DivideEquilateral
 
             Dim numcells = data.CellList.Count
             Dim n = data.Nodelist.Count
@@ -117,25 +120,112 @@ Namespace Services
                 Dim nodes As CellNodes = GetNodeDetails(t)
                 Dim nodeTypeCollection As CellNodeTypes = GetNodeSurface(nodes)
                 Dim positionVectors As CellNodeVectors = GetPositionVectors(nodes)
+                Dim newNodes As New List(Of Integer)
 
-                For Each e As Edge In data.CellList(t).Edges
+                'check for half-equilateral triangles at the left and right edges. These need special handling.
+                If HasRightAngle(positionVectors) = True Then
 
-                    Dim rP = FindMidPoint(e, positionVectors)
+                    'determine which is the longest side
+                    Dim longSide As Edge = data.FindLongestSide(t)
+
+                    'A new node will be created at the mid point of longest side
+                    Dim rP = FindMidPoint(longSide, positionVectors)
+
                     Dim vp As Integer
 
-                    If data.Exists(rP) > 0 Then           'if there is an orphan node
+                    If data.Exists(rP) > 0 Then   'if there is already a node there make sure we don't overwrite it
 
                         'point vp to the existing node
                         vp = data.FindNode(rP)
 
-                        'Split the existing cell in two and return incremented newId
-                        newId = DivideCells(t, e, newId, vp, nodes)
+                    Else                           'else create a new node (default and most common behavior)
 
-                        Continue For
+                        vp = n                     'assign index to new node
+
+                        'Create a new node at the np point and return incremented n
+                        n = CreateNewNode(longSide, vp, rP, nodeTypeCollection)
 
                     End If
-                Next
+
+                    'Split the cell between the new node and its opposing vertex and return incremented newId
+                    newId = DivideCells(t, longSide, newId, vp, nodes)
+
+                    'we have created two cells with the following indexes
+                    Dim index1 = data.CellList.FindIndex(Function(p) p.Id = newId - 2)
+                    Dim index2 = data.CellList.FindIndex(Function(p) p.Id = newId - 1)
+
+                    'figure out which of these newly created cells has a vertical side and repeat the
+                    'split for that cell
+                    For Each c As Integer In {index1, index2}
+
+                        nodes = GetNodeDetails(c)
+                        positionVectors = GetPositionVectors(nodes)
+
+                        If HasVerticalSide(c) = True Then
+
+                            'determine which is the longest side
+                            'this has to be calculated as side lengths are not known for newly created cells
+                            longSide = FindLongSide(c, positionVectors)
+
+                            'find the mid point of longest side
+                            rP = FindMidPoint(longSide, positionVectors)
+
+                            If data.Exists(rP) > 0 Then   'if there is already a node there make sure we don't overwrite it
+
+                                'point vp to the existing node
+                                vp = data.FindNode(rP)
+
+                            Else                           'else create a new node (default and most common behavior)
+
+                                vp = n                     'assign index to new node
+
+                                'create a new node at the np point and return incremented n
+                                n = CreateNewNode(longSide, vp, rP, nodeTypeCollection)
+
+                            End If
+
+                            'split the cell between the new node and its opposing vertex and return incremented newId
+                            newId = DivideCells(c, longSide, newId, vp, nodes)
+
+                            Exit For
+
+                        End If
+
+                    Next
+
+                Else
+
+                    'otherwise treat as a standard equilateral triangle
+                    For Each e As Edge In data.CellList(t).Edges
+
+                        Dim rP = FindMidPoint(e, positionVectors)
+                        Dim vp As Integer
+
+                        If data.Exists(rP) > 0 Then           'if there is an orphan node
+
+                            'point vp to the existing node
+                            vp = data.FindNode(rP)
+
+                        Else                                   'create new mid point node
+
+                            vp = n        'assign index to new node
+                            n = CreateNewNode(e, vp, rP, nodeTypeCollection)
+
+                        End If
+
+                        'add vp to a new node list, note that new nodes are added in the same order as
+                        'edges
+                        newNodes.Add(vp)
+
+                    Next
+
+                    'split the existing cell in four and return incremented newId
+                    newId = DivideCellsEquilateral(t, newId, nodes, newNodes)
+
+                End If
+
             Next
+
         End Sub
 
         ''' <summary>
@@ -172,7 +262,7 @@ Namespace Services
 
                         vp = n        'assign index to new node
 
-                        n = CreateNewNodeSquare(e, vp, rP)
+                        n = CreateNewNodeRectangle(e, vp, rP)
 
                     End If
 
@@ -182,7 +272,7 @@ Namespace Services
                 Next
 
                 'finally, create new node at the cell center
-                n = CreateNewCenterNodeSquare(n, positionVectors)
+                n = CreateNewCenterNodeRectangle(n, positionVectors)
 
                 'split the existing cell in four and return incremented newId
                 newId = DivideCellsSquares(t, newId, nodes, centerNodes, n - 1)
@@ -285,8 +375,72 @@ Namespace Services
 
             End If
 
-
             Return result
+
+        End Function
+
+        ''' <summary>
+        ''' Determines if a set of position vectors creates a right angle triangle and, if so, returns an
+        ''' integer corresponding with the right-angled node
+        ''' </summary>
+        ''' <param name="positionVectors"></param>
+        ''' <returns></returns>
+        Private Function HasRightAngle(positionVectors As CellNodeVectors) As Boolean
+
+            Dim r1 = Vector2.Subtract(positionVectors.R3, positionVectors.R2)
+            Dim r2 = Vector2.Subtract(positionVectors.R1, positionVectors.R3)
+            Dim r3 = Vector2.Subtract(positionVectors.R2, positionVectors.R1)
+
+            If Vector2.Dot(r3, r2) = 0 Or Vector2.Dot(r1, r3) = 0 Or Vector2.Dot(r2, r1) = 0 Then
+                Return True
+            Else
+                Return False
+            End If
+
+        End Function
+
+        ''' <summary>
+        ''' Inspects a cell to see if check if any of the edges is vertical
+        ''' </summary>
+        ''' <param name="t"></param>
+        ''' <returns></returns>
+        Private Function HasVerticalSide(t As Integer) As Boolean
+
+            Dim nodes As CellNodes = GetNodeDetails(t)
+            Dim positionVectors As CellNodeVectors = GetPositionVectors(nodes)
+
+            Dim r1 = Vector2.Subtract(positionVectors.R3, positionVectors.R2)
+            Dim r2 = Vector2.Subtract(positionVectors.R1, positionVectors.R3)
+            Dim r3 = Vector2.Subtract(positionVectors.R2, positionVectors.R1)
+
+            If Vector2.Dot(r1, Vector2.UnitX) = 0 Or Vector2.Dot(r2, Vector2.UnitX) = 0 Or Vector2.Dot(r3, Vector2.UnitX) = 0 Then
+                Return True
+            Else
+                Return False
+            End If
+
+        End Function
+
+        ''' <summary>
+        ''' Returns the longest edge of a cell when the cell lengths have not yet been calculated
+        ''' </summary>
+        ''' <param name="t"></param>
+        ''' <param name="positionVectors"></param>
+        ''' <returns></returns>
+        Private Function FindLongSide(t As Integer, positionVectors As CellNodeVectors) As Edge
+
+            Dim l1 = Vector2.Subtract(positionVectors.R3, positionVectors.R2).Length
+            Dim l2 = Vector2.Subtract(positionVectors.R1, positionVectors.R3).Length
+            Dim l3 = Vector2.Subtract(positionVectors.R2, positionVectors.R1).Length
+
+            If l1 > l2 And l1 > l3 Then
+                Return data.CellList(t).Edge1
+            ElseIf l2 > l1 And l2 > l3 Then
+                Return data.CellList(t).Edge2
+            Else
+                Return data.CellList(t).Edge3
+            End If
+
 
         End Function
 
@@ -342,7 +496,7 @@ Namespace Services
         ''' <param name="e"></param>
         ''' <param name="n"></param>
         ''' <returns></returns>
-        Private Function CreateNewNodeSquare(e As Edge, vp As Integer, rP As Vector2) As Integer
+        Private Function CreateNewNodeRectangle(e As Edge, vp As Integer, rP As Vector2) As Integer
 
             'If nodes to either side are both surface nodes, then np must be a surface node.
             'Boundary node identification must come from the existing cell (not the nodes) as lines between nodes
@@ -355,12 +509,12 @@ Namespace Services
         End Function
 
         ''' <summary>
-        ''' Creates a new node at the center of a square cell
+        ''' Creates a new node at the center of a rectangular cell
         ''' </summary>
         ''' <param name="n"></param>
         ''' <param name="positionVectors"></param>
         ''' <returns></returns>
-        Private Function CreateNewCenterNodeSquare(n As Integer, positionVectors As CellNodeVectors) As Integer
+        Private Function CreateNewCenterNodeRectangle(n As Integer, positionVectors As CellNodeVectors) As Integer
 
             'position vector of the center point
             Dim rP As Vector2 = Vector2.Add(positionVectors.R1, Vector2.Add(positionVectors.R2, Vector2.Add(positionVectors.R3, positionVectors.R4))) * 0.25
@@ -387,9 +541,7 @@ Namespace Services
             Dim s2 As SideType = data.CellList(t).Edge2.SideType
             Dim s3 As SideType = data.CellList(t).Edge3.SideType
 
-            'Note: The following code can be extremely confusing. Refer to the diagram at the SplitCells sub for help
-            'understanding what is being done.
-
+            'Refer to the diagram at the SplitCells sub for better understanding of what is being done.
             Select Case e.SideName
                 Case SideName.S1
                     'The new face must always be of SideType.none : other faces inherit their existing state.
@@ -410,6 +562,73 @@ Namespace Services
         End Function
 
         ''' <summary>
+        ''' Finds triangular cells that have an orphan node on one edge and splits them at the orphan node
+        ''' </summary>
+        Private Sub CleanOrphanNodes()
+
+            Dim numcells = data.CellList.Count
+            Dim n = data.Nodelist.Count
+
+            'current max id in celllist and new id for new cells
+            Dim maxId = data.CellList.Max(Function(p) p.Id)
+            Dim newId = maxId + 1
+
+            'cycle through 1 less than the count
+            For t = 0 To numcells - 1
+
+                'Get node ids and details for this cell
+                Dim nodes As CellNodes = GetNodeDetails(t)
+                Dim positionVectors As CellNodeVectors = GetPositionVectors(nodes)
+
+                For Each e As Edge In data.CellList(t).Edges
+
+                    Dim rP = FindMidPoint(e, positionVectors)
+                    Dim vp As Integer
+
+                    If data.Exists(rP) > 0 Then           'if there is an orphan node
+
+                        'point vp to the existing node
+                        vp = data.FindNode(rP)
+
+                        'Split the existing cell in two and return incremented newId
+                        newId = DivideCells(t, e, newId, vp, nodes)
+
+                        Continue For
+
+                    End If
+                Next
+            Next
+        End Sub
+
+        ''' <summary>
+        ''' Replaces an existing equilateral triangle with four new equilateral triangle cells
+        ''' </summary>
+        ''' <param name="t"></param>
+        ''' <param name="newid"></param>
+        ''' <param name="n"></param>
+        ''' <param name="m"></param>
+        ''' <param name="i"></param>
+        ''' <returns></returns>
+        Private Function DivideCellsEquilateral(t As Integer, newid As Integer, n As CellNodes, m As List(Of Integer)) As Integer
+
+            Dim s0 As SideType = SideType.none
+            Dim s1 As SideType = data.CellList(t).Edge1.SideType
+            Dim s2 As SideType = data.CellList(t).Edge2.SideType
+            Dim s3 As SideType = data.CellList(t).Edge3.SideType
+
+            'replace the original cell
+            factory.ReplaceCell(t, newid, n.N1, m(2), m(1), s0, s2, s3)
+
+            'add three new cells
+            factory.AddCell(newid + 1, n.N2, m(0), m(2), s0, s3, s1)
+            factory.AddCell(newid + 2, n.N3, m(1), m(0), s0, s1, s2)
+            factory.AddCell(newid + 3, m(0), m(1), m(2), s0, s0, s0)
+
+            Return newid + 4
+
+        End Function
+
+        ''' <summary>
         ''' Replace an existing square cell instance with four new square cells
         ''' </summary>
         ''' <param name="t"></param>
@@ -423,8 +642,6 @@ Namespace Services
             Dim s2 As SideType = data.CellList(t).Edge2.SideType
             Dim s3 As SideType = data.CellList(t).Edge3.SideType
             Dim s4 As SideType = data.CellList(t).Edge4.SideType
-
-            'Note: The following code can be extremely confusing.
 
             'replace the original cell
             factory.ReplaceCellSquare(t, newid, n.N1, m(0), c, m(3), s1, s0, s0, s4)

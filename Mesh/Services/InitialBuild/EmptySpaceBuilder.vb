@@ -27,6 +27,16 @@ Namespace Services
 
                 End With
 
+            ElseIf farfield.Gridtype = GridType.RegularTriangles Or farfield.Gridtype = GridType.Equilateral Then
+
+                With factory
+
+                    .AddCornerNodes(farfield)
+                    .AddTopBoundaryNode(farfield)
+                    .SetupRegularTriangleCells()
+
+                End With
+
             Else                                     'rectangular grid
 
                 With factory
