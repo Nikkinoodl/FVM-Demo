@@ -10,7 +10,7 @@ density and viscosity) than on irregular grids.
 The code is well commented, so it can be read easily if you are looking for help with building your own FVM methods. The solution to the pressure equation,
 in particular, will be useful as it is not often well covered in online materials.
 
-Linear equations are solved step-by-step using the SIMPLE predictor-corrector method. No matrix methods are used, but parallization is used throughout.
+Linear equations are solved step-by-step using the SIMPLE predictor-corrector method. No matrix methods are used, but parallelization is used throughout.
 
 Sample plots at Reynolds Number of 13 on a rectangular grid:
 
