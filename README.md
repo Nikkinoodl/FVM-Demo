@@ -3,12 +3,14 @@
 This Windows Forms/C#/VB application uses the cell-centered finite volume method (FVM) to generate fluid flow simulations by solving the
 incompressible Navier-Stokes equations for a lid-cavity problem. 
 
-This is an extension of earlier projects that developed triangular mesh generation and fluid flow solutions using the finite difference method.
+This application allows grids of different types to be generated (e.g. irregular triangles, equilateral triangles, rectangular) and uses the
+same grid-agnostic FVM solver for all grid types. Stable solutions are much easier to find on regular grids (play around with mesh granularity, lid velocity,
+density and viscosity) than on irregular grids.
 
-Although it is still a project in development, solutions using both triangular and rectangular meshes can be obtained (numerical instability may 
-be encountered, especially on irregular grids). The code is well commented, so it can be read easily if you are looking for help with building your own FVM methods.
+The code is well commented, so it can be read easily if you are looking for help with building your own FVM methods. The solution to the pressure equation,
+in particular, will be useful as it is not often well covered in online materials.
 
-Linear equations are solved step-by-step using the SIMPLE method. No matrix methods are used, but parallization is used throughout.
+Linear equations are solved step-by-step using the SIMPLE predictor-corrector method. No matrix methods are used, but parallization is used throughout.
 
 Sample plots at Reynolds Number of 13 on a rectangular grid:
 
