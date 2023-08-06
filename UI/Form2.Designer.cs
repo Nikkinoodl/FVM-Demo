@@ -114,6 +114,7 @@
             comboBox1.Name = "comboBox1";
             comboBox1.Size = new Size(143, 28);
             comboBox1.TabIndex = 37;
+            comboBox1.Validating += comboBox1_Validating;
             // 
             // button10
             // 
@@ -186,6 +187,7 @@
             TextBoxHeight.Name = "TextBoxHeight";
             TextBoxHeight.Size = new Size(68, 27);
             TextBoxHeight.TabIndex = 2;
+            TextBoxHeight.Validating += TextBoxHeight_Validating;
             // 
             // Button3
             // 
@@ -205,6 +207,7 @@
             TextBoxWidth.Name = "TextBoxWidth";
             TextBoxWidth.Size = new Size(68, 27);
             TextBoxWidth.TabIndex = 1;
+            TextBoxWidth.Validating += TextBoxWidth_Validating;
             // 
             // Button4
             // 
@@ -266,6 +269,7 @@
             TextBoxSmoothingCycles.Name = "TextBoxSmoothingCycles";
             TextBoxSmoothingCycles.Size = new Size(68, 27);
             TextBoxSmoothingCycles.TabIndex = 23;
+            TextBoxSmoothingCycles.Validating += TextBoxSmoothingCycles_Validating;
             // 
             // Label11
             // 

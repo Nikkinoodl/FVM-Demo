@@ -24,23 +24,27 @@ namespace CFDSolv
 
             _farfield = farfield;
 
-            textBox1.Text = "0.001";    //dt
-            textBox2.Text = "5";    //total time
+            textBox1.Text = "0.001";  //dt
+            textBox2.Text = "5";      //total time
             textBox3.Text = "2";      //inlet U velocity
 
             textBox7.Text = "0.15";   //nu
             textBox8.Text = "1";      //rho
 
-            textBox4.Text = "1";      //Piter
+            textBox4.Text = "1";      //piter
 
             button1.Enabled = false;
             button2.Enabled = false;
 
         }
 
+        /// <summary>
+        /// Displays a status message
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         private int StatusMessage(string s)
         {
-            // displays a status message in the form
             TextBoxStatus.Text = s;
             TextBoxStatus.Refresh();
             return 0;
@@ -48,7 +52,7 @@ namespace CFDSolv
 
         private void DisplayRe(float nu, float uTop, float Lx)
         {
-            //Calculate and display Reynolds number
+            //calculate and display Reynolds number
             if (nu > 0)
                 reynolds = Math.Round(uTop * Lx / nu, 2);
             else
@@ -78,14 +82,14 @@ namespace CFDSolv
         {
             StatusMessage(MeshConstants.MSGEMPTY);
 
-            //Top lid U velocity boundary conditions
+            //top lid U velocity boundary conditions
             var u = float.Parse(textBox3.Text);
 
-            //Carried over from rectangular grid - for the purpose of displaying Re, we will
+            //carried over from rectangular grid - for the purpose of displaying Re, we will
             //just calculate using the farfield width as the length scale
             var Lx = _farfield.Width;
 
-            //Fluid and fluid properties
+            //fluid and fluid properties
             Fluid fluid = new()
             {
                 InletU = u,
@@ -95,7 +99,7 @@ namespace CFDSolv
                 InletV = 0
             };
 
-            //Calc domain is used for times steps and other non-fluid calculation parameters
+            //calc domain is used for times steps and other non-fluid calculation parameters
             CalcDomain calc = new()
             {
                 Tmax = float.Parse(textBox2.Text),
@@ -103,13 +107,13 @@ namespace CFDSolv
                 Piter = int.Parse(textBox4.Text)
             };
 
-            //Calculate and display Reynolds number
+            //calculate and display Reynolds number
             DisplayRe(fluid.Nu, u, Lx);
 
-            //Display CFL. Use count of cells on top edge.
+            //display CFL. Use count of cells on top edge.
             DisplayCFL(fluid.Nu, u, _data.GetElementsByBoundary("top", _farfield).Count / Lx, calc.Dt);
 
-            //Call CFD Logic
+            //call CFD Logic
             var simulation = Program.container.GetInstance<CFDLogic>();
             simulation.FlowSimulation(_farfield, calc, fluid);
 
@@ -119,14 +123,17 @@ namespace CFDSolv
 
             plot1.Refresh();
 
-            //Display initial plot depending on selection
+            //display initial plot depending on selection
             ChangeDisplayType();
 
-            //Show elapsed time
+            //show elapsed time
             if (Utilities.ElapsedTime != null)
             {
                 DisplayTime(Utilities.ElapsedTime);
             }
+
+            //enable the save plot button
+            button2.Enabled = true;
 
             StatusMessage(MeshConstants.MSGCFDDONE);
 
@@ -209,9 +216,70 @@ namespace CFDSolv
 
             StatusMessage(MeshConstants.MSGPRECALC);
 
-            button3.Enabled = false;
+            //enable the CFD button and lock down the others
             button1.Enabled = true;
-            button2.Enabled = true;
+            button3.Enabled = false;
+            button2.Enabled = false;
+        }
+
+        private void textBox1_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            float fallback = 0.001F;
+            textBox1.Text = ValidateEntry<float>(ref textBox1, fallback).ToString();
+        }
+
+        private void textBox2_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            float fallback = 5F;
+            textBox2.Text = ValidateEntry<float>(ref textBox2, fallback).ToString();
+        }
+
+        private void textBox3_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            float fallback = 6F;
+            textBox3.Text = ValidateEntry<float>(ref textBox3, fallback).ToString();
+        }
+
+        private void textBox4_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            short fallback = 1;
+            textBox4.Text = ValidateEntry<short>(ref textBox4, fallback).ToString();
+        }
+
+        private void textBox7_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            float fallback = 0.15F;
+            textBox7.Text = ValidateEntry<float>(ref textBox7, fallback).ToString();
+        }
+
+        private void textBox8_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            float fallback = 1F;
+            textBox8.Text = ValidateEntry<float>(ref textBox8, fallback).ToString();
+        }
+
+        /// <summary>
+        /// Provides a type validation method for input fields
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="textBox"></param>
+        /// <param name="fallback"></param>
+        /// <returns></returns>
+        private static T ValidateEntry<T>(ref TextBox textBox, object fallback)
+        {
+            //success return the value converted to specified type. On failure return the fallback value and highlight
+            //the box in yellow.
+            try
+            {
+                textBox.BackColor = Color.White;
+                return (T)Convert.ChangeType(textBox.Text, typeof(T));
+            }
+            catch (Exception)
+            {
+                textBox.BackColor = Color.Yellow;
+                textBox.Text = fallback.ToString();
+                return (T)fallback;
+            }
         }
     }
 }

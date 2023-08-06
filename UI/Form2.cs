@@ -15,7 +15,7 @@ namespace CFDSolv
         private readonly Settings settings = new();
         private readonly Farfield farfield = new();
 
-        public Farfield Farfield { get { return farfield; } }
+        //public Farfield Farfield { get { return farfield; } }
 
         private System.Windows.Forms.Timer _timer = null!;
         private float _angle = 0.0f;
@@ -29,23 +29,23 @@ namespace CFDSolv
         private void Form2_Load(object sender, EventArgs e)
         {
 
-            //Get values for combo box and make a default selection
+            //get values for combo box
             comboBox1.DataSource = Enum.GetValues(typeof(GridType));
-            comboBox1.SelectedItem = GridType.Triangles;
 
-            // initialize settings and read from settings.xml file
+            //get settings
             settings.CreateSettings();
 
-            // Initial settings
+            //initial farfield values are copied from saved settings
             farfield.Height = settings.Height;
             farfield.Width = settings.Width;
             farfield.Smoothingcycles = settings.Smoothingcycles;
             farfield.Gridtype = settings.Gridtype;
 
-            // populate text boxes with farfield settings
+            //populate text boxes with farfield settings
             TextBoxHeight.Text = farfield.Height.ToString();
             TextBoxWidth.Text = farfield.Width.ToString();
             TextBoxSmoothingCycles.Text = farfield.Smoothingcycles.ToString();
+            comboBox1.SelectedItem = settings.Gridtype;
 
             WindowState = FormWindowState.Maximized;
             GL.ClearColor(Color4.White);
@@ -166,17 +166,17 @@ namespace CFDSolv
         }
         private void Form2_Paint(object sender, PaintEventArgs e)
         {
-            // Clear GPU buffers
+            //clear GPU buffers
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
-            // Set size of Gl Control scaled to reasonable viewing size (used to display grid)
+            //set size of Gl Control scaled to reasonable viewing size (used to display grid)
             GL.Viewport(0, 0, 1000, (int)(1000 * farfield.Height / farfield.Width));
 
-            // Draw the Grid based on cells
+            //draw the Grid based on cells
             int? n1, n2, n3, n4;
 
-            // UI layer dealing directly with the repository
+            //UI layer dealing directly with the repository
             foreach (var cell in Repository.CellList)
             {
                 n1 = cell.V1;
@@ -211,36 +211,21 @@ namespace CFDSolv
 
         private void Form2_Closing(object sender, EventArgs e)
         {
-            // on closing the form update settings.xml
+            //update settings.xml
             Settings.WriteSettings(farfield);
         }
 
         private void EventCompletion()
         {
-            // initiates refresh of the form and repaint of the GL drawing control
+            //initiates refresh of the form and repaint of the GL drawing control
             Refresh();
             GlControl.Invalidate();
             StatusMessage(MeshConstants.MSGCOMPLETE);
         }
 
-        private void UpdateFarfield()
-        {
-            // Obtain form data and perform a simple validation. Default to saved settings in 
-            // case of error
-            //farfield.Height = ValidateEntry<int>(ref TextBoxHeight, ref settings.Height);
-            //farfield.Width = ValidateEntry<int>(ref TextBoxWidth, ref settings.Width);
-            //farfield.Smoothingcycles = ValidateEntry<short>(ref TextBoxSmoothingCycles, ref settings.Smoothingcycles);
-
-            farfield.Height = float.Parse(TextBoxHeight.Text);
-            farfield.Width = float.Parse(TextBoxWidth.Text);
-            farfield.Smoothingcycles = short.Parse(TextBoxSmoothingCycles.Text);
-            farfield.Gridtype = (GridType)comboBox1.SelectedItem;
-        }
-
         private void UpdateGLSize()
         {
-            // set the GL control size
-
+            //set the GL control size
             GlControl.Width = 1000;
             GlControl.Height = (int)(1000 * farfield.Height / farfield.Width);
         }
@@ -255,7 +240,7 @@ namespace CFDSolv
 
             StatusMessage(MeshConstants.MSGDELAUNAY);
 
-            // call the logic layer - here we initiate the grid optimization
+            //call the logic layer - here we initiate the grid optimization
             DelaunayLogic delaunayLogic = Program.container.GetInstance<DelaunayLogic>();
             delaunayLogic.Logic();
 
@@ -273,14 +258,11 @@ namespace CFDSolv
 
             StatusMessage(MeshConstants.MSGDIVIDE);
 
-            // pull in any changed farfield values
-            UpdateFarfield();
-
-            // call the logic layer - here we initiate grid refining
+            //call the logic layer - here we initiate grid refining
             Split split = Program.container.GetInstance<Split>();
             split.Logic(farfield);
 
-            // Repaint
+            //repaint
             EventCompletion();
         }
 
@@ -294,14 +276,11 @@ namespace CFDSolv
 
             StatusMessage(MeshConstants.MSGSMOOTH);
 
-            // pull in any changed farfield values
-            UpdateFarfield();
-
-            // call the logic layer - here we initiate grid smoothing
+            //call the logic layer - here we initiate grid smoothing
             Smooth smooth = Program.container.GetInstance<Smooth>();
             smooth.Logic(farfield);
 
-            // Repaint
+            //repaint
             EventCompletion();
         }
 
@@ -315,20 +294,22 @@ namespace CFDSolv
 
             StatusMessage(MeshConstants.MSGINITIALIZE);
 
-            // pull in any changed farfield values
-            UpdateFarfield();
+            //lock down the input boxes
+            TextBoxWidth.Enabled = false;
+            TextBoxHeight.Enabled = false;
+            comboBox1.Enabled = false;
 
-            //take this opportunity to save the settings
+            //save settings
             Settings.WriteSettings(farfield);
 
-            // set window drawing size
+            //set window drawing size
             UpdateGLSize();
 
-            // call the logic layer - here we do the actual work of building the empty grid
+            //call the logic layer - here we do the actual work of building the empty grid
             EmptySpace emptySpace = Program.container.GetInstance<EmptySpace>();
             emptySpace.Logic(farfield);
 
-            //Enable buttons irregular grids
+            //enable buttons for irregular grids
             if (farfield.Gridtype == GridType.Triangles)
             {
                 Button2.Enabled = true;
@@ -342,7 +323,7 @@ namespace CFDSolv
                 Button7.Enabled = false;
             }
 
-            //Enable for all grids
+            //enable buttons for all grids
             Button3.Enabled = true;
             Button9.Enabled = true;
 
@@ -360,11 +341,7 @@ namespace CFDSolv
 
             StatusMessage(MeshConstants.MSGREDISTRIBUTE);
 
-            // pull in any changed farfield values
-            // UpdateFarfield()
-
-            // call the logic layer - here we initiate redistribution of the edge nodes
-            // the first line gets the object by type from the container
+            //call the logic layer
             Redistribute redistribute = Program.container.GetInstance<Redistribute>();
             redistribute.Logic(farfield);
 
@@ -374,7 +351,7 @@ namespace CFDSolv
 
         private int StatusMessage(string s)
         {
-            // displays a status message in the form
+            // displays a status message
             TextBoxStatus.Text = s;
             TextBoxStatus.Refresh();
             return 0;
@@ -387,7 +364,7 @@ namespace CFDSolv
         /// <param name="e"></param>
         private void Button9_Click(object sender, EventArgs e)
         {
-            //At this point we don't want to make any more changes so disable buttons
+            //disable buttons to prevent further editing
             Button2.Enabled = false;
             Button3.Enabled = false;
             Button4.Enabled = false;
@@ -395,11 +372,11 @@ namespace CFDSolv
             Button7.Enabled = false;
             Button9.Enabled = false;
 
-            //Only allow CFD or RESET
+            //only allow CFD or RESET
             Button8.Enabled = true;
             button10.Enabled = true;
 
-            //Message to indicate whether grid element is finalized
+            //message to indicate when grid is finalized
             StatusMessage(MeshConstants.MSGFINALIZED);
         }
 
@@ -410,7 +387,10 @@ namespace CFDSolv
         /// <param name="e"></param>
         private void Button8_MouseClick(object sender, MouseEventArgs e)
         {
+            //update settings.xml
+            Settings.WriteSettings(farfield);
 
+            //open new form
             Form form1 = new Form1(farfield, data);
             form1.Show();
 
@@ -431,14 +411,67 @@ namespace CFDSolv
             //set buttons to default
             ResetButtonStatus();
 
+            //unlock the input boxes
+            TextBoxWidth.Enabled = true;
+            TextBoxHeight.Enabled = true;
+            comboBox1.Enabled = true;
+
         }
 
+        private void TextBoxWidth_Validating(object sender, CancelEventArgs e)
+        {
+            farfield.Width = ValidateEntry<float>(ref TextBoxWidth, settings.Width);
+        }
+
+        private void TextBoxSmoothingCycles_Validating(object sender, CancelEventArgs e)
+        {
+            farfield.Smoothingcycles = ValidateEntry<short>(ref TextBoxSmoothingCycles, settings.Smoothingcycles);
+        }
+
+        private void TextBoxHeight_Validating(object sender, CancelEventArgs e)
+        {
+            farfield.Height = ValidateEntry<float>(ref TextBoxHeight, settings.Height);
+        }
+
+        private void comboBox1_Validating(object sender, CancelEventArgs e)
+        {
+            farfield.Gridtype = (GridType)comboBox1.SelectedItem;
+        }
+
+        /// <summary>
+        /// Provides a type validation method for input fields
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="textBox"></param>
+        /// <param name="fallback"></param>
+        /// <returns></returns>
+        private static T ValidateEntry<T>(ref TextBox textBox, object fallback)
+        {
+            //success return the value converted to specified type. On failure return the fallback value and highlight
+            //the box in yellow.
+            try
+            {
+                textBox.BackColor = Color.White;
+                return (T)Convert.ChangeType(textBox.Text, typeof(T));
+            }
+            catch (Exception)
+            {
+                textBox.BackColor = Color.Yellow;
+                textBox.Text = fallback.ToString();
+                return (T)fallback;
+            }
+        }
+
+        /// <summary>
+        /// Sets the default button availability
+        /// </summary>
         private void ResetButtonStatus()
         {
-            //defaut button availability
+            //allow initial build and reset
             Button6.Enabled = true;
             button10.Enabled = true;
 
+            //disable all other buttons
             Button2.Enabled = false;
             Button3.Enabled = false;
             Button4.Enabled = false;
@@ -446,22 +479,5 @@ namespace CFDSolv
             Button8.Enabled = false;
             Button9.Enabled = false;
         }
-
-
-        //private T ValidateEntry<T>(ref object value, ref object fallback)
-        //{
-        //    // On success return the value converted to specified type. On failure return the fallback value and highlight
-        //    // the box in yellow.
-        //    try
-        //    {
-        //        value.BackColor = Color.White;
-        //        return (T)value.Text;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        value.BackColor = Color.Yellow;
-        //        return fallback;
-        //    }
-        //}
     }
 }
