@@ -15,17 +15,21 @@ namespace CFDSolv
         private readonly Settings settings = new();
         private readonly Farfield farfield = new();
 
-        //public Farfield Farfield { get { return farfield; } }
-
-        private System.Windows.Forms.Timer _timer = null!;
-        private float _angle = 0.0f;
-
+        #region "Constructor"
         public Form2(IDataAccessService data)
         {
+
             this.data = data;
             InitializeComponent();
-        }
 
+        }
+        #endregion
+
+        /// <summary>
+        /// Runs on form load
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Form2_Load(object sender, EventArgs e)
         {
 
@@ -48,11 +52,8 @@ namespace CFDSolv
             comboBox1.SelectedItem = settings.Gridtype;
 
             WindowState = FormWindowState.Maximized;
-            GL.ClearColor(Color4.White);
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
-            GL.Ortho(0, farfield.Width, 0, farfield.Height, -1, 1);
-            GL.Viewport(0, 0, 1000, (int)(1000 * farfield.Height / farfield.Width));
+
+            UpdateGLSize();
 
             var ToolTip1 = new ToolTip();
             var ToolTip2 = new ToolTip();
@@ -64,114 +65,22 @@ namespace CFDSolv
 
             //set buttons to default
             ResetButtonStatus();
+
         }
 
-        private void GlControl_Load(object? sender, EventArgs e)
-        {
-            // Make sure that when the GLControl is resized or needs to be painted,
-            // we update our projection matrix or re-render its contents, respectively.
-            GlControl.Resize += GlControl_Resize;
-            GlControl.Paint += GlControl_Paint;
-
-            // Redraw the screen every 1/20 of a second.
-            _timer = new System.Windows.Forms.Timer();
-            _timer.Tick += (sender, e) =>
-            {
-                _angle += 0.5f;
-                Render();
-            };
-            _timer.Interval = 50;   // 1000 ms per sec / 50 ms per frame = 20 FPS
-            _timer.Start();
-
-            // Ensure that the viewport and projection matrix are set correctly initially.
-            GlControl_Resize(GlControl, EventArgs.Empty);
-        }
-
-        private void GlControl_Resize(object? sender, EventArgs e)
-        {
-
-            GlControl.MakeCurrent();
-
-            if (GlControl.ClientSize.Height == 0)
-                GlControl.ClientSize = new Size(GlControl.ClientSize.Width, 1);
-
-            GL.Viewport(0, 0, GlControl.ClientSize.Width, GlControl.ClientSize.Height);
-
-            float aspect_ratio = Math.Max(GlControl.ClientSize.Width, 1) / (float)Math.Max(GlControl.ClientSize.Height, 1);
-            Matrix4 perpective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspect_ratio, 1, 64);
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadMatrix(ref perpective);
-        }
-
-        private void GlControl_Paint(object? sender, PaintEventArgs e)
-        {
-            Render();
-        }
-
-        private void Render()
-        {
-            GlControl.MakeCurrent();
-
-            GL.ClearColor(Color4.MidnightBlue);
-            GL.Enable(EnableCap.DepthTest);
-
-            Matrix4 lookat = Matrix4.LookAt(0, 5, 5, 0, 0, 0, 0, 1, 0);
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadMatrix(ref lookat);
-
-            GL.Rotate(_angle, 0.0f, 1.0f, 0.0f);
-
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            GL.Begin(PrimitiveType.Quads);
-            GL.Color4(Color4.Silver);
-            GL.Vertex3(-1.0f, -1.0f, -1.0f);
-            GL.Vertex3(-1.0f, 1.0f, -1.0f);
-            GL.Vertex3(1.0f, 1.0f, -1.0f);
-            GL.Vertex3(1.0f, -1.0f, -1.0f);
-
-            GL.Color4(Color4.Honeydew);
-            GL.Vertex3(-1.0f, -1.0f, -1.0f);
-            GL.Vertex3(1.0f, -1.0f, -1.0f);
-            GL.Vertex3(1.0f, -1.0f, 1.0f);
-            GL.Vertex3(-1.0f, -1.0f, 1.0f);
-
-            GL.Color4(Color4.Moccasin);
-            GL.Vertex3(-1.0f, -1.0f, -1.0f);
-            GL.Vertex3(-1.0f, -1.0f, 1.0f);
-            GL.Vertex3(-1.0f, 1.0f, 1.0f);
-            GL.Vertex3(-1.0f, 1.0f, -1.0f);
-
-            GL.Color4(Color4.IndianRed);
-            GL.Vertex3(-1.0f, -1.0f, 1.0f);
-            GL.Vertex3(1.0f, -1.0f, 1.0f);
-            GL.Vertex3(1.0f, 1.0f, 1.0f);
-            GL.Vertex3(-1.0f, 1.0f, 1.0f);
-
-            GL.Color4(Color4.PaleVioletRed);
-            GL.Vertex3(-1.0f, 1.0f, -1.0f);
-            GL.Vertex3(-1.0f, 1.0f, 1.0f);
-            GL.Vertex3(1.0f, 1.0f, 1.0f);
-            GL.Vertex3(1.0f, 1.0f, -1.0f);
-
-            GL.Color4(Color4.ForestGreen);
-            GL.Vertex3(1.0f, -1.0f, -1.0f);
-            GL.Vertex3(1.0f, 1.0f, -1.0f);
-            GL.Vertex3(1.0f, 1.0f, 1.0f);
-            GL.Vertex3(1.0f, -1.0f, 1.0f);
-
-            GL.End();
-
-            GlControl.SwapBuffers();
-        }
+        /// <summary>
+        /// Runs on form paint
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Form2_Paint(object sender, PaintEventArgs e)
         {
+
             //clear GPU buffers
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
-            //set size of Gl Control scaled to reasonable viewing size (used to display grid)
-            GL.Viewport(0, 0, 1000, (int)(1000 * farfield.Height / farfield.Width));
+            UpdateGLSize();
 
             //draw the Grid based on cells
             int? n1, n2, n3, n4;
@@ -194,40 +103,53 @@ namespace CFDSolv
                 if (n4 != null) GL.Vertex2(data.NodeV(n4).R.X, data.NodeV(n4).R.Y);
                 GL.End();
 
-                ////Optional fill for debugging cell creation
-                //GL.Begin(PrimitiveType.Quads);
-                //GL.Color3(Color.Red);
-                //GL.Vertex2((short)data.NodeV(n1).R.X, (short)data.NodeV(n1).R.Y);
-                //GL.Vertex2((short)data.NodeV(n2).R.X, (short)data.NodeV(n2).R.Y);
-                //GL.Vertex2((short)data.NodeV(n3).R.X, (short)data.NodeV(n3).R.Y);
-                //if (n4 != null) GL.Vertex2((short)data.NodeV(n4).R.X, (short)data.NodeV(n4).R.Y);
-                //GL.End();
-
             }
 
             GlControl.SwapBuffers();
 
         }
 
+        /// <summary>
+        /// Runs on form closing
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Form2_Closing(object sender, EventArgs e)
         {
+
             //update settings.xml
             Settings.WriteSettings(farfield);
+
         }
 
+        /// <summary>
+        /// Initiates refresh of the form and repaint of the GL drawing control
+        /// </summary>
         private void EventCompletion()
         {
-            //initiates refresh of the form and repaint of the GL drawing control
+
             Refresh();
             GlControl.Invalidate();
             StatusMessage(MeshConstants.MSGCOMPLETE);
+
         }
 
+        /// <summary>
+        /// Resets and resizes the GL Control
+        /// </summary>
         private void UpdateGLSize()
         {
+
             //set the GL control size
             GlControl.Width = 1000;
             GlControl.Height = (int)(1000 * farfield.Height / farfield.Width);
+
+            GL.ClearColor(Color4.White);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+            GL.Ortho(0, farfield.Width, 0, farfield.Height, -1, 1);
+            GL.Viewport(0, 0, 1000, (int)(1000 * farfield.Height / farfield.Width));
+
         }
 
         /// <summary>
@@ -244,8 +166,9 @@ namespace CFDSolv
             DelaunayLogic delaunayLogic = Program.container.GetInstance<DelaunayLogic>();
             delaunayLogic.Logic();
 
-            // Repaint
+            //repaint
             EventCompletion();
+
         }
 
         /// <summary>
@@ -264,6 +187,7 @@ namespace CFDSolv
 
             //repaint
             EventCompletion();
+
         }
 
         /// <summary>
@@ -282,6 +206,7 @@ namespace CFDSolv
 
             //repaint
             EventCompletion();
+
         }
 
         /// <summary>
@@ -301,9 +226,6 @@ namespace CFDSolv
 
             //save settings
             Settings.WriteSettings(farfield);
-
-            //set window drawing size
-            UpdateGLSize();
 
             //call the logic layer - here we do the actual work of building the empty grid
             EmptySpace emptySpace = Program.container.GetInstance<EmptySpace>();
@@ -327,8 +249,9 @@ namespace CFDSolv
             Button3.Enabled = true;
             Button9.Enabled = true;
 
-            // Repaint
+            //repaint
             EventCompletion();
+
         }
 
         /// <summary>
@@ -347,14 +270,7 @@ namespace CFDSolv
 
             // Repaint
             EventCompletion();
-        }
 
-        private int StatusMessage(string s)
-        {
-            // displays a status message
-            TextBoxStatus.Text = s;
-            TextBoxStatus.Refresh();
-            return 0;
         }
 
         /// <summary>
@@ -364,6 +280,7 @@ namespace CFDSolv
         /// <param name="e"></param>
         private void Button9_Click(object sender, EventArgs e)
         {
+
             //disable buttons to prevent further editing
             Button2.Enabled = false;
             Button3.Enabled = false;
@@ -378,6 +295,7 @@ namespace CFDSolv
 
             //message to indicate when grid is finalized
             StatusMessage(MeshConstants.MSGFINALIZED);
+
         }
 
         /// <summary>
@@ -387,6 +305,7 @@ namespace CFDSolv
         /// <param name="e"></param>
         private void Button8_MouseClick(object sender, MouseEventArgs e)
         {
+
             //update settings.xml
             Settings.WriteSettings(farfield);
 
@@ -447,6 +366,7 @@ namespace CFDSolv
         /// <returns></returns>
         private static T ValidateEntry<T>(ref TextBox textBox, object fallback)
         {
+
             //success return the value converted to specified type. On failure return the fallback value and highlight
             //the box in yellow.
             try
@@ -460,6 +380,7 @@ namespace CFDSolv
                 textBox.Text = fallback.ToString();
                 return (T)fallback;
             }
+
         }
 
         /// <summary>
@@ -467,6 +388,7 @@ namespace CFDSolv
         /// </summary>
         private void ResetButtonStatus()
         {
+
             //allow initial build and reset
             Button6.Enabled = true;
             button10.Enabled = true;
@@ -478,6 +400,21 @@ namespace CFDSolv
             Button7.Enabled = false;
             Button8.Enabled = false;
             Button9.Enabled = false;
+
+        }
+
+        /// <summary>
+        /// Displays a status message
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        private int StatusMessage(string s)
+        {
+
+            TextBoxStatus.Text = s;
+            TextBoxStatus.Refresh();
+            return 0;
+
         }
     }
 }

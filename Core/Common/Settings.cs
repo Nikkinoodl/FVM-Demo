@@ -12,7 +12,6 @@ namespace Core.Common
         protected string _smoothingcycles;
         protected GridType _gridtype;
 
-
         // on read takes the string and converts to specific type
         // on write takes a specific type and converts to a string
         public float Width

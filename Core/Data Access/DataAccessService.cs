@@ -44,7 +44,7 @@ namespace Core.Data
 
             int countNode = (from node in Nodelist
                              where node.R == rP
-                             select node.Id).Count();
+                             select node.Id).AsParallel().Count();
 
             return countNode;
         }
@@ -60,7 +60,7 @@ namespace Core.Data
 
             int countNode = (from node in Nodelist
                              where node.R.X == xp && node.R.Y == yp
-                             select node.Id).Count();
+                             select node.Id).AsParallel().Count();
 
             return countNode;
         }
@@ -75,8 +75,8 @@ namespace Core.Data
         {
 
             var n = (from node in Nodelist
-                     where node.R.X == xp & node.R.Y == yp
-                     select node.Id).FirstOrDefault();
+                     where node.R.X == xp && node.R.Y == yp
+                     select node.Id).AsParallel().FirstOrDefault();
 
             return n;
         }
@@ -91,7 +91,7 @@ namespace Core.Data
 
             var n = (from node in Nodelist
                      where node.R == rP
-                     select node.Id).FirstOrDefault();
+                     select node.Id).AsParallel().FirstOrDefault();
 
             return n;
         }
@@ -104,7 +104,7 @@ namespace Core.Data
         {
 
             var thislist = (from node in Nodelist
-                           where node.Boundary == false & node.Surface == false  // nodes on the surface or boundary aren't selected
+                           where node.Boundary == false && node.Surface == false  // nodes on the surface or boundary aren't selected
                            select node).OrderBy(n => n.R.X).ThenBy(n => n.R.Y);
 
             return thislist.ToList();
@@ -121,7 +121,7 @@ namespace Core.Data
 
             var thisNode = (from node in Nodelist
                            where node.Id == n
-                           select node).Single();
+                           select node).AsParallel().Single();
 
             return thisNode;
         }
@@ -148,11 +148,11 @@ namespace Core.Data
         public List<Cell> CalcCells()
         {
 
-            var cellList = from t in CellList
+            var cellList = (from t in CellList
                         where t.BorderCell == false
                         orderby t.R.X ascending
                         orderby t.R.Y ascending
-                        select t;
+                        select t).AsParallel();
                         
             return cellList.ToList();
         }
@@ -165,10 +165,10 @@ namespace Core.Data
         public List<Cell> SmoothCell(int thisnode)
         {
 
-            var thislist = from cell in CellList
-                           where cell.V1 == thisnode | cell.V2 == thisnode | cell.V3 == thisnode
+            var thislist = (from cell in CellList
+                           where cell.V1 == thisnode || cell.V2 == thisnode || cell.V3 == thisnode
                            orderby cell.R.X
-                           select cell;
+                           select cell).AsParallel();
 
             return thislist.ToList();
         }
@@ -180,9 +180,9 @@ namespace Core.Data
         public List<Node> SmoothNode()
         {
 
-            var thislist = from node in Nodelist
-                           where node.Boundary == false & node.Surface == false  // nodes on the surface or boundary aren't moved
-                           select node;
+            var thislist = (from node in Nodelist
+                           where node.Boundary == false && node.Surface == false  // nodes on the surface or boundary aren't moved
+                           select node).AsParallel();
 
             return thislist.ToList();
         }
@@ -195,9 +195,9 @@ namespace Core.Data
         public List<Cell> BoundaryCell()
         {
 
-            var thislist = from cell in CellList
+            var thislist = (from cell in CellList
                            .Where(c => c.Edges.Any(e => e.SideType == SideType.boundary))
-                           select cell;
+                           select cell).AsParallel();
 
             return thislist.ToList();
         }
@@ -210,9 +210,9 @@ namespace Core.Data
         public List<Cell> SurfaceCell()
         {
 
-            var thislist = from cell in CellList
+            var thislist = (from cell in CellList
                            .Where(c => c.Edges.Any(e => e.SideType == SideType.surface))
-                           select cell;
+                           select cell).AsParallel();
 
             return thislist.ToList();
         }
@@ -226,9 +226,9 @@ namespace Core.Data
         public List<Node> BoundaryNode(Farfield farfield)
         {
 
-            var boundarynodes = from node in Nodelist
+            var boundarynodes = (from node in Nodelist
                                 where node.Boundary == true || node.Surface == true
-                                select node;
+                                select node).AsParallel();
 
             return boundarynodes.ToList();
         }
@@ -272,14 +272,14 @@ namespace Core.Data
             Cell? t_adj = (from Cell t in CellList
                              where (t.V3 == nodePair.nA || t.V2 == nodePair.nA || t.V1 == nodePair.nA) && (t.V3 == nodePair.nB || t.V2 == nodePair.nB || t.V1 == nodePair.nB)
                              where t.Id != this_t
-                             select t).FirstOrDefault();
+                             select t).AsParallel().FirstOrDefault();
 
             if (t_adj != null)
             {
                 //matching sides is easy because we can simply match on the mid point position vector
                 sideName = (from Edge e in t_adj.Edges
                            where e.R == nodePair.r
-                           select e.SideName).FirstOrDefault();
+                           select e.SideName).AsParallel().FirstOrDefault();
 
                 result = (Repository.CellList.IndexOf(t_adj), sideName);
             }
@@ -306,14 +306,14 @@ namespace Core.Data
             Cell? t_adj = (from Cell t in CellList
                            where (t.V4 == nodePair.nA || t.V3 == nodePair.nA || t.V2 == nodePair.nA || t.V1 == nodePair.nA) && (t.V4 == nodePair.nB || t.V3 == nodePair.nB || t.V2 == nodePair.nB || t.V1 == nodePair.nB)
                            where t.Id != this_t
-                           select t).FirstOrDefault();
+                           select t).AsParallel().FirstOrDefault();
 
             if (t_adj != null)
             {
                 //matching sides is easy because we can match on the mid point position vector 
                 sideName = (from Edge e in t_adj.Edges
                             where e.R == nodePair.r
-                            select e.SideName).FirstOrDefault();
+                            select e.SideName).AsParallel().FirstOrDefault();
 
                 result = (Repository.CellList.IndexOf(t_adj), sideName);
             }
@@ -345,39 +345,40 @@ namespace Core.Data
                 {
                     case 1:
                         {
-                            return t.V1 == n.N1 & t.V3 == n.N2;
+                            return t.V1 == n.N1 && t.V3 == n.N2;
                         }
 
                     case 2:
                         {
-                            return t.V2 == n.N2 & t.V1 == n.N3;
+                            return t.V2 == n.N2 && t.V1 == n.N3;
                         }
 
                     case 3:
                         {
-                            return t.V2 == n.N1 & t.V3 == n.N3;
+                            return t.V2 == n.N1 && t.V3 == n.N3;
                         }
 
                     case 4:
                         {
-                            return t.V2 == n.N1 & t.V1 == n.N2 ;
+                            return t.V2 == n.N1 && t.V1 == n.N2 ;
                         }
 
                     case 5:
                         {
-                            return t.V3 == n.N2 & t.V2 == n.N3;
+                            return t.V3 == n.N2 && t.V2 == n.N3;
                         }
 
                     case 6:
                         {
-                            return t.V3 == n.N1 & t.V1 == n.N3;
+                            return t.V3 == n.N1 && t.V1 == n.N3;
                         }
                     default:
                         {
                             throw new Exception();
                         }
                 }
-            });
+            }).AsParallel();
+
             return filterquery.ToList();
         }
 
@@ -400,22 +401,22 @@ namespace Core.Data
                 {
                     case "top":
                         {
-                            return n.R.Y == farfield.Height & n.R.X != 0 & n.R.X != farfield.Width;
+                            return n.R.Y == farfield.Height && n.R.X != 0 && n.R.X != farfield.Width;
                         }
 
                     case "bottom":
                         {
-                            return n.R.Y == 0 & n.R.X != 0 & n.R.X != farfield.Width;
+                            return n.R.Y == 0 && n.R.X != 0 && n.R.X != farfield.Width;
                         }
 
                     case "right":
                         {
-                            return n.R.X == farfield.Width & n.R.Y != 0 & n.R.Y != farfield.Height;
+                            return n.R.X == farfield.Width && n.R.Y != 0 && n.R.Y != farfield.Height;
                         }
 
                     case "left":
                         {
-                            return n.R.X == 0 & n.R.Y != 0 & n.R.Y != farfield.Height;
+                            return n.R.X == 0 && n.R.Y != 0 && n.R.Y != farfield.Height;
                         }
 
                     default:
@@ -423,7 +424,7 @@ namespace Core.Data
                             throw new Exception();
                         }
                 }
-            });
+            }).AsParallel();
 
             var orderquery = filterquery.OrderBy(n =>
             {
@@ -446,7 +447,7 @@ namespace Core.Data
                             throw new Exception();
                         }
                 }
-            });
+            }).AsParallel();
             return orderquery.ToList();
         }
 
@@ -459,10 +460,10 @@ namespace Core.Data
         /// <returns></returns>
         public List<Cell> GetElementsByBoundary(string edge, Farfield farfield)
         {
-            var basequery = from cell in CellList
+            var basequery = (from cell in CellList
                             where cell.BorderCell == true
                             where cell.BorderCellType == BorderType.Farfield
-                            select cell;
+                            select cell).AsParallel();
 
             var filterquery = basequery.Where(t =>
             {
@@ -493,7 +494,7 @@ namespace Core.Data
                             throw new Exception();
                         }
                   }
-            });
+            }).AsParallel();
 
             return filterquery.ToList();
         }
@@ -506,10 +507,10 @@ namespace Core.Data
         public List<Cell> GetAirfoilSurfaceElements()
         {
 
-            var basequery = from cell in CellList
+            var basequery = (from cell in CellList
                             where cell.BorderCell == true
                             where cell.BorderCellType == BorderType.Airfoil
-                            select cell;
+                            select cell).AsParallel();
 
             return basequery.ToList();
         }
@@ -524,7 +525,7 @@ namespace Core.Data
 
             Edge e = (from c in CellList[t].Edges
                       orderby c.L descending
-                      select c).First();
+                      select c).AsParallel().First();
 
             return e;
         }
@@ -539,7 +540,7 @@ namespace Core.Data
 
             Edge e = (from c in t.Edges
                      orderby c.L descending
-                     select c).First();
+                     select c).AsParallel().First();
 
             return e;
         }
@@ -554,7 +555,7 @@ namespace Core.Data
 
             Cell result = (from c in GetElementsByBoundary("top", farfield)
                            orderby c.R.X ascending
-                           select c).First();
+                           select c).AsParallel().First();
 
             return result;
         }
@@ -569,7 +570,7 @@ namespace Core.Data
 
             Cell result = (from c in GetElementsByBoundary("top", farfield)
                            orderby c.R.X descending
-                           select c).First();
+                           select c).AsParallel().First();
 
             return result;
         }
