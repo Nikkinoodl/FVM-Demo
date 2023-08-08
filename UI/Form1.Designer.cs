@@ -88,7 +88,7 @@
             textBox1.Name = "textBox1";
             textBox1.Size = new Size(125, 27);
             textBox1.TabIndex = 2;
-            textBox1.Validating += textBox1_Validating;
+            textBox1.Validating += TextBox1_Validating;
             // 
             // textBox2
             // 
@@ -96,7 +96,7 @@
             textBox2.Name = "textBox2";
             textBox2.Size = new Size(91, 27);
             textBox2.TabIndex = 3;
-            textBox2.Validating += textBox2_Validating;
+            textBox2.Validating += TextBox2_Validating;
             // 
             // textBox3
             // 
@@ -104,7 +104,7 @@
             textBox3.Name = "textBox3";
             textBox3.Size = new Size(125, 27);
             textBox3.TabIndex = 4;
-            textBox3.Validating += textBox3_Validating;
+            textBox3.Validating += TextBox3_Validating;
             // 
             // textBox7
             // 
@@ -112,7 +112,7 @@
             textBox7.Name = "textBox7";
             textBox7.Size = new Size(125, 27);
             textBox7.TabIndex = 8;
-            textBox7.Validating += textBox7_Validating;
+            textBox7.Validating += TextBox7_Validating;
             // 
             // textBox8
             // 
@@ -120,7 +120,7 @@
             textBox8.Name = "textBox8";
             textBox8.Size = new Size(125, 27);
             textBox8.TabIndex = 9;
-            textBox8.Validating += textBox8_Validating;
+            textBox8.Validating += TextBox8_Validating;
             // 
             // label1
             // 
@@ -185,7 +185,7 @@
             radioButton1.TabStop = true;
             radioButton1.Text = "U";
             radioButton1.UseVisualStyleBackColor = true;
-            radioButton1.Click += radioButton1_Click;
+            radioButton1.Click += RadioButton1_Click;
             // 
             // radioButton2
             // 
@@ -196,7 +196,7 @@
             radioButton2.TabIndex = 29;
             radioButton2.Text = "V";
             radioButton2.UseVisualStyleBackColor = true;
-            radioButton2.Click += radioButton2_Click;
+            radioButton2.Click += RadioButton2_Click;
             // 
             // label14
             // 
@@ -236,7 +236,7 @@
             radioButton4.TabStop = true;
             radioButton4.Text = "Test";
             radioButton4.UseVisualStyleBackColor = true;
-            radioButton4.Click += radioButton4_Click;
+            radioButton4.Click += RadioButton4_Click;
             // 
             // radioButton3
             // 
@@ -248,7 +248,7 @@
             radioButton3.TabStop = true;
             radioButton3.Text = "Pressure";
             radioButton3.UseVisualStyleBackColor = true;
-            radioButton3.Click += radioButton3_Click;
+            radioButton3.Click += RadioButton3_Click;
             // 
             // label5
             // 
@@ -276,7 +276,7 @@
             button2.TabIndex = 36;
             button2.Text = "Save Plot";
             button2.UseVisualStyleBackColor = true;
-            button2.Click += button2_Click;
+            button2.Click += Button2_Click;
             // 
             // button3
             // 
@@ -286,7 +286,7 @@
             button3.TabIndex = 39;
             button3.Text = "Precalc";
             button3.UseVisualStyleBackColor = true;
-            button3.Click += button3_Click;
+            button3.Click += Button3_Click;
             // 
             // TextBoxStatus
             // 
@@ -303,7 +303,7 @@
             textBox4.Name = "textBox4";
             textBox4.Size = new Size(125, 27);
             textBox4.TabIndex = 41;
-            textBox4.Validating += textBox4_Validating;
+            textBox4.Validating += TextBox4_Validating;
             // 
             // label10
             // 

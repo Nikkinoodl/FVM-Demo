@@ -5,14 +5,12 @@ Namespace Logic
 
         Private ReadOnly delaunay As IDelaunay
         Private ReadOnly setter As IStatusSetter
-        Private ReadOnly sorter As ICellSorter
         Private ReadOnly calculator As ICellCalculator
 
-        Public Sub New(delaunay As IDelaunay, setter As IStatusSetter, sorter As ICellSorter, calculator As ICellCalculator)
+        Public Sub New(delaunay As IDelaunay, setter As IStatusSetter, calculator As ICellCalculator)
 
             Me.delaunay = delaunay
             Me.setter = setter
-            Me.sorter = sorter
             Me.calculator = calculator
 
         End Sub

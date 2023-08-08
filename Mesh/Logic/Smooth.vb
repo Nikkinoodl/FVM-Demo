@@ -5,14 +5,12 @@ Namespace Logic
 
         Private ReadOnly calculator As ICellCalculator
         Private ReadOnly smoother As IGridSmoother
-        Private ReadOnly sorter As ICellSorter
         Private ReadOnly setter As IStatusSetter
 
-        Public Sub New(calculator As ICellCalculator, smoother As IGridSmoother, sorter As ICellSorter, setter As IStatusSetter)
+        Public Sub New(calculator As ICellCalculator, smoother As IGridSmoother, setter As IStatusSetter)
 
             Me.calculator = calculator
             Me.smoother = smoother
-            Me.sorter = sorter
             Me.setter = setter
 
         End Sub

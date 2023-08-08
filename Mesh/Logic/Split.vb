@@ -6,14 +6,12 @@ Namespace Logic
 
         Private ReadOnly checker As IBoundaryNodeChecker
         Private ReadOnly calculator As ICellCalculator
-        Private ReadOnly sorter As ICellSorter
         Private ReadOnly splitter As ICellSplitter
 
-        Public Sub New(checker As IBoundaryNodeChecker, calculator As ICellCalculator, sorter As ICellSorter, splitter As ICellSplitter)
+        Public Sub New(checker As IBoundaryNodeChecker, calculator As ICellCalculator, splitter As ICellSplitter)
 
             Me.checker = checker
             Me.calculator = calculator
-            Me.sorter = sorter
             Me.splitter = splitter
 
         End Sub

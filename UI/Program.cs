@@ -40,14 +40,12 @@ namespace CFDSolv
             container.Register<Redistribute>();
             container.Register<Smooth>();
             container.Register<Split>();
-            //container.Register<Build>();
             container.Register<ResetData>();
             container.Register<Finalize>();
             container.Register<CFDLogic>();
 
             //Mesh building services
             container.Register<IInitializer, Initializer>();
-            container.Register<ICellSorter, CellSorter>();
             container.Register<IStatusSetter, StatusSetter>();
             container.Register<ICellCalculator, CellCalculator>();
             container.Register<IBoundaryNodeChecker, BoundaryNodeChecker>();

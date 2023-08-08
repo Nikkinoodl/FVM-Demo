@@ -37,7 +37,6 @@ Namespace Services
             '(Debugging) check for incorrectly assigned boundary edges
             CheckBoundaryEdges(farfield)
 #End If
-
             'Call factory to create a set of zero-height border cells around the farfield boundary
             'these are used to set boundary conditions and simplify cfd calcs
             factory.AddBorderCellsSquare(farfield)
@@ -56,8 +55,7 @@ Namespace Services
                     t.Edge3
                 }
 
-                    'add fourth side for square grid types
-
+                    'add fourth side for rectangular grids
                     If IsNothing(t.Edge4) = False Then
                         edges.Add(t.Edge4)
                     End If

@@ -26,7 +26,7 @@ namespace CFDSolv
 
             textBox1.Text = "0.001";  //dt
             textBox2.Text = "5";      //total time
-            textBox3.Text = "2";      //inlet U velocity
+            textBox3.Text = "6";      //inlet U velocity
 
             textBox7.Text = "0.15";   //nu
             textBox8.Text = "1";      //rho
@@ -117,10 +117,9 @@ namespace CFDSolv
             var simulation = Program.container.GetInstance<CFDLogic>();
             simulation.FlowSimulation(_farfield, calc, fluid);
 
+            //generate plots
             pmCollection = new();
-
             plot1.Model = pmCollection.uModel;
-
             plot1.Refresh();
 
             //display initial plot depending on selection
@@ -144,7 +143,7 @@ namespace CFDSolv
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button2_Click(object sender, EventArgs e)
+        private void Button2_Click(object sender, EventArgs e)
         {
             var plotModel = plot1.Model;
 
@@ -186,19 +185,19 @@ namespace CFDSolv
                 plot1.Refresh();
             }
         }
-        private void radioButton1_Click(object sender, EventArgs e)
+        private void RadioButton1_Click(object sender, EventArgs e)
         {
             ChangeDisplayType();
         }
-        private void radioButton2_Click(object sender, EventArgs e)
+        private void RadioButton2_Click(object sender, EventArgs e)
         {
             ChangeDisplayType();
         }
-        private void radioButton3_Click(object sender, EventArgs e)
+        private void RadioButton3_Click(object sender, EventArgs e)
         {
             ChangeDisplayType();
         }
-        private void radioButton4_Click(object sender, EventArgs e)
+        private void RadioButton4_Click(object sender, EventArgs e)
         {
             ChangeDisplayType();
         }
@@ -208,7 +207,7 @@ namespace CFDSolv
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button3_Click(object sender, EventArgs e)
+        private void Button3_Click(object sender, EventArgs e)
         {
 
             Finalize finalize = Program.container.GetInstance<Finalize>();
@@ -222,37 +221,37 @@ namespace CFDSolv
             button2.Enabled = false;
         }
 
-        private void textBox1_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        private void TextBox1_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
             float fallback = 0.001F;
             textBox1.Text = ValidateEntry<float>(ref textBox1, fallback).ToString();
         }
 
-        private void textBox2_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        private void TextBox2_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
             float fallback = 5F;
             textBox2.Text = ValidateEntry<float>(ref textBox2, fallback).ToString();
         }
 
-        private void textBox3_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        private void TextBox3_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
             float fallback = 6F;
             textBox3.Text = ValidateEntry<float>(ref textBox3, fallback).ToString();
         }
 
-        private void textBox4_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        private void TextBox4_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
             short fallback = 1;
             textBox4.Text = ValidateEntry<short>(ref textBox4, fallback).ToString();
         }
 
-        private void textBox7_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        private void TextBox7_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
             float fallback = 0.15F;
             textBox7.Text = ValidateEntry<float>(ref textBox7, fallback).ToString();
         }
 
-        private void textBox8_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        private void TextBox8_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
             float fallback = 1F;
             textBox8.Text = ValidateEntry<float>(ref textBox8, fallback).ToString();

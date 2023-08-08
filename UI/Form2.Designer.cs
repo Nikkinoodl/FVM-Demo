@@ -15,7 +15,7 @@
             label14 = new Label();
             label13 = new Label();
             label12 = new Label();
-            comboBox1 = new ComboBox();
+            ComboBox1 = new ComboBox();
             button10 = new Button();
             Button9 = new Button();
             Label10 = new Label();
@@ -45,7 +45,7 @@
             Panel1.Controls.Add(label14);
             Panel1.Controls.Add(label13);
             Panel1.Controls.Add(label12);
-            Panel1.Controls.Add(comboBox1);
+            Panel1.Controls.Add(ComboBox1);
             Panel1.Controls.Add(button10);
             Panel1.Controls.Add(Button9);
             Panel1.Controls.Add(Label10);
@@ -107,14 +107,14 @@
             label12.TabIndex = 38;
             label12.Text = "Grid Type";
             // 
-            // comboBox1
+            // ComboBox1
             // 
-            comboBox1.FormattingEnabled = true;
-            comboBox1.Location = new Point(111, 73);
-            comboBox1.Name = "comboBox1";
-            comboBox1.Size = new Size(143, 28);
-            comboBox1.TabIndex = 37;
-            comboBox1.Validating += comboBox1_Validating;
+            ComboBox1.FormattingEnabled = true;
+            ComboBox1.Location = new Point(111, 73);
+            ComboBox1.Name = "ComboBox1";
+            ComboBox1.Size = new Size(143, 28);
+            ComboBox1.TabIndex = 37;
+            ComboBox1.Validating += ComboBox1_Validating;
             // 
             // button10
             // 
@@ -124,7 +124,7 @@
             button10.TabIndex = 36;
             button10.Text = "RESET";
             button10.UseVisualStyleBackColor = true;
-            button10.Click += button10_Click;
+            button10.Click += Button10_Click;
             // 
             // Button9
             // 
@@ -338,7 +338,7 @@
 
         private Button Button9;
         private Button button10;
-        private ComboBox comboBox1;
+        private ComboBox ComboBox1;
         private Label label13;
         private Label label12;
         private Label label15;

@@ -34,7 +34,7 @@ namespace CFDSolv
         {
 
             //get values for combo box
-            comboBox1.DataSource = Enum.GetValues(typeof(GridType));
+            ComboBox1.DataSource = Enum.GetValues(typeof(GridType));
 
             //get settings
             settings.CreateSettings();
@@ -49,7 +49,7 @@ namespace CFDSolv
             TextBoxHeight.Text = farfield.Height.ToString();
             TextBoxWidth.Text = farfield.Width.ToString();
             TextBoxSmoothingCycles.Text = farfield.Smoothingcycles.ToString();
-            comboBox1.SelectedItem = settings.Gridtype;
+            ComboBox1.SelectedItem = settings.Gridtype;
 
             WindowState = FormWindowState.Maximized;
 
@@ -148,7 +148,7 @@ namespace CFDSolv
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
             GL.Ortho(0, farfield.Width, 0, farfield.Height, -1, 1);
-            GL.Viewport(0, 0, 1000, (int)(1000 * farfield.Height / farfield.Width));
+            GL.Viewport(0, 0, GlControl.Width, GlControl.Height);
 
         }
 
@@ -222,7 +222,7 @@ namespace CFDSolv
             //lock down the input boxes
             TextBoxWidth.Enabled = false;
             TextBoxHeight.Enabled = false;
-            comboBox1.Enabled = false;
+            ComboBox1.Enabled = false;
 
             //save settings
             Settings.WriteSettings(farfield);
@@ -320,7 +320,7 @@ namespace CFDSolv
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button10_Click(object sender, EventArgs e)
+        private void Button10_Click(object sender, EventArgs e)
         {
 
             //reset lists of nodes and cells
@@ -333,7 +333,7 @@ namespace CFDSolv
             //unlock the input boxes
             TextBoxWidth.Enabled = true;
             TextBoxHeight.Enabled = true;
-            comboBox1.Enabled = true;
+            ComboBox1.Enabled = true;
 
         }
 
@@ -352,9 +352,9 @@ namespace CFDSolv
             farfield.Height = ValidateEntry<float>(ref TextBoxHeight, settings.Height);
         }
 
-        private void comboBox1_Validating(object sender, CancelEventArgs e)
+        private void ComboBox1_Validating(object sender, CancelEventArgs e)
         {
-            farfield.Gridtype = (GridType)comboBox1.SelectedItem;
+            farfield.Gridtype = (GridType)ComboBox1.SelectedItem;
         }
 
         /// <summary>

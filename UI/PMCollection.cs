@@ -24,6 +24,7 @@ namespace UI
 
             foreach (Cell p in Repository.CellList)
             {
+
                 var ucolorValue = p.Vel.X;
                 seriesU.Points.Add(new ScatterPoint(p.R.X, p.R.Y, 15, ucolorValue));
 
@@ -35,6 +36,7 @@ namespace UI
 
                 var bcolorValue = p.Test;
                 seriesT.Points.Add(new ScatterPoint(p.R.X, p.R.Y, 15, bcolorValue));
+
             }
 
             //Add plot models for u, v velocities and pressure p
