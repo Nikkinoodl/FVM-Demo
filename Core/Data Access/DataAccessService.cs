@@ -110,7 +110,6 @@ namespace Core.Data
             return thislist.ToList();
         }
 
-
         /// <summary>
         /// Returns a specific node
         /// </summary>
@@ -119,11 +118,19 @@ namespace Core.Data
         public Node NodeV(int? n)
         {
 
-            var thisNode = (from node in Nodelist
-                           where node.Id == n
-                           select node).AsParallel().Single();
+            if (n != null)
+            {
+                var thisNode = (from node in Nodelist
+                                where node.Id == n
+                                select node).AsParallel().Single();
 
-            return thisNode;
+                return thisNode;
+            }
+            else
+            {
+                throw new Exception();
+            }
+
         }
 
         /// <summary>
@@ -265,40 +272,6 @@ namespace Core.Data
         /// <returns>Id, SideName</returns>
         public (int?, SideName?) AdjacentCellEdge((int nA, int nB, Vector2 r, Edge e) nodePair, int this_t)
         {
-            //Boundary and surface edges may not have a matching element/edge, so we need to be prepared to return nulls
-            SideName? sideName;
-            (int?, SideName?) result;
-
-            Cell? t_adj = (from Cell t in CellList
-                             where (t.V3 == nodePair.nA || t.V2 == nodePair.nA || t.V1 == nodePair.nA) && (t.V3 == nodePair.nB || t.V2 == nodePair.nB || t.V1 == nodePair.nB)
-                             where t.Id != this_t
-                             select t).AsParallel().FirstOrDefault();
-
-            if (t_adj != null)
-            {
-                //matching sides is easy because we can simply match on the mid point position vector
-                sideName = (from Edge e in t_adj.Edges
-                           where e.R == nodePair.r
-                           select e.SideName).AsParallel().FirstOrDefault();
-
-                result = (Repository.CellList.IndexOf(t_adj), sideName);
-            }
-            else
-            {
-                result = (null, null);
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Finds the adjacent cell and side to a given node pair
-        /// </summary>
-        /// <param name="nA"></param>
-        /// <param name="nB"></param>
-        /// <returns>Id, SideName</returns>
-        public (int?, SideName?) AdjacentCellEdgeSquare((int nA, int nB, Vector2 r, Edge e) nodePair, int this_t)
-        {
             //boundary and surface edges may not have a matching element/edge, so we need to be prepared to return nulls
             SideName? sideName;
             (int?, SideName?) result;
@@ -306,14 +279,14 @@ namespace Core.Data
             Cell? t_adj = (from Cell t in CellList
                            where (t.V4 == nodePair.nA || t.V3 == nodePair.nA || t.V2 == nodePair.nA || t.V1 == nodePair.nA) && (t.V4 == nodePair.nB || t.V3 == nodePair.nB || t.V2 == nodePair.nB || t.V1 == nodePair.nB)
                            where t.Id != this_t
-                           select t).AsParallel().FirstOrDefault();
+                           select t).FirstOrDefault();
 
             if (t_adj != null)
             {
                 //matching sides is easy because we can match on the mid point position vector 
                 sideName = (from Edge e in t_adj.Edges
                             where e.R == nodePair.r
-                            select e.SideName).AsParallel().FirstOrDefault();
+                            select e.SideName).FirstOrDefault();
 
                 result = (Repository.CellList.IndexOf(t_adj), sideName);
             }

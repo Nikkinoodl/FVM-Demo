@@ -43,6 +43,7 @@ namespace CFDSolv
             container.Register<ResetData>();
             container.Register<Finalize>();
             container.Register<CFDLogic>();
+            container.Register<TilingLogic>();
 
             //Mesh building services
             container.Register<IInitializer, Initializer>();

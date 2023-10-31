@@ -1,7 +1,18 @@
 ﻿namespace Core.Common
 {
     /// <summary>
-    /// Identifies which vertex of a grid element lies opposite. Use S4 only for square meshes
+    /// Distinguishes the way in which vertex nodes and sides are numbered. All numbering schemes proceed
+    /// clockwise around the cell.
+    /// </summary>
+    public enum SideNamingScheme
+    {
+        none,      //not set
+        triangle,  //side n lies opposite vertex n
+        standard   //side n lies between vertex n and vertex n+1
+    }
+
+    /// <summary>
+    /// Used to distinguish between edges when using the Edges list. Use S4 only for quad meshes
     /// </summary>
     public enum SideName
     {
@@ -62,9 +73,20 @@
     public enum GridType
     {
         Triangles,          //triangles, irregular
-        RegularTriangles,   //triangles, regular
         Equilateral,        //triangles, equilateral
-        Rectangles          //rectangular
+        Quads                //quads, squares, rectangles and 4-sided irregular shapes
+    }
+
+    /// <summary>
+    /// Identifies the types of tiling operations that can be applied to the base cell layouts
+    /// </summary>
+    public enum Tiling
+    {
+        None,               //base grid
+        Kis,                //join nodes to center of cell
+        Join,               //join edge centers to center of cell
+        KisAndJoin,         //apply both kis and join (like tetrakis on square cell)
+        Trunc               //truncate cell vertices
     }
 
     /// <summary>

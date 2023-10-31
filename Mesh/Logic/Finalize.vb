@@ -21,51 +21,26 @@ Namespace Logic
 
         Public Sub Logic(farfield As Farfield)
 
-            If farfield.Gridtype = GridType.Triangles Or farfield.Gridtype = GridType.Equilateral Or farfield.Gridtype = GridType.RegularTriangles Then
 
-                'Some changes to cells prior to starting CFD
-                'Find edge midpoints
-                calculator.CalculateMidPoints()
+            'Some changes to cells prior to starting CFD
+            'Find edge midpoints
+            calculator.CalculateMidPoints()
 
-                'Remove any 'complete' flags on the cells
-                setter.SetCompleteStatus()
+            'Remove any 'complete' flags on the cells
+            setter.SetCompleteStatus()
 
-                'Calculate Areas
-                calculator.CalculateAreas()
+            'Calculate Areas
+            calculator.CalculateAreas()
 
-                'Calculate face vectors and face normals
-                calculator.CalculateFaceVectors()
-                calculator.CalculateFaceNormals()
+            'Calculate face vectors and face normals
+            calculator.CalculateFaceVectors()
+            calculator.CalculateFaceNormals()
 
-                'Add zero-height border cells for setting boundary conditions
-                cellBuilder.CreateBorderCells(farfield)
+            'Add zero-height border cells for setting boundary conditions
+            cellBuilder.CreateBorderCells(farfield)
 
-                'Find adjoining cell and face for each edge
-                meshprecalc.FindAdjoiningCells()
-
-            Else
-
-                'Some changes to cells prior to starting CFD
-                'Find edge midpoints
-                calculator.CalculateMidPointsSquares()
-
-                'Remove any 'complete' flags on the cells
-                setter.SetCompleteStatus()
-
-                'Calculate Areas
-                calculator.CalculateAreasSquares()
-
-                'Calculate face vectors and face normals
-                calculator.CalculateFaceVectors()
-                calculator.CalculateFaceNormalsSquares()
-
-                'Add zero-height border cells for setting boundary conditions
-                cellBuilder.CreateBorderCellsSquare(farfield)
-
-                'Find adjoining cell and face for each edge
-                meshprecalc.FindAdjoiningCellsSquare()
-
-            End If
+            'Find adjoining cell and face for each edge
+            meshprecalc.FindAdjoiningCells()
 
         End Sub
 

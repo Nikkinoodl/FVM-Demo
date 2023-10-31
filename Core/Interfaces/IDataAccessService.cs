@@ -123,20 +123,12 @@ namespace Core.Interfaces
         void SortCells();
 
         /// <summary>
-        /// Finds the adjacent cell and side to a given node pair in a triangular grid type mesh
+        /// Finds the adjacent cell and side to a given node pair
         /// </summary>
         /// <param name="nA"></param>
         /// <param name="nB"></param>
         /// <returns>Id, SideName</returns>
         (int?, SideName?) AdjacentCellEdge((int nA, int nB, Vector2 r, Edge e) nodePair, int this_t);
-
-        /// <summary>
-        /// Finds the adjacent cell and side to a given node pair i n a square grid type mesh
-        /// </summary>
-        /// <param name="nA"></param>
-        /// <param name="nB"></param>
-        /// <returns>Id, SideName</returns>
-        (int?, SideName?) AdjacentCellEdgeSquare((int nA, int nB, Vector2 r, Edge e) nodePair, int this_t);
 
         /// <summary>
         /// Returns a list of cells with given nodes used in Delaunay triangulation

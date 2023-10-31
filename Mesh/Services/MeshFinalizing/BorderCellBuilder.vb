@@ -49,18 +49,7 @@ Namespace Services
             For Each t As Cell In celllist
                 If IsNothing(t) = False Then
 
-                    Dim edges As New List(Of Edge) From {
-                    t.Edge1,
-                    t.Edge2,
-                    t.Edge3
-                }
-
-                    'add fourth side for rectangular grids
-                    If IsNothing(t.Edge4) = False Then
-                        edges.Add(t.Edge4)
-                    End If
-
-                    For Each s As Edge In edges
+                    For Each s As Edge In t.Edges
 
                         If (s.R.Y = 0 And s.SideType <> SideType.boundary) Then
                             Debug.WriteLine("Invalid edge type on farfield bottom boundary")

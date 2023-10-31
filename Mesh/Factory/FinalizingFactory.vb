@@ -36,34 +36,65 @@ Namespace Factories
                     If e.SideType = SideType.boundary Then
 
                         Dim newId = data.MaxCellId + 1
-                        Dim this_v2 As Integer
-                        Dim this_v3 As Integer
+                        Dim v1 As Integer
+                        Dim v2 As Integer
 
-                        Dim this_edge As New Edge(SideName.S1, SideType.border) With {
+                        Dim borderCellEdge As New Edge(SideName.S1, SideType.border) With {
                             .R = e.R,
                             .L = e.L,
                             .AdjoiningCell = data.CellList.IndexOf(t),
                             .AdjoiningEdge = e.SideName
                         }
 
-                        If e.SideName = SideName.S1 Then
+                        If t.Edge4 Is Nothing Then      'triangular cell
 
-                            this_v2 = t.V3
-                            this_v3 = t.V2
+                            If e.SideName = SideName.S1 Then
 
-                        ElseIf e.SideName = SideName.S2 Then
+                                v1 = t.V2
+                                v2 = t.V3
 
-                            this_v2 = t.V3
-                            this_v3 = t.V1
+                            ElseIf e.SideName = SideName.S2 Then
 
-                        Else
+                                v1 = t.V1
+                                v2 = t.V3
 
-                            this_v2 = t.V2
-                            this_v3 = t.V1
+                            Else
+
+                                v1 = t.V1
+                                v2 = t.V2
+
+                            End If
+
+
+                        Else                            'quad cell
+
+                            If e.SideName = SideName.S1 Then
+
+                                v1 = t.V2
+                                v2 = t.V1
+
+                            ElseIf e.SideName = SideName.S2 Then
+
+                                v1 = t.V3
+                                v2 = t.V2
+
+                            ElseIf e.SideName = SideName.S3 Then
+
+                                v1 = t.V4
+                                v2 = t.V3
+
+                            Else
+
+                                v1 = t.V1
+                                v2 = t.V4
+
+                            End If
 
                         End If
 
-                        Dim bc As New BorderCell(newId, this_v2, this_v3, this_edge)
+
+                        'add new border cell
+                        Dim bc As New BorderCell(newId, v1, v2, borderCellEdge)
 
                         'set the new border cell id as the adjoining cell on the existing boundary edge
                         e.AdjoiningCell = newId
@@ -78,7 +109,7 @@ Namespace Factories
 
         ''' <summary>
         ''' Adds zero-height cells that have only one edge around the border of the farfield with square mesh type. These are
-        ''' used to set boundary conditions
+        ''' used to set boundary conditions (deprecated)
         ''' </summary>
         ''' <param name="farfield"></param>
         Public Sub AddBorderCellsSquare(farfield As Farfield) Implements IFinalizingFactory.AddBorderCellsSquare

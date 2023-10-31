@@ -11,6 +11,7 @@ namespace Core.Common
         protected string _height;
         protected string _smoothingcycles;
         protected GridType _gridtype;
+        protected Tiling _tiling;
 
         // on read takes the string and converts to specific type
         // on write takes a specific type and converts to a string
@@ -44,6 +45,12 @@ namespace Core.Common
             set => _gridtype = value;
         }
 
+        public Tiling Tiling
+        {
+            get => _tiling;
+            set => _tiling = value;
+        }
+
         public void CreateSettings()
         {
 
@@ -63,6 +70,7 @@ namespace Core.Common
                     withBlock.WriteElementString("height", "2");
                     withBlock.WriteElementString("smoothingcycles", "8");
                     withBlock.WriteElementString("gridtype", "1");
+                    withBlock.WriteElementString("tiling", "0");
                     withBlock.WriteEndElement();
                     withBlock.WriteEndDocument();
                     withBlock.Close();
@@ -82,6 +90,7 @@ namespace Core.Common
                 _height = childnode.SelectSingleNode("height").InnerText;
                 _smoothingcycles = childnode.SelectSingleNode("smoothingcycles").InnerText;
                 _gridtype = (GridType)Enum.Parse(typeof(GridType), childnode.SelectSingleNode("gridtype").InnerText);
+                _tiling = (Tiling)Enum.Parse(typeof(Tiling), childnode.SelectSingleNode("tiling").InnerText);
             }
         }
 
@@ -99,6 +108,7 @@ namespace Core.Common
                 childnode.SelectSingleNode("height").InnerText = Convert.ToString(farfield.Height);
                 childnode.SelectSingleNode("smoothingcycles").InnerText = Convert.ToString(farfield.Smoothingcycles);
                 childnode.SelectSingleNode("gridtype").InnerText = Convert.ToString(farfield.Gridtype);
+                childnode.SelectSingleNode("tiling").InnerText = Convert.ToString(farfield.Tiling);
             }
 
             xmlDoc.Save("Settings.xml");

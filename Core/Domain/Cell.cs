@@ -1,4 +1,5 @@
 ﻿using Core.DataCollections;
+using Core.Common;
 
 namespace Core.Domain
 {
@@ -26,6 +27,7 @@ namespace Core.Domain
             V1 = n1;
             V2 = n2;
             V3 = n3;
+            NamingScheme = SideNamingScheme.triangle;
             Complete = false;
             Edge1 = e1;
             Edge2 = e2;
@@ -60,6 +62,7 @@ namespace Core.Domain
             V2 = n2;
             V3 = n3;
             V4 = n4;
+            NamingScheme = SideNamingScheme.standard;
             Complete = false;
             Edge1 = e1;
             Edge2 = e2;

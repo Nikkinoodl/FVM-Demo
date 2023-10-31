@@ -9,7 +9,7 @@
 
         public int N3 { get; set; }
 
-        //an optional node that is used for square grid cells
+        //optional nodes that are used for N_sides > 3
         public int? N4 { get; set; }
     }
 }

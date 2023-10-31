@@ -1,8 +1,6 @@
 ﻿Imports Core.Domain
 Imports Core.Common
 Imports System.Numerics
-Imports System.Windows.Forms.VisualStyles
-Imports System.Security.AccessControl
 
 Namespace Factories
 
@@ -34,8 +32,7 @@ Namespace Factories
         ''' Adds a generic node which does not lie on the boundary or airfoil surface
         ''' </summary>
         ''' <param name="this_id"></param>
-        ''' <param name="this_x"></param>
-        ''' <param name="this_y"></param>
+        ''' <param name="thisPosition"></param>
         Public Sub AddNode(this_id As Integer, thisPosition As Vector2) Implements IGridFactory.AddNode
             Dim newNode As New Node(this_id, thisPosition)
         End Sub
@@ -61,7 +58,7 @@ Namespace Factories
         End Sub
 
         ''' <summary>
-        ''' Add a new cell
+        ''' Adds a cell with three nodes
         ''' </summary>
         ''' <param name="this_id"></param>
         ''' <param name="this_n1"></param>
@@ -83,11 +80,23 @@ Namespace Factories
 
         End Sub
 
-        Public Sub AddSquare(this_id As Integer, n1 As Integer, n2 As Integer, n3 As Integer, n4 As Integer,
+        ''' <summary>
+        ''' Adds a cell with four nodes
+        ''' </summary>
+        ''' <param name="this_id"></param>
+        ''' <param name="n1"></param>
+        ''' <param name="n2"></param>
+        ''' <param name="n3"></param>
+        ''' <param name="n4"></param>
+        ''' <param name="s1"></param>
+        ''' <param name="s2"></param>
+        ''' <param name="s3"></param>
+        ''' <param name="s4"></param>
+        Public Sub AddQuad(this_id As Integer, n1 As Integer, n2 As Integer, n3 As Integer, n4 As Integer,
                     Optional s1 As SideType = SideType.none,
                     Optional s2 As SideType = SideType.none,
                     Optional s3 As SideType = SideType.none,
-                    Optional s4 As SideType = SideType.none) Implements IGridFactory.AddSquare
+                    Optional s4 As SideType = SideType.none) Implements IGridFactory.AddQuad
             Dim e1 As New Edge(0, s1)
             Dim e2 As New Edge(1, s2)
             Dim e3 As New Edge(2, s3)
@@ -98,7 +107,7 @@ Namespace Factories
         End Sub
 
         ''' <summary>
-        ''' Replace an existing grid cell with a new one
+        ''' Replaces an existing triangular grid cell with a new one
         ''' To avoid confusion, note that t is the index, not the Id
         ''' </summary>
         ''' <param name="t">Index</param>
@@ -119,15 +128,54 @@ Namespace Factories
 
         End Sub
 
-        Public Sub ReplaceCellSquare(t As Integer, newId As Integer, n1 As Integer, n2 As Integer, n3 As Integer, n4 As Integer,
-                                   s1 As SideType, s2 As SideType, s3 As SideType, s4 As SideType) Implements IGridFactory.ReplaceCellSquare
+        ''' <summary>
+        ''' Replaces an existing rectangular grid cell with a new one
+        ''' </summary>
+        ''' <param name="t"></param>
+        ''' <param name="newId"></param>
+        ''' <param name="n1"></param>
+        ''' <param name="n2"></param>
+        ''' <param name="n3"></param>
+        ''' <param name="n4"></param>
+        ''' <param name="s1"></param>
+        ''' <param name="s2"></param>
+        ''' <param name="s3"></param>
+        ''' <param name="s4"></param>
+        Public Sub ReplaceCellQuad(t As Integer, newId As Integer, n1 As Integer, n2 As Integer, n3 As Integer, n4 As Integer,
+                              Optional s1 As SideType = SideType.none,
+                              Optional s2 As SideType = SideType.none,
+                              Optional s3 As SideType = SideType.none,
+                              Optional s4 As SideType = SideType.none) Implements IGridFactory.ReplaceCellQuad
 
             Dim replaceCell As Cell = New ReplacementCell(t, newId, n1, n2, n3, n4, s1, s2, s3, s4)
 
         End Sub
 
         ''' <summary>
-        ''' Update the properties of an existing grid cell
+        ''' Replaces a triangular cell with a quad cell
+        ''' </summary>
+        ''' <param name="t"></param>
+        ''' <param name="newId"></param>
+        ''' <param name="n1"></param>
+        ''' <param name="n2"></param>
+        ''' <param name="n3"></param>
+        ''' <param name="n4"></param>
+        ''' <param name="s1"></param>
+        ''' <param name="s2"></param>
+        ''' <param name="s3"></param>
+        ''' <param name="s4"></param>
+        Public Sub ReplaceTriWithQuad(t As Integer, newId As Integer, n1 As Integer, n2 As Integer, n3 As Integer, n4 As Integer,
+                              Optional s1 As SideType = SideType.none,
+                              Optional s2 As SideType = SideType.none,
+                              Optional s3 As SideType = SideType.none,
+                              Optional s4 As SideType = SideType.none) Implements IGridFactory.ReplaceTriWithQuad
+
+            Dim upgradeCell As Cell = New UpgradeCell(t, newId, n1, n2, n3, n4, s1, s2, s3, s4)
+
+        End Sub
+
+        ''' <summary>
+        ''' Update the properties of an existing triangular grid cell
         ''' To avoid confusion, note that t is the index, not the Id
         ''' </summary>
         ''' <param name="t">Index</param>
@@ -198,7 +246,7 @@ Namespace Factories
         End Sub
 
         ''' <summary>
-        ''' Creates the first cells in an equilateral triangle mesh when no airfoil is present
+        ''' Creates the first cells in a tetrakis or equilateral triangle mesh when no airfoil is present
         ''' </summary>
         Public Sub SetupRegularTriangleCells() Implements IGridFactory.SetupRegularTriangleCells
 
@@ -217,7 +265,7 @@ Namespace Factories
         Public Sub SetupRegularGrid() Implements IGridFactory.SetupRegularGrid
 
             'Note that nodes are always assigned to vertices in a clockwise arrangement
-            AddSquare(0, 0, 1, 2, 3, SideType.boundary, SideType.boundary, SideType.boundary, SideType.boundary)
+            AddQuad(0, 0, 1, 2, 3, SideType.boundary, SideType.boundary, SideType.boundary, SideType.boundary)
 
         End Sub
 #End Region

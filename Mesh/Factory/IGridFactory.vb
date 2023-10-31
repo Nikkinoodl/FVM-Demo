@@ -92,7 +92,7 @@ Namespace Factories
         ''' <param name="s2"></param>
         ''' <param name="s3"></param>
         ''' <param name="s4"></param>
-        Sub AddSquare(this_id As Integer, n1 As Integer, n2 As Integer, n3 As Integer, n4 As Integer,
+        Sub AddQuad(this_id As Integer, n1 As Integer, n2 As Integer, n3 As Integer, n4 As Integer,
                     Optional s1 As SideType = SideType.none,
                     Optional s2 As SideType = SideType.none,
                     Optional s3 As SideType = SideType.none,
@@ -113,7 +113,7 @@ Namespace Factories
         Sub SetupRegularTriangleCells()
 
         ''' <summary>
-        ''' Performs the initial build of a rectangular mesh
+        ''' Performs the initial build of a quad mesh
         ''' </summary>
         Sub SetupRegularGrid()
 
@@ -138,7 +138,7 @@ Namespace Factories
                             Optional sideType3 As SideType = SideType.none)
 
         ''' <summary>
-        ''' Replaces a existing rectangular cell with a new one
+        ''' Replaces a existing quad cell with a new one
         ''' </summary>
         ''' <param name="t"></param>
         ''' <param name="newId"></param>
@@ -150,8 +150,31 @@ Namespace Factories
         ''' <param name="s2"></param>
         ''' <param name="s3"></param>
         ''' <param name="s4"></param>
-        Sub ReplaceCellSquare(t As Integer, newId As Integer, n1 As Integer, n2 As Integer, n3 As Integer, n4 As Integer,
-                              s1 As SideType, s2 As SideType, s3 As SideType, s4 As SideType)
+        Sub ReplaceCellQuad(t As Integer, newId As Integer, n1 As Integer, n2 As Integer, n3 As Integer, n4 As Integer,
+                              Optional s1 As SideType = SideType.none,
+                              Optional s2 As SideType = SideType.none,
+                              Optional s3 As SideType = SideType.none,
+                              Optional s4 As SideType = SideType.none)
+
+        ''' <summary>
+        ''' Replaces a triangular cell with a quad cell
+        ''' </summary>
+        ''' <param name="t"></param>
+        ''' <param name="newId"></param>
+        ''' <param name="n1"></param>
+        ''' <param name="n2"></param>
+        ''' <param name="n3"></param>
+        ''' <param name="n4"></param>
+        ''' <param name="s1"></param>
+        ''' <param name="s2"></param>
+        ''' <param name="s3"></param>
+        ''' <param name="s4"></param>
+        Sub ReplaceTriWithQuad(t As Integer, newId As Integer, n1 As Integer, n2 As Integer, n3 As Integer, n4 As Integer,
+                              Optional s1 As SideType = SideType.none,
+                              Optional s2 As SideType = SideType.none,
+                              Optional s3 As SideType = SideType.none,
+                              Optional s4 As SideType = SideType.none)
+
 
         ''' <summary>
         ''' Updates the nodes and optionally the side types of an existing triangle

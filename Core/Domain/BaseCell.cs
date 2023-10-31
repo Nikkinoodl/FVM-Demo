@@ -31,6 +31,11 @@ namespace Core.Domain
         /// </summary>
         public int? V4 { get; set; }
 
+        /// <summary>
+        /// Distinguishes the way in which vertex nodes and sides are numbered
+        /// </summary>
+        public SideNamingScheme NamingScheme { get; set; }
+
         //Basic geometry
 
         /// <summary>
@@ -51,22 +56,22 @@ namespace Core.Domain
         //Edges
 
         /// <summary>
-        /// Cell edge opposite V1
+        /// Cell edge (usage depends on naming scheme)
         /// </summary>
         public Edge Edge1 { get; set; }
 
         /// <summary>
-        /// Cell edge opposite V2
+        /// Cell edge (usage depends on naming scheme)
         /// </summary>
         public Edge? Edge2 { get; set; }
 
         /// <summary>
-        /// Cell edge opposite V3
+        /// Cell edge (usage depends on naming scheme)
         /// </summary>
         public Edge? Edge3 { get; set; }
 
         /// <summary>
-        /// An optional cell edge for rectangular grids
+        /// An optional cell edge for quad grids
         /// </summary>
         public Edge? Edge4 { get; set; }
 

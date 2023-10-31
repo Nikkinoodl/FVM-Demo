@@ -28,6 +28,11 @@ namespace Core.Domain
         public float L { get; set; }
 
         /// <summary>
+        /// edge vector
+        /// </summary>
+        public Vector2 Lv { get; set; }
+
+        /// <summary>
         /// ratio of edge length to distance from cell center to adjoining cell center
         /// </summary>
         public float Lk { get; set; }

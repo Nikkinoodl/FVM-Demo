@@ -29,11 +29,7 @@ Namespace Logic
             'calculate lengths, make sure all nodes on boundary have .boundary = True
             checker.CheckBoundaryNodes(farfield)
 
-            If farfield.Gridtype <> GridType.Rectangles Then
-                calculator.CalculateLengths()
-            Else
-                calculator.CalculateLengthsSquares()
-            End If
+            calculator.CalculateLengths()
 
         End Sub
 

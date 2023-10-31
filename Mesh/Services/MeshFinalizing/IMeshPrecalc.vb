@@ -6,10 +6,5 @@
         ''' </summary>
         Sub FindAdjoiningCells()
 
-        ''' <summary>
-        ''' Find the adjoinging element/face for each square cell
-        ''' </summary>
-        Sub FindAdjoiningCellsSquare()
-
     End Interface
 End Namespace

@@ -2,7 +2,7 @@
 Imports Mesh.Services
 
 Namespace Logic
-    Public Class Split
+    Public Class TilingLogic
 
         Private ReadOnly checker As IBoundaryNodeChecker
         Private ReadOnly calculator As ICellCalculator
@@ -18,21 +18,33 @@ Namespace Logic
 
         Public Sub Logic(farfield As Farfield)
 
-            'Use different methods depending on the grid type
-            If farfield.Gridtype = GridType.Triangles Then
+            calculator.CalculateMidPoints()
 
-                'simple cell refinement
-                splitter.SplitCells()
+            'tiling logic is independent of the grid type
+            If farfield.Tiling = Tiling.Kis Then
 
-            ElseIf farfield.Gridtype = GridType.Equilateral Then
+                splitter.DivideKis(farfield)
 
-                'divide up grid, preserving triangle shapes
-                splitter.DivideEquilateral()
+            ElseIf farfield.Tiling = Tiling.Join Then
 
-            Else
+                If farfield.Gridtype = GridType.Quads Then
 
-                'divide up rectangular grid elements
-                splitter.DivideRegularCells()
+                    splitter.DivideRegularCells()
+
+                Else
+
+                    splitter.DivideJoin(farfield)
+
+                End If
+
+            ElseIf farfield.Tiling = Tiling.KisAndJoin Then
+
+                splitter.DivideKis(farfield)
+
+                checker.CheckBoundaryNodes(farfield)
+                calculator.CalculateLengths()
+
+                splitter.SplitCells(True)
 
             End If
 

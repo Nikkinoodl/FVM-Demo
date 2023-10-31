@@ -35,6 +35,7 @@ namespace CFDSolv
 
             //get values for combo box
             ComboBox1.DataSource = Enum.GetValues(typeof(GridType));
+            comboBox2.DataSource = Enum.GetValues(typeof(Tiling));
 
             //get settings
             settings.CreateSettings();
@@ -44,12 +45,14 @@ namespace CFDSolv
             farfield.Width = settings.Width;
             farfield.Smoothingcycles = settings.Smoothingcycles;
             farfield.Gridtype = settings.Gridtype;
+            farfield.Tiling = settings.Tiling;
 
             //populate text boxes with farfield settings
             TextBoxHeight.Text = farfield.Height.ToString();
             TextBoxWidth.Text = farfield.Width.ToString();
             TextBoxSmoothingCycles.Text = farfield.Smoothingcycles.ToString();
             ComboBox1.SelectedItem = settings.Gridtype;
+            comboBox2.SelectedItem = settings.Tiling;
 
             WindowState = FormWindowState.Maximized;
 
@@ -274,7 +277,7 @@ namespace CFDSolv
         }
 
         /// <summary>
-        /// Locks out buttons so that grid can't be changed
+        /// Locks out buttons so that grid can't be changed and performs tiling operations
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -292,6 +295,16 @@ namespace CFDSolv
             //only allow CFD or RESET
             Button8.Enabled = true;
             button10.Enabled = true;
+
+            //save settings
+            Settings.WriteSettings(farfield);
+
+            //call the logic layer
+            TilingLogic tilingLogic = Program.container.GetInstance<TilingLogic>();
+            tilingLogic.Logic(farfield);
+
+            // Repaint
+            EventCompletion();
 
             //message to indicate when grid is finalized
             StatusMessage(MeshConstants.MSGFINALIZED);
@@ -334,6 +347,7 @@ namespace CFDSolv
             TextBoxWidth.Enabled = true;
             TextBoxHeight.Enabled = true;
             ComboBox1.Enabled = true;
+            comboBox2.Enabled = true;
 
         }
 
@@ -355,6 +369,11 @@ namespace CFDSolv
         private void ComboBox1_Validating(object sender, CancelEventArgs e)
         {
             farfield.Gridtype = (GridType)ComboBox1.SelectedItem;
+        }
+
+        private void comboBox2_Validating(object sender, CancelEventArgs e)
+        {
+            farfield.Tiling = (Tiling)comboBox2.SelectedItem;
         }
 
         /// <summary>
@@ -416,5 +435,6 @@ namespace CFDSolv
             return 0;
 
         }
+
     }
 }

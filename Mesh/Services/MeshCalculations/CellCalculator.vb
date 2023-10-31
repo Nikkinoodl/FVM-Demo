@@ -24,44 +24,50 @@ Namespace Services
                                                 Dim n2 = t.V2
                                                 Dim n3 = t.V3
 
-                                                Dim r1 As Vector2 = data.NodeV(n1).R
-                                                Dim r2 As Vector2 = data.NodeV(n2).R
-                                                Dim r3 As Vector2 = data.NodeV(n3).R
-
-                                                't center
-                                                t.R = New Vector2((r1.X + r2.X + r3.X) / 3, (r1.Y + r2.Y + r3.Y) / 3)
-
-                                                'calculate length metrics
-                                                t.Edge1.L = Vector2.Distance(r3, r2)
-                                                t.Edge2.L = Vector2.Distance(r1, r3)
-                                                t.Edge3.L = Vector2.Distance(r2, r1)
-
-                                            End Sub)
-        End Sub
-
-        Public Sub CalculateLengthsSquares() Implements ICellCalculator.CalculateLengthsSquares
-
-            Parallel.ForEach(data.CellList, Sub(t)
-
-                                                Dim n1 = t.V1
-                                                Dim n2 = t.V2
-                                                Dim n3 = t.V3
-                                                Dim n4 = t.V4
+                                                Dim n4 As Integer?
+                                                Dim r4 As Vector2 = Vector2.Zero
 
                                                 Dim r1 As Vector2 = data.NodeV(n1).R
                                                 Dim r2 As Vector2 = data.NodeV(n2).R
                                                 Dim r3 As Vector2 = data.NodeV(n3).R
-                                                Dim r4 As Vector2 = data.NodeV(n4).R
 
-                                                't center
-                                                t.R = New Vector2((r1.X + r2.X + r3.X + r4.X) / 4, (r1.Y + r2.Y + r3.Y + r4.Y) / 4)
+                                                If t.V4 IsNot Nothing Then   'quad cell
 
-                                                'calculate length metrics
-                                                t.Edge1.L = Vector2.Distance(r1, r2)
-                                                t.Edge2.L = Vector2.Distance(r2, r3)
-                                                t.Edge3.L = Vector2.Distance(r3, r4)
-                                                t.Edge4.L = Vector2.Distance(r4, r1)
+                                                    n4 = t.V4
+                                                    r4 = data.NodeV(n4).R
 
+                                                    't center
+                                                    t.R = New Vector2((r1.X + r2.X + r3.X + r4.X) / 4, (r1.Y + r2.Y + r3.Y + r4.Y) / 4)
+
+                                                    'calculate length metrics
+                                                    t.Edge1.L = Vector2.Distance(r1, r2)
+                                                    t.Edge2.L = Vector2.Distance(r2, r3)
+                                                    t.Edge3.L = Vector2.Distance(r3, r4)
+                                                    t.Edge4.L = Vector2.Distance(r4, r1)
+
+                                                    'calculate edge vectors
+                                                    t.Edge1.Lv = Vector2.Subtract(r1, r2)
+                                                    t.Edge2.Lv = Vector2.Subtract(r2, r3)
+                                                    t.Edge3.Lv = Vector2.Subtract(r3, r4)
+                                                    t.Edge4.Lv = Vector2.Subtract(r4, r1)
+
+
+                                                Else   'triangular cell
+
+                                                    't center
+                                                    t.R = New Vector2((r1.X + r2.X + r3.X) / 3, (r1.Y + r2.Y + r3.Y) / 3)
+
+                                                    'calculate length metrics
+                                                    t.Edge1.L = Vector2.Distance(r3, r2)
+                                                    t.Edge2.L = Vector2.Distance(r1, r3)
+                                                    t.Edge3.L = Vector2.Distance(r2, r1)
+
+                                                    'calculate edge vectors
+                                                    t.Edge1.Lv = Vector2.Subtract(r3, r2)
+                                                    t.Edge2.Lv = Vector2.Subtract(r1, r3)
+                                                    t.Edge3.Lv = Vector2.Subtract(r2, r1)
+
+                                                End If
                                             End Sub)
         End Sub
 
@@ -80,37 +86,32 @@ Namespace Services
                                                 Dim r2 As Vector2 = data.NodeV(n2).R
                                                 Dim r3 As Vector2 = data.NodeV(n3).R
 
-                                                cell.Edge1.R = Vector2.Add(r2, r3) * 0.5
-                                                cell.Edge2.R = Vector2.Add(r1, r3) * 0.5
-                                                cell.Edge3.R = Vector2.Add(r1, r2) * 0.5
+                                                Dim n4 As Integer?
+                                                Dim r4 As Vector2 = Vector2.Zero
 
-                                            End Sub)
-        End Sub
+                                                If cell.V4 IsNot Nothing Then       'quad cell
 
-        Public Sub CalculateMidPointsSquares() Implements ICellCalculator.CalculateMidPointsSquares
+                                                    n4 = cell.V4
+                                                    r4 = data.NodeV(n4).R
 
-            Parallel.ForEach(data.CellList, Sub(cell)
+                                                    cell.Edge1.R = Vector2.Add(r1, r2) * 0.5
+                                                    cell.Edge2.R = Vector2.Add(r2, r3) * 0.5
+                                                    cell.Edge3.R = Vector2.Add(r3, r4) * 0.5
+                                                    cell.Edge4.R = Vector2.Add(r4, r1) * 0.5
 
-                                                Dim n1 = cell.V1
-                                                Dim n2 = cell.V2
-                                                Dim n3 = cell.V3
-                                                Dim n4 = cell.V4
+                                                Else                                'triangle
 
-                                                Dim r1 As Vector2 = data.NodeV(n1).R
-                                                Dim r2 As Vector2 = data.NodeV(n2).R
-                                                Dim r3 As Vector2 = data.NodeV(n3).R
-                                                Dim r4 As Vector2 = data.NodeV(n4).R
+                                                    cell.Edge1.R = Vector2.Add(r2, r3) * 0.5
+                                                    cell.Edge2.R = Vector2.Add(r1, r3) * 0.5
+                                                    cell.Edge3.R = Vector2.Add(r1, r2) * 0.5
 
-                                                cell.Edge1.R = Vector2.Add(r1, r2) * 0.5
-                                                cell.Edge2.R = Vector2.Add(r2, r3) * 0.5
-                                                cell.Edge3.R = Vector2.Add(r3, r4) * 0.5
-                                                cell.Edge4.R = Vector2.Add(r4, r1) * 0.5
+                                                End If
 
                                             End Sub)
         End Sub
 
         ''' <summary>
-        ''' Calculates the inverse area of each triangular cell using Hero's rule
+        ''' Calculates the inverse area of each cell using Heron's rule for triangles and node vectors for quads
         ''' </summary>
         Public Sub CalculateAreas() Implements ICellCalculator.CalculateAreas
 
@@ -119,26 +120,27 @@ Namespace Services
                                                 Dim area As Single
                                                 Dim p As Single
 
-                                                p = (t.Edge1.L + t.Edge2.L + t.Edge3.L) * 0.5
-                                                area = Math.Sqrt(p * (p - t.Edge1.L) * (p - t.Edge2.L) * (p - t.Edge3.L))
+                                                If t.Edge4 IsNot Nothing Then
 
-                                                t.AreaI = 1 / area
+                                                    Dim nodes As CellNodes = GetNodeDetails(t)
+                                                    Dim pV As CellNodeVectors = GetPositionVectors(nodes)
+
+                                                    area = 0.5 * ((pV.R1.X * pV.R2.Y + pV.R2.X * pV.R3.Y + pV.R3.X * pV.R4.Y + pV.R4.X * pV.R1.Y) _
+                                                                - (pV.R1.Y * pV.R2.X + pV.R2.Y * pV.R3.X + pV.R3.Y * pV.R4.X + pV.R4.Y * pV.R1.X))
+
+                                                Else
+
+
+                                                    p = (t.Edge1.L + t.Edge2.L + t.Edge3.L) * 0.5
+                                                    area = Math.Sqrt(p * (p - t.Edge1.L) * (p - t.Edge2.L) * (p - t.Edge3.L))
+
+                                                End If
+
+                                                t.AreaI = 1 / Math.Abs(area)
+
 
                                             End Sub)
         End Sub
-
-        ''' <summary>
-        ''' Calculates the inverse area of a rectangular grid cell
-        ''' </summary>
-        Public Sub CalculateAreasSquares() Implements ICellCalculator.CalculateAreasSquares
-
-            Parallel.ForEach(data.CellList, Sub(t)
-
-                                                t.AreaI = 1 / (t.Edge1.L * t.Edge2.L)
-
-                                            End Sub)
-        End Sub
-
 
         ''' <summary>
         ''' Calculates the vector from a cell center to each edge center
@@ -166,11 +168,33 @@ Namespace Services
                                                  Dim r1 As Vector2 = data.NodeV(t.V1).R
                                                  Dim r2 As Vector2 = data.NodeV(t.V2).R
                                                  Dim r3 As Vector2 = data.NodeV(t.V3).R
+                                                 Dim r4 As Vector2 = Vector2.Zero
 
-                                                 'Vector representing sides, eg S3 = vector V2 - vector V1
-                                                 Dim s1 As Vector2 = Vector2.Subtract(r3, r2)
-                                                 Dim s2 As Vector2 = Vector2.Subtract(r1, r3)
-                                                 Dim s3 As Vector2 = Vector2.Subtract(r2, r1)
+                                                 'Edge vectors
+                                                 Dim s1 As Vector2
+                                                 Dim s2 As Vector2
+                                                 Dim s3 As Vector2
+                                                 Dim s4 As Vector2
+
+                                                 If t.V4 IsNot Nothing Then
+
+                                                     r4 = data.NodeV(t.V4).R
+
+                                                     s1 = Vector2.Subtract(r2, r1)
+                                                     s2 = Vector2.Subtract(r3, r2)
+                                                     s3 = Vector2.Subtract(r4, r3)
+                                                     s4 = Vector2.Subtract(r1, r4)
+
+                                                     t.Edge4.N = Vector2.Normalize(New Vector2(-s4.Y, s4.X))
+
+                                                 Else
+
+                                                     'Vector representing sides, eg S3 = vector V2 - vector V1
+                                                     s1 = Vector2.Subtract(r3, r2)
+                                                     s2 = Vector2.Subtract(r1, r3)
+                                                     s3 = Vector2.Subtract(r2, r1)
+
+                                                 End If
 
                                                  'Rotate counter clockwise by 90 degrees by (x, y) => (-y, x)
                                                  'and normalize to unit vector
@@ -181,18 +205,53 @@ Namespace Services
                                              End Sub)
         End Sub
 
-        Public Sub CalculateFaceNormalsSquares() Implements ICellCalculator.CalculateFaceNormalsSquares
+        ''' <summary>
+        ''' Gets the node ids of the vertices of the given cell
+        ''' </summary>
+        ''' <param name="t"></param>
+        ''' <returns></returns>
+        Private Function GetNodeDetails(t As Cell) As CellNodes
 
-            Parallel.ForEach(data.CellList, Sub(t)
+            Dim result = New CellNodes With {
+                .N1 = t.V1,
+                .N2 = t.V2,
+                .N3 = t.V3
+            }
 
-                                                'square cell edges are always oriented in W N E S order
-                                                t.Edge1.N = New Vector2(-1, 0)
-                                                t.Edge2.N = New Vector2(0, 1)
-                                                t.Edge3.N = New Vector2(1, 0)
-                                                t.Edge4.N = New Vector2(0, -1)
+            If IsNothing(t.V4) = False Then
 
-                                            End Sub)
-        End Sub
+                result.N4 = t.V4
+
+            End If
+
+            Return result
+
+        End Function
+
+        ''' <summary>
+        ''' Gets the position vectors of the vertices of a given cell
+        ''' </summary>
+        ''' <param name="n1"></param>
+        ''' <param name="n2"></param>
+        ''' <param name="n3"></param>
+        ''' <returns></returns>
+        Private Function GetPositionVectors(n As CellNodes) As CellNodeVectors
+
+            Dim result As New CellNodeVectors With {
+                .R1 = data.NodeV(n.N1).R,
+                .R2 = data.NodeV(n.N2).R,
+                .R3 = data.NodeV(n.N3).R
+            }
+
+            If IsNothing(n.N4) = False Then
+
+                result.R4 = data.NodeV(n.N4).R
+
+            End If
+
+            Return result
+
+        End Function
 
     End Class
 End Namespace

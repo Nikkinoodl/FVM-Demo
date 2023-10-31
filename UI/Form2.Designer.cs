@@ -11,6 +11,9 @@
         private void InitializeComponent()
         {
             Panel1 = new Panel();
+            label4 = new Label();
+            comboBox2 = new ComboBox();
+            label1 = new Label();
             label15 = new Label();
             label14 = new Label();
             label13 = new Label();
@@ -41,6 +44,9 @@
             // 
             Panel1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             Panel1.BorderStyle = BorderStyle.FixedSingle;
+            Panel1.Controls.Add(label4);
+            Panel1.Controls.Add(comboBox2);
+            Panel1.Controls.Add(label1);
             Panel1.Controls.Add(label15);
             Panel1.Controls.Add(label14);
             Panel1.Controls.Add(label13);
@@ -68,21 +74,49 @@
             Panel1.Size = new Size(322, 848);
             Panel1.TabIndex = 0;
             // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(21, 438);
+            label4.Name = "label4";
+            label4.Size = new Size(40, 20);
+            label4.TabIndex = 44;
+            label4.Text = "Type";
+            // 
+            // comboBox2
+            // 
+            comboBox2.FormattingEnabled = true;
+            comboBox2.Location = new Point(111, 435);
+            comboBox2.Name = "comboBox2";
+            comboBox2.Size = new Size(143, 28);
+            comboBox2.TabIndex = 43;
+            comboBox2.Validating += comboBox2_Validating;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            label1.Location = new Point(21, 399);
+            label1.Name = "label1";
+            label1.Size = new Size(134, 20);
+            label1.TabIndex = 42;
+            label1.Text = "3. Extended Tiling";
+            // 
             // label15
             // 
             label15.AutoSize = true;
             label15.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
-            label15.Location = new Point(19, 468);
+            label15.Location = new Point(18, 499);
             label15.Name = "label15";
             label15.Size = new Size(82, 20);
             label15.TabIndex = 41;
-            label15.Text = "3. Commit";
+            label15.Text = "4. Commit";
             // 
             // label14
             // 
             label14.AutoSize = true;
             label14.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
-            label14.Location = new Point(19, 258);
+            label14.Location = new Point(26, 212);
             label14.Name = "label14";
             label14.Size = new Size(89, 20);
             label14.TabIndex = 40;
@@ -92,7 +126,7 @@
             // 
             label13.AutoSize = true;
             label13.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
-            label13.Location = new Point(19, 150);
+            label13.Location = new Point(22, 124);
             label13.Name = "label13";
             label13.Size = new Size(100, 20);
             label13.TabIndex = 39;
@@ -105,7 +139,7 @@
             label12.Name = "label12";
             label12.Size = new Size(72, 20);
             label12.TabIndex = 38;
-            label12.Text = "Grid Type";
+            label12.Text = "Base Grid";
             // 
             // ComboBox1
             // 
@@ -128,7 +162,7 @@
             // 
             // Button9
             // 
-            Button9.Location = new Point(19, 505);
+            Button9.Location = new Point(18, 536);
             Button9.Name = "Button9";
             Button9.Size = new Size(97, 28);
             Button9.TabIndex = 33;
@@ -161,7 +195,7 @@
             // 
             // Button8
             // 
-            Button8.Location = new Point(123, 505);
+            Button8.Location = new Point(122, 536);
             Button8.Name = "Button8";
             Button8.Size = new Size(97, 28);
             Button8.TabIndex = 32;
@@ -171,7 +205,7 @@
             // 
             // Button2
             // 
-            Button2.Location = new Point(19, 374);
+            Button2.Location = new Point(26, 328);
             Button2.Margin = new Padding(4);
             Button2.Name = "Button2";
             Button2.Size = new Size(97, 28);
@@ -191,7 +225,7 @@
             // 
             // Button3
             // 
-            Button3.Location = new Point(19, 338);
+            Button3.Location = new Point(26, 292);
             Button3.Margin = new Padding(4);
             Button3.Name = "Button3";
             Button3.Size = new Size(97, 28);
@@ -211,7 +245,7 @@
             // 
             // Button4
             // 
-            Button4.Location = new Point(123, 338);
+            Button4.Location = new Point(130, 292);
             Button4.Margin = new Padding(4);
             Button4.Name = "Button4";
             Button4.Size = new Size(87, 28);
@@ -222,7 +256,7 @@
             // 
             // Button7
             // 
-            Button7.Location = new Point(123, 374);
+            Button7.Location = new Point(130, 328);
             Button7.Margin = new Padding(4);
             Button7.Name = "Button7";
             Button7.Size = new Size(89, 28);
@@ -243,7 +277,7 @@
             // 
             // Button6
             // 
-            Button6.Location = new Point(19, 174);
+            Button6.Location = new Point(22, 148);
             Button6.Margin = new Padding(4);
             Button6.Name = "Button6";
             Button6.Size = new Size(134, 28);
@@ -264,7 +298,7 @@
             // 
             // TextBoxSmoothingCycles
             // 
-            TextBoxSmoothingCycles.Location = new Point(160, 288);
+            TextBoxSmoothingCycles.Location = new Point(167, 242);
             TextBoxSmoothingCycles.Margin = new Padding(4);
             TextBoxSmoothingCycles.Name = "TextBoxSmoothingCycles";
             TextBoxSmoothingCycles.Size = new Size(68, 27);
@@ -274,7 +308,7 @@
             // Label11
             // 
             Label11.AutoSize = true;
-            Label11.Location = new Point(19, 288);
+            Label11.Location = new Point(26, 242);
             Label11.Margin = new Padding(4, 0, 4, 0);
             Label11.Name = "Label11";
             Label11.Size = new Size(127, 20);
@@ -343,5 +377,8 @@
         private Label label12;
         private Label label15;
         private Label label14;
+        private Label label4;
+        private ComboBox comboBox2;
+        private Label label1;
     }
 }
