@@ -4,7 +4,7 @@ This Windows Forms/C#/VB/.NET 7 application uses the cell-centered finite volume
 incompressible Navier-Stokes equations for a lid-cavity problem. 
 
 This application allows grids of different types to be generated (e.g. irregular triangles, equilateral triangles, rectangular) and uses the
-same grid-agnostic FVM solver for all grid types. A newly added feature allows grids to be transformed via 2D Conway tiling operations.
+same grid-agnostic FVM solver for all grid types. A newly added feature allows grids to be transformed via 2D Conway tiling operations: kis, join and kis+join.
 
 Stable solutions are much easier to find on regular grids (play around with mesh granularity, lid velocity, density and viscosity) than on irregular grids.
 
