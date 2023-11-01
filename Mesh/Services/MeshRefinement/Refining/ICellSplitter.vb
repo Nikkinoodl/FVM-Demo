@@ -17,7 +17,7 @@ Namespace Services
         ''' Refines a rectangular grid by performing a join tiling. Each cell is divided by joining the center of
         ''' each edge to a new node at the cell center
         ''' </summary>
-        Sub DivideRegularCells()
+        Sub DivideRectangularCells()
 
         ''' <summary>
         ''' Refines the mesh by performing a kis tiling. Each cell is divided by joining each node

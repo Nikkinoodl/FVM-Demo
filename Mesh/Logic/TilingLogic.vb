@@ -29,7 +29,7 @@ Namespace Logic
 
                 If farfield.Gridtype = GridType.Quads Then
 
-                    splitter.DivideRegularCells()
+                    splitter.DivideRectangularCells()
 
                 Else
 

@@ -32,7 +32,7 @@ Namespace Logic
             Else
 
                 'divide up rectangular grid elements
-                splitter.DivideRegularCells()
+                splitter.DivideRectangularCells()
 
             End If
 

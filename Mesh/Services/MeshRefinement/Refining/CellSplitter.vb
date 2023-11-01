@@ -3,10 +3,6 @@ Imports Core.Common
 Imports Mesh.Factories
 Imports System.Numerics
 Imports Core.Domain
-Imports System.Text.Json
-Imports Core.DataCollections
-Imports System.Collections.Immutable
-Imports System.Security.Cryptography
 
 Namespace Services
     Public Class CellSplitter : Implements ICellSplitter
@@ -52,7 +48,7 @@ Namespace Services
                 Dim nodeTypeCollection As CellNodeTypes = GetNodeSurface(nodes)
                 Dim positionVectors As CellNodeVectors = GetPositionVectors(nodes)
 
-                'do we want to skip tiling if the cell has right angle
+                'in some circumstances we want to skip tiling if the cell has a right angle
                 If ignoreRightAngleTriangles = True Then
 
                     If HasRightAngle(positionVectors) = True Then
@@ -60,8 +56,6 @@ Namespace Services
                     End If
 
                 End If
-
-
 
                 'Use this diagram to help with diagnosing problems and to understand node order
                 'before and after splits.  All methods number the vertices in a clockwise direction
@@ -257,7 +251,7 @@ Namespace Services
         ''' Refines a rectangular grid by performing a join tiling. Each cell is divided by joining the center of
         ''' each edge to a new node at the cell center. Do not use if irregular quad cells exist.
         ''' </summary>
-        Public Sub DivideRegularCells() Implements ICellSplitter.DivideRegularCells
+        Public Sub DivideRectangularCells() Implements ICellSplitter.DivideRectangularCells
 
             Dim numcells = data.CellList.Count
             Dim n = data.Nodelist.Count
@@ -592,6 +586,7 @@ next_cell:
 
                 Dim r31 = FindMidPoint(data.CellList(t).Edge2, positionVectors)
                 Dim v31
+
                 If data.Exists(r31) > 0 Then
 
                     v31 = data.FindNode(r31)
@@ -635,7 +630,7 @@ Next_Cell:
             Dim nodes As CellNodes = GetNodeDetails(t)
 
             'side naming and node numbering protocols are a problem here, as we've used a different
-            'order for triangles and squares. A workaround is to create a flag on the cell class that
+            'order for triangles and quads. A workaround is to create a flag on the cell class that
             'indicates the vertex/side assignment order.
 
             Dim s1 = data.CellList(t).Edge1.SideName
@@ -766,7 +761,6 @@ Next_Cell:
                 Return data.CellList(t).Edge3
             End If
 
-
         End Function
 
         ''' <summary>
@@ -811,7 +805,7 @@ Next_Cell:
         ''' </summary>
         ''' <param name="e"></param>
         ''' <param name="n"></param>
-        ''' <returns></returns>
+        ''' <returns>incremented node index (for next node)</returns>
         Private Function CreateNewNode(e As Edge, vp As Integer, rP As Vector2, s As CellNodeTypes) As Integer
 
             'If nodes to either side are both surface nodes, then np must be a surface node.

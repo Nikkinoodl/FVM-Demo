@@ -23,7 +23,7 @@ Namespace Services
 
                     .AddCornerNodes(farfield)
                     .AddMidBoundaryNodes(farfield)
-                    .SetupEmptySpaceCells()
+                    .SetupIrregularTriangleGrid()
 
                 End With
 
@@ -33,16 +33,16 @@ Namespace Services
 
                     .AddCornerNodes(farfield)
                     .AddTopBoundaryNode(farfield)
-                    .SetupRegularTriangleCells()
+                    .SetupEquilateralTriangleGrid()
 
                 End With
 
-            Else                                     'rectangular grid
+            Else                         'rectangular grid as default
 
                 With factory
 
                     .AddCornerNodes(farfield)
-                    .SetupRegularGrid()
+                    .SetupRectangularGrid()
 
                 End With
 

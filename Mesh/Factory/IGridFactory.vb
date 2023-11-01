@@ -105,17 +105,17 @@ Namespace Factories
         ''' <summary>
         ''' Performs the initial build of an irregular triangle mesh
         ''' </summary>
-        Sub SetupEmptySpaceCells()
+        Sub SetupIrregularTriangleGrid()
 
         ''' <summary>
         ''' Performs the initial build of a regular triangular mesh
         ''' </summary>
-        Sub SetupRegularTriangleCells()
+        Sub SetupEquilateralTriangleGrid()
 
         ''' <summary>
         ''' Performs the initial build of a quad mesh
         ''' </summary>
-        Sub SetupRegularGrid()
+        Sub SetupRectangularGrid()
 
 #End Region
 

@@ -234,10 +234,9 @@ Namespace Factories
         ''' <summary>
         ''' Creates the first set of irregular triangular grid cells in a mesh when no airfoil is present
         ''' </summary>
-        Public Sub SetupEmptySpaceCells() Implements IGridFactory.SetupEmptySpaceCells
+        Public Sub SetupIrregularTriangleGrid() Implements IGridFactory.SetupIrregularTriangleGrid
 
             'Note that nodes are always assigned to vertices in a clockwise arrangement
-
             AddCell(0, 0, 4, 3, SideType.none, SideType.boundary, SideType.boundary)
             AddCell(1, 4, 1, 3, SideType.none, SideType.none, SideType.boundary)
             AddCell(2, 1, 5, 3, SideType.boundary, SideType.none, SideType.none)
@@ -246,13 +245,11 @@ Namespace Factories
         End Sub
 
         ''' <summary>
-        ''' Creates the first cells in a tetrakis or equilateral triangle mesh when no airfoil is present
+        ''' Creates the first cells in an equilateral triangle mesh when no airfoil is present
         ''' </summary>
-        Public Sub SetupRegularTriangleCells() Implements IGridFactory.SetupRegularTriangleCells
+        Public Sub SetupEquilateralTriangleGrid() Implements IGridFactory.SetupEquilateralTriangleGrid
 
-            'Note that nodes are always assigned to vertices in a clockwise arrangement,
-            'starting with the left-most side
-
+            'nodes are always assigned to vertices in a clockwise arrangement,
             AddCell(0, 0, 1, 4, SideType.boundary, SideType.none, SideType.boundary)
             AddCell(1, 0, 4, 3, SideType.none, SideType.boundary, SideType.none)
             AddCell(2, 3, 4, 2, SideType.boundary, SideType.boundary, SideType.none)
@@ -262,9 +259,9 @@ Namespace Factories
         ''' <summary>
         ''' Creates a the first cell in a rectangular mesh when no airfoil is present
         ''' </summary>
-        Public Sub SetupRegularGrid() Implements IGridFactory.SetupRegularGrid
+        Public Sub SetupRectangularGrid() Implements IGridFactory.SetupRectangularGrid
 
-            'Note that nodes are always assigned to vertices in a clockwise arrangement
+            'nodes are always assigned to vertices in a clockwise arrangement
             AddQuad(0, 0, 1, 2, 3, SideType.boundary, SideType.boundary, SideType.boundary, SideType.boundary)
 
         End Sub
