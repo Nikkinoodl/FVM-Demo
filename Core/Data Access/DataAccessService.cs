@@ -276,9 +276,15 @@ namespace Core.Data
             (int?, SideName?) result;
 
             Cell? t_adj = (from Cell t in CellList
-                           where (t.V8 == nodePair.nA || t.V7 == nodePair.nA || t.V6 == nodePair.nA || t.V5 == nodePair.nA || t.V4 == nodePair.nA || t.V3 == nodePair.nA || t.V2 == nodePair.nA || t.V1 == nodePair.nA) && (t.V8 == nodePair.nB || t.V7 == nodePair.nB || t.V6 == nodePair.nB || t.V5 == nodePair.nB || t.V4 == nodePair.nB || t.V3 == nodePair.nB || t.V2 == nodePair.nB || t.V1 == nodePair.nB)
-                           where t.Id != this_t
+                           let values = new[] { t.V1, t.V2, t.V3, t.V4, t.V5, t.V6, t.V7, t.V8 }
+                           where values.Contains(nodePair.nA) && values.Contains(nodePair.nB) && t.Id != this_t
                            select t).FirstOrDefault();
+
+            ////original, clunky version
+            //Cell? t_adj = (from Cell t in CellList
+            //               where (t.V8 == nodePair.nA || t.V7 == nodePair.nA || t.V6 == nodePair.nA || t.V5 == nodePair.nA || t.V4 == nodePair.nA || t.V3 == nodePair.nA || t.V2 == nodePair.nA || t.V1 == nodePair.nA) && (t.V8 == nodePair.nB || t.V7 == nodePair.nB || t.V6 == nodePair.nB || t.V5 == nodePair.nB || t.V4 == nodePair.nB || t.V3 == nodePair.nB || t.V2 == nodePair.nB || t.V1 == nodePair.nB)
+            //               where t.Id != this_t
+            //               select t).FirstOrDefault();
 
             if (t_adj != null)
             {

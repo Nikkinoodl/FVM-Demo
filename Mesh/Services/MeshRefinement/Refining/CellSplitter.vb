@@ -497,13 +497,17 @@ next_cell:
                             Dim k As (Integer, Integer)
 
                             If config = 1 Or config = 4 Then
+
                                 k = (vp, vs)
                                 triSide2 = SideType.boundary
                                 quadSide2 = e.SideType
+
                             Else
+
                                 k = (vs, vp)
                                 triSide3 = SideType.boundary
                                 quadSide4 = e.SideType
+
                             End If
 
                             'put cell nodes into group, order as A, B, C in above diagram
@@ -1218,7 +1222,7 @@ Next_Cell:
             Dim s() As SideType = GetSideTypes(data.CellList(t))
 
             'replace the original cell
-            factory.ReplaceCell(t, newid, n.N1, m(2), m(1),, s(1), (2))
+            factory.ReplaceCell(t, newid, n.N1, m(2), m(1),, s(1), s(2))
 
             'add three new cells
             factory.AddCell(newid + 1, n.N2, m(0), m(2),, s(2), s(0))

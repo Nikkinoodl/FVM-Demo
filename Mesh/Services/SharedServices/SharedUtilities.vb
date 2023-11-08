@@ -18,6 +18,8 @@ Namespace Services
 
             For Each e As Edge In t.Edges
 
+                Debug.Assert(e.SideType <> SideType.surface)
+
                 s(i) = e.SideType
 
                 i += 1
