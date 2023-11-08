@@ -15,7 +15,6 @@ Linear equations are solved step-by-step using the SIMPLE predictor-corrector me
 
 The images show sample plots at Reynolds Number 80 on an equilateral triangle grid with kis and join tiling:
 
-Grid:
 ![Equilateral Kis Join](https://github.com/Nikkinoodl/FVM-Demo/assets/17559271/3ab80cbf-6973-4ede-828d-1c6fcf10ffec)
 ![U Equilateral Kis Join 80 Re](https://github.com/Nikkinoodl/FVM-Demo/assets/17559271/3d9c82cc-4c19-4c86-a081-9f69a8b4c248)
 ![V Equilateral Kis Join 80 Re](https://github.com/Nikkinoodl/FVM-Demo/assets/17559271/886ec398-cd6a-4df8-90db-687f8eb80151)
