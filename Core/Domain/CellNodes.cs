@@ -11,5 +11,13 @@
 
         //optional nodes that are used for N_sides > 3
         public int? N4 { get; set; }
+
+        public int? N5 { get; set; }
+
+        public int? N6 { get; set; }
+
+        public int? N7 { get; set; }
+
+        public int? N8 { get; set; }
     }
 }

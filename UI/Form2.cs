@@ -86,7 +86,7 @@ namespace CFDSolv
             UpdateGLSize();
 
             //draw the Grid based on cells
-            int? n1, n2, n3, n4;
+            int? n1, n2, n3, n4, n5, n6, n7, n8;
 
             //UI layer dealing directly with the repository
             foreach (var cell in Repository.CellList)
@@ -95,6 +95,10 @@ namespace CFDSolv
                 n2 = cell.V2;
                 n3 = cell.V3;
                 n4 = cell.V4;
+                n5 = cell.V5;
+                n6 = cell.V6;
+                n7 = cell.V7;
+                n8 = cell.V8;
 
                 // This is old school OpenGl 1.0
                 // Wire frame
@@ -104,6 +108,11 @@ namespace CFDSolv
                 GL.Vertex2(data.NodeV(n2).R.X, data.NodeV(n2).R.Y);
                 GL.Vertex2(data.NodeV(n3).R.X, data.NodeV(n3).R.Y);
                 if (n4 != null) GL.Vertex2(data.NodeV(n4).R.X, data.NodeV(n4).R.Y);
+                if (n5 != null) GL.Vertex2(data.NodeV(n5).R.X, data.NodeV(n5).R.Y);
+                if (n6 != null) GL.Vertex2(data.NodeV(n6).R.X, data.NodeV(n6).R.Y);
+                if (n7 != null) GL.Vertex2(data.NodeV(n7).R.X, data.NodeV(n7).R.Y);
+                if (n8 != null) GL.Vertex2(data.NodeV(n8).R.X, data.NodeV(n8).R.Y);
+
                 GL.End();
 
             }

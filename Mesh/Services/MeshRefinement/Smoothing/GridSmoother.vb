@@ -14,7 +14,7 @@ Namespace Services
         End Sub
 
         ''' <summary>
-        ''' Evens out the distribution of grid nodes
+        ''' Evens out the distribution of irregular triangular grid nodes
         ''' </summary>
         Public Sub SmoothGrid() Implements IGridSmoother.SmoothGrid
 

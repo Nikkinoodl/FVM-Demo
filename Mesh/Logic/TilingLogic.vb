@@ -46,6 +46,10 @@ Namespace Logic
 
                 splitter.SplitCells(True)
 
+            ElseIf farfield.Tiling = Tiling.Trunc Then
+
+                splitter.DivideTrunc(farfield)
+
             End If
 
             'calculate lengths, make sure all nodes on boundary have .boundary = True

@@ -32,5 +32,11 @@ Namespace Services
         ''' <param name="farfield"></param>
         Sub DivideJoin(farfield As Farfield)
 
+        ''' <summary>
+        ''' Refines a mesh by performing a trunc tiling. Each cell is divided by truncating it at each node.
+        ''' </summary>
+        ''' <param name="farfield"></param>
+        Sub DivideTrunc(farfield As Farfield)
+
     End Interface
 End Namespace

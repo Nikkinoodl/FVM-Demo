@@ -2,6 +2,7 @@
 Imports Core.Common
 Imports Core.Domain
 Imports Core.Interfaces
+Imports Mesh.Services.SharedUtilities
 
 Namespace Services
     Public Class MeshPrecalc : Implements IMeshPrecalc
@@ -19,54 +20,59 @@ Namespace Services
         ''' </summary>
         Public Sub FindAjoiningCells() Implements IMeshPrecalc.FindAdjoiningCells
 
-            Parallel.ForEach(data.CalcCells, Sub(cell)
+            Parallel.ForEach(data.CalcCells, Sub(t)
 
-                                                 Dim t As Integer = data.CellList.IndexOf(cell)
+                                                 Dim nSides As Integer = GetNumberSides(t)
+                                                 Dim n(nSides - 1) As Integer
 
-                                                 Dim n1 As Integer = cell.V1
-                                                 Dim n2 As Integer = cell.V2
-                                                 Dim n3 As Integer = cell.V3
-                                                 Dim n4 As Integer?
+                                                 n = GetNodes(t)
 
-                                                 Dim e1 As Edge = cell.Edge1
-                                                 Dim e2 As Edge = cell.Edge2
-                                                 Dim e3 As Edge = cell.Edge3
-                                                 Dim e4 As Edge
+                                                 Dim r(nSides - 1) As Vector2
+                                                 Dim e(nSides - 1) As Edge
 
-                                                 Dim r1 As Vector2 = e1.R
-                                                 Dim r2 As Vector2 = e2.R
-                                                 Dim r3 As Vector2 = e3.R
-                                                 Dim r4 As Vector2
+                                                 'position vectors for all cell nodes
+                                                 For i As Integer = 0 To nSides - 1
 
+                                                     r(i) = data.NodeV(n(i)).R
+                                                     e(i) = t.Edges(i)
 
-                                                 'Use a list of tuples to hold node pairs
+                                                 Next
+
+                                                 'Use a list of tuples to hold node pairs for this cell
                                                  Dim nodePairs As New List(Of (nA As Integer, nB As Integer, r As Vector2, e As Edge))
 
-                                                 If cell.V4 IsNot Nothing Then      'quad cell
+                                                 If nSides = 3 Then  'special processing for triangles
 
-                                                     n4 = cell.V4
-                                                     e4 = cell.Edge4
-                                                     r4 = e4.R
+                                                     nodePairs.Add((n(2), n(1), r(0), e(0)))    'side1
+                                                     nodePairs.Add((n(0), n(2), r(1), e(1)))    'side2
+                                                     nodePairs.Add((n(1), n(0), r(2), e(2)))    'side3
 
-                                                     nodePairs.Add((n2, n1, r1, e1))
-                                                     nodePairs.Add((n3, n2, r2, e2))
-                                                     nodePairs.Add((n4, n3, r3, e3))
-                                                     nodePairs.Add((n1, n4, r4, e4))
+                                                 Else               'all other cells
 
-                                                 Else                               'triangle cell
+                                                     For i As Integer = 0 To nSides - 1
 
-                                                     nodePairs.Add((n3, n2, r1, e1))
-                                                     nodePairs.Add((n1, n3, r2, e2))
-                                                     nodePairs.Add((n2, n1, r3, e3))
+                                                         'node pairs
+                                                         If i = 0 Then    'close the loop on the cell
+
+                                                             nodePairs.Add((n(i), n(nSides - 1), r(nSides - 1), e(nSides - 1)))
+
+                                                         Else
+
+                                                             nodePairs.Add((n(i), n(i - 1), r(i - 1), e(i - 1)))
+
+                                                         End If
+
+                                                     Next
 
                                                  End If
 
+
                                                  For Each nodePair In nodePairs
 
-                                                     'get the matching cell Id and edge
+                                                     'get the matching cell index and edge
                                                      Dim result As (t_adj As Integer?, sideName As SideName?)
 
-                                                     result = data.AdjacentCellEdge(nodePair, cell.Id)
+                                                     result = data.AdjacentCellEdge(nodePair, t.Id)
 
                                                      If result.t_adj IsNot Nothing Then
 
@@ -75,7 +81,7 @@ Namespace Services
                                                          nodePair.e.AdjoiningEdge = result.sideName
 
                                                          'calculate position vectors and ratios
-                                                         nodePair.e.Rk = Vector2.Subtract(data.CellList(result.t_adj).R, cell.R)
+                                                         nodePair.e.Rk = Vector2.Subtract(data.CellList(result.t_adj).R, t.R)
 
                                                          'determine weighting. Note that this will be 0.5 on regular shaped cells,
                                                          'and 1.0 on boundary cells
@@ -83,10 +89,12 @@ Namespace Services
 
                                                          nodePair.e.Lk = nodePair.e.L / nodePair.e.Rk.Length()
 
-                                                         cell.Lk += nodePair.e.Lk
+                                                         t.Lk += nodePair.e.Lk
 
                                                      Else
-                                                         Debug.WriteLine("Error matching edges at cell: " & cell.Id)
+
+                                                         Debug.WriteLine("Error matching edges at cell: " & t.Id)
+
                                                      End If
 
                                                  Next

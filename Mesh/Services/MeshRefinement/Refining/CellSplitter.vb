@@ -3,6 +3,7 @@ Imports Core.Common
 Imports Mesh.Factories
 Imports System.Numerics
 Imports Core.Domain
+Imports Mesh.Services.SharedUtilities
 
 Namespace Services
     Public Class CellSplitter : Implements ICellSplitter
@@ -48,7 +49,7 @@ Namespace Services
                 Dim nodeTypeCollection As CellNodeTypes = GetNodeSurface(nodes)
                 Dim positionVectors As CellNodeVectors = GetPositionVectors(nodes)
 
-                'in some circumstances we want to skip tiling if the cell has a right angle
+                'in some tiling operations we must skip tiling if the cell has a right angle
                 If ignoreRightAngleTriangles = True Then
 
                     If HasRightAngle(positionVectors) = True Then
@@ -477,7 +478,7 @@ next_cell:
                             '
                             ' 3                                4 
                             '
-                            '               B ____ C              B  ____ A
+                            '               B ____ C              B  ____ C
                             '                |   /                   \   |
                             '             vs |__/ vp                vp\__| vs
                             '                | /                       \ |
@@ -487,7 +488,7 @@ next_cell:
                             Dim triSide2 As SideType = SideType.none
                             Dim triSide3 As SideType = SideType.none
 
-                            Dim quadSide1 As SideType
+                            Dim quadSide1 As SideType       'value assigned conditionally in code below
                             Dim quadSide2 As SideType = SideType.none
                             Dim quadSide4 As SideType = SideType.none
 
@@ -523,7 +524,7 @@ next_cell:
 
                             End If
 
-                            'the side type of the new quad vertical edge
+                            'the side type of the new quad horizontal edge
                             quadSide1 = IIf(data.NodeV(newNodes.Item2).R.Y = 0 Or
                             data.NodeV(newNodes.Item2).R.Y = farfield.Height, SideType.boundary, SideType.none)
 
@@ -600,15 +601,299 @@ next_cell:
                 End If
 
                 'side types in the existing triangle
-                Dim s1 As SideType = data.CellList(t).Edge1.SideType
-                Dim s2 As SideType = data.CellList(t).Edge2.SideType
-                Dim s3 As SideType = data.CellList(t).Edge3.SideType
+                Dim s() As SideType = GetSideTypes(data.CellList(t))
 
-                factory.ReplaceTriWithQuad(t, newId, nodes.N1, v12, vc, v31, s3,,, s2)
-                factory.AddQuad(newId + 1, nodes.N2, v23, vc, v12, s1,,, s3)
-                factory.AddQuad(newId + 2, nodes.N3, v31, vc, v23, s2,,, s1)
+                factory.ReplaceTriWithQuad(t, newId, nodes.N1, v12, vc, v31, s(2),,, s(1))
+                factory.AddQuad(newId + 1, nodes.N2, v23, vc, v12, s(0),,, s(2))
+                factory.AddQuad(newId + 2, nodes.N3, v31, vc, v23, s(1),,, s(0))
 
                 newId += 3
+
+Next_Cell:
+            Next
+
+        End Sub
+
+        ''' <summary>
+        ''' Refines a mesh by performing a trunc tiling. Each cell is divided by truncating it at each node.
+        ''' </summary>
+        ''' <param name="farfield"></param>
+        Public Sub DivideTrunc(farfield As Farfield) Implements ICellSplitter.DivideTrunc
+
+            Dim numcells = data.CellList.Count
+            Dim n = data.Nodelist.Count
+
+            'current max id in celllist and new id for new cells
+            Dim maxId = data.CellList.Max(Function(p) p.Id)
+            Dim newId = maxId + 1
+
+            'offset of nodes from center or side for octagons and hexagons
+            Dim delta As Single
+
+            If farfield.Gridtype = GridType.Quads Then
+
+                delta = 0.5 / (1 + Math.Sqrt(2))
+
+            Else
+
+                delta = 1 / 6
+
+            End If
+
+            'cycle through 1 less than the count
+            For t = 0 To numcells - 1
+
+                Dim nodes As CellNodes = GetNodeDetails(t)
+                Dim nodeTypeCollection As CellNodeTypes = GetNodeSurface(nodes)
+                Dim positionVectors As CellNodeVectors = GetPositionVectors(nodes)
+
+                Dim r(5, 2) As Vector2
+                Dim vp(5, 2) As Integer
+
+                'equilateral cells with edges on the left and right farfield boundaries
+                If farfield.Gridtype = GridType.Equilateral Then
+
+                    For Each e As Edge In data.CellList(t).Edges
+
+                        'this identifies the left/right edge cells and vertical side
+                        If e.R.X = 0 Or e.R.X = farfield.Width Then
+
+                            Dim LR As Integer       'is cell aligned to the left edge or right edge?
+                            Dim PSD As Integer      'is it pointy side down (is apex below the base)?
+
+                            If e.R.X = 0 Then
+                                LR = 1
+                            ElseIf e.R.X = farfield.Width Then
+                                LR = 2
+                            End If
+
+                            'create new node on vertical side - there is no risk of creating overlapping nodes.
+                            vp(1, 1) = n
+
+                            'use cell center location to determine orientation of cell
+                            If data.CellList(t).R.Y > e.R.Y Then
+
+                                PSD = 2       'apex is below base
+
+                                'node nearer to top of cell
+                                r(1, 1) = New Vector2(e.R.X, e.R.Y - delta * e.L)
+
+                            Else
+
+                                PSD = 0        'apex is above base
+
+                                'node nearer to bottom of cell
+                                r(1, 1) = New Vector2(e.R.X, e.R.Y + delta * e.L)
+
+                            End If
+
+                            n = CreateNewNode(e, vp(1, 1), r(1, 1), nodeTypeCollection)
+
+
+                            'configuration determines the orientation of the cell
+                            Dim config As Integer = LR + PSD
+
+                            'determine long side and horizontal side
+                            Dim longSide As Edge = data.FindLongestSide(t)
+                            Dim h As Edge = FindHorizontalEdge(t, e, longSide)
+
+                            'two new nodes will be created on the longest side and one on the horizontal side
+                            If config = 1 Or config = 4 Then
+
+                                r(2, 1) = Vector2.Subtract(longSide.R, delta * longSide.Lv)
+                                r(2, 2) = Vector2.Add(longSide.R, delta * longSide.Lv)
+
+                                r(3, 1) = Vector2.Add(h.R, delta * h.Lv)
+
+
+                            Else     'config = 2 or 3
+
+                                r(2, 1) = Vector2.Add(longSide.R, delta * longSide.Lv)
+                                r(2, 2) = Vector2.Subtract(longSide.R, delta * longSide.Lv)
+
+                                r(3, 1) = Vector2.Subtract(h.R, delta * h.Lv)
+
+                            End If
+
+                            'long side nodes
+                            For j As Integer = 1 To 2
+                                If data.Exists(r(2, j)) > 0 Then   'if there is already a node there make sure we don't overwrite it
+
+                                    'point vp to the existing node
+                                    vp(2, j) = data.FindNode(r(2, j))
+
+                                Else                           'else create a new node (default and most common behavior)
+
+                                    vp(2, j) = n                     'assign index to new node
+
+                                    'Create a new node at the np point and return incremented n
+                                    n = CreateNewNode(longSide, vp(2, j), r(2, j), nodeTypeCollection)
+
+                                End If
+                            Next
+
+                            'horizontal node
+                            If data.Exists(r(3, 1)) > 0 Then   'if there is already a node there make sure we don't overwrite it
+
+                                'point vp to the existing node
+                                vp(3, 1) = data.FindNode(r(3, 1))
+
+                            Else                           'else create a new node (default and most common behavior)
+
+                                vp(3, 1) = n                     'assign index to new node
+
+                                'Create a new node at the np point and return incremented n
+                                n = CreateNewNode(h, vp(3, 1), r(3, 1), nodeTypeCollection)
+
+                            End If
+
+
+
+                            'config = 1                       2
+                            '
+                            '               A                           A
+                            '                |\                         /|
+                            '        vp(1,1) |_\ vp(2,1)       vp(2,1) /_| vp(1,1)
+                            '                |  \ vp(2,2)     vp(2,2) /  |
+                            '                |__/\                   /\__|
+                            '               C    B                  C    B
+                            '                   vp(3,1)                vp(3,1)
+                            '
+                            ' 3                                4 
+                            '                  vp(3,1)                vp(3,1)
+                            '               B ____ C              B  ____ A
+                            '                |  \/ vp(2,2)   vp(2,2) \/  |
+                            '        vp(1,1) |__/ vp(2,1)     vp(2,1) \__| vp(1,1)
+                            '                | /                       \ |
+                            '                |/                         \|
+                            '               A                            A
+
+                            Dim triSide2 As SideType = SideType.none
+                            Dim triSide3 As SideType = SideType.none
+
+                            Dim pSide1 As SideType = h.SideType
+                            Dim pSide2 As SideType = SideType.none
+                            Dim pSide5 As SideType = SideType.none
+
+                            'order new nodes to make cell creation easier - side types
+                            'depend on cell orientation
+                            Dim k As (Integer, Integer)
+                            Dim m As (Integer, Integer)
+
+                            If config = 1 Or config = 4 Then
+                                k = (vp(2, 1), vp(1, 1))
+                                m = (vp(3, 1), vp(2, 2))
+                                triSide2 = SideType.boundary
+                                pSide2 = e.SideType
+                            Else
+                                k = (vp(1, 1), vp(2, 1))
+                                m = (vp(2, 2), vp(3, 1))
+                                triSide3 = SideType.boundary
+                                pSide5 = e.SideType
+                            End If
+
+                            'put cell nodes into group, order as A, B, C in above diagram
+                            Dim newNodes As (Integer, Integer, Integer)
+
+                            'apex is first item, base is second and third
+                            If positionVectors.R1.Y = positionVectors.R2.Y Then
+
+                                newNodes = (nodes.N3, nodes.N1, nodes.N2)
+
+                            ElseIf positionVectors.R2.Y = positionVectors.R3.Y Then
+
+                                newNodes = (nodes.N1, nodes.N2, nodes.N3)
+
+                            Else
+
+                                newNodes = (nodes.N2, nodes.N3, nodes.N1)
+
+                            End If
+
+                            'replace and add cells
+                            factory.ReplaceCell(t, newId, newNodes.Item1, k.Item1, k.Item2,, triSide2, triSide3)
+
+                            If config = 1 Or config = 4 Then
+
+                                factory.AddCell(newId + 1, newNodes.Item2, vp(3, 1), vp(2, 2),,, h.SideType)
+                                factory.AddPent(newId + 2, vp(3, 1), newNodes.Item3, vp(1, 1), vp(2, 1), vp(2, 2), h.SideType, pSide2,,,)
+
+                            Else
+
+                                factory.AddCell(newId + 1, newNodes.Item3, vp(2, 2), vp(3, 1), , h.SideType,)
+                                factory.AddPent(newId + 2, newNodes.Item2, vp(3, 1), vp(2, 2), vp(2, 1), vp(1, 1), h.SideType,,,, pSide5)
+
+                            End If
+
+                            newId += 3
+
+                            'skip to the next cell
+                            GoTo Next_Cell
+
+                        End If
+
+                    Next
+
+                End If
+
+                'interior equilateral cells, all irregular triangle cells, all quad cells
+
+                Dim i As Integer = 1
+
+                'cycle through each edge and create new nodes
+                For Each e As Edge In data.CellList(t).Edges
+
+                    For j As Integer = 1 To 2
+
+                        r(i, 1) = Vector2.Subtract(e.R, e.Lv * delta)
+                        r(i, 2) = Vector2.Add(e.R, e.Lv * delta)
+
+                        If data.Exists(r(i, j)) > 0 Then   'if there is already a node there make sure we don't overwrite it
+
+                            'point vp to the existing node
+                            vp(i, j) = data.FindNode(r(i, j))
+
+                        Else                           'else create a new node
+
+                            vp(i, j) = n               'assign index to new node
+
+                            'Create a new node and return incremented n
+                            factory.AddNode(vp(i, j), r(i, j))
+                            n += 1
+
+                        End If
+
+                    Next
+
+                    i += 1
+
+                Next
+
+                'side types in the existing triangle
+                Dim s() As SideType = GetSideTypes(data.CellList(t))
+
+                If farfield.Gridtype = GridType.Quads Then
+
+                    factory.ReplaceCell(t, newId, nodes.N1, vp(1, 1), vp(4, 2),, s(3), s(0))
+                    factory.AddCell(newId + 1, nodes.N2, vp(2, 1), vp(1, 2),, s(0), s(1))
+                    factory.AddCell(newId + 2, nodes.N3, vp(3, 1), vp(2, 2),, s(1), s(2))
+                    factory.AddCell(newId + 3, nodes.N4, vp(4, 1), vp(3, 2),, s(2), s(3))
+                    factory.AddOct(newId + 4, vp(1, 1), vp(1, 2), vp(2, 1), vp(2, 2), vp(3, 1), vp(3, 2), vp(4, 1), vp(4, 2), s(0),, s(1),, s(2),, s(3),)
+
+                    newId += 5
+
+
+                Else            'equilateral or irregular triangles
+
+                    factory.ReplaceCell(t, newId, nodes.N1, vp(3, 1), vp(2, 2),, s(1), s(2))
+                    factory.AddCell(newId + 1, nodes.N2, vp(1, 1), vp(3, 2),, s(2), s(0))
+                    factory.AddCell(newId + 2, nodes.N3, vp(2, 1), vp(1, 2),, s(0), s(1))
+                    factory.AddHex(newId + 3, vp(1, 1), vp(1, 2), vp(2, 1), vp(2, 2), vp(3, 1), vp(3, 2), (0),, s(1),, (2),)
+
+                    newId += 4
+
+                End If
+
 
 Next_Cell:
             Next
@@ -629,37 +914,26 @@ Next_Cell:
             'get node details for cell
             Dim nodes As CellNodes = GetNodeDetails(t)
 
-            'side naming and node numbering protocols are a problem here, as we've used a different
-            'order for triangles and quads. A workaround is to create a flag on the cell class that
-            'indicates the vertex/side assignment order.
+            'side names and types in the existing triangle
+            Dim s() As SideName = GetSideNames(data.CellList(t))
+            Dim p() As SideType = GetSideTypes(data.CellList(t))
 
-            Dim s1 = data.CellList(t).Edge1.SideName
-            Dim s2 = data.CellList(t).Edge2.SideName
-            Dim s3 = data.CellList(t).Edge3.SideName
-
-            Dim t1 = data.CellList(t).Edge1.SideType
-            Dim t2 = data.CellList(t).Edge2.SideType
-            Dim t3 = data.CellList(t).Edge3.SideType
-
-            If data.CellList(t).NamingScheme = SideNamingScheme.triangle Then
+            If data.CellList(t).CellType = CellType.triangle Then
 
                 Dim nodePairs As New List(Of (nA As Integer, nB As Integer, sName As SideName, sType As SideType)) _
-                    From {(nodes.N2, nodes.N3, s1, t1),
-                          (nodes.N3, nodes.N1, s2, t2),
-                          (nodes.N1, nodes.N2, s3, t3)}
+                    From {(nodes.N2, nodes.N3, s(0), p(0)),
+                          (nodes.N3, nodes.N1, s(1), p(1)),
+                          (nodes.N1, nodes.N2, s(2), p(2))}
 
                 Return nodePairs
 
-            ElseIf data.CellList(t).NamingScheme = SideNamingScheme.standard Then
-
-                Dim s4 = data.CellList(t).Edge4.SideName
-                Dim t4 = data.CellList(t).Edge4.SideType
+            ElseIf data.CellList(t).CellType = CellType.quad Then
 
                 Dim nodePairs As New List(Of (nA As Integer, nB As Integer, sName As SideName, sType As SideType)) _
-                    From {(nodes.N1, nodes.N2, s1, t1),
-                          (nodes.N2, nodes.N3, s2, t2),
-                          (nodes.N3, nodes.N4, s3, t3),
-                          (nodes.N4, nodes.N1, s4, t4)}
+                    From {(nodes.N1, nodes.N2, s(0), p(0)),
+                          (nodes.N2, nodes.N3, s(1), p(1)),
+                          (nodes.N3, nodes.N4, s(2), p(2)),
+                          (nodes.N4, nodes.N1, s(3), p(3))}
 
                 Return nodePairs
 
@@ -672,7 +946,7 @@ Next_Cell:
         End Function
 
         ''' <summary>
-        ''' Gets the node ids of the vertices of the given cell
+        ''' Gets the node ids of the vertices of the given triangular cell
         ''' </summary>
         ''' <param name="t"></param>
         ''' <returns></returns>
@@ -720,7 +994,7 @@ Next_Cell:
         End Function
 
         ''' <summary>
-        ''' Inspects a cell to determine if any of the edges are vertical
+        ''' Inspects a triangular cell to determine if any of the edges are vertical
         ''' </summary>
         ''' <param name="t"></param>
         ''' <returns></returns>
@@ -799,9 +1073,8 @@ Next_Cell:
 
         End Function
 
-
         ''' <summary>
-        ''' Creates a new node on the given edge
+        ''' Creates a new node on the given edge of a triangular cell
         ''' </summary>
         ''' <param name="e"></param>
         ''' <param name="n"></param>
@@ -811,7 +1084,6 @@ Next_Cell:
             'If nodes to either side are both surface nodes, then np must be a surface node.
             'Boundary node identification must come from the existing cell (not the nodes) as lines between nodes
             'can cut across corners of the calc domain
-
             Select Case e.SideName
                 Case SideName.S1
                     factory.RequestNode(vp, rP, s.S2 And s.S3, IIf(e.SideType = SideType.boundary, True, False))
@@ -828,7 +1100,7 @@ Next_Cell:
         End Function
 
         ''' <summary>
-        ''' Creates a new node on the given edge of a square cell
+        ''' Creates a new node on the given edge of a quad cell
         ''' </summary>
         ''' <param name="e"></param>
         ''' <param name="n"></param>
@@ -860,9 +1132,8 @@ Next_Cell:
 
         End Function
 
-
         ''' <summary>
-        ''' Replace an existing cell instance and create a new cell instance
+        ''' Replaces an existing triangular with two additional new cells
         ''' </summary>
         ''' <param name="t"></param>
         ''' <param name="e"></param>
@@ -870,23 +1141,21 @@ Next_Cell:
         ''' <returns></returns>
         Private Function DivideCells(t As Integer, e As Edge, newid As Integer, vp As Integer, n As CellNodes) As Integer
 
-            Dim s0 As SideType = SideType.none
-            Dim s1 As SideType = data.CellList(t).Edge1.SideType
-            Dim s2 As SideType = data.CellList(t).Edge2.SideType
-            Dim s3 As SideType = data.CellList(t).Edge3.SideType
+            'side types in the existing triangle
+            Dim s() As SideType = GetSideTypes(data.CellList(t))
 
             'refer to the diagram at the SplitCells sub for better understanding of what is being done.
             Select Case e.SideName
                 Case SideName.S1
                     'The new face must always be of SideType.none : other faces inherit their existing state.
-                    factory.ReplaceCell(t, newid, n.N1, n.N2, vp, s1, s0, s3)
-                    factory.AddCell(newid + 1, n.N1, vp, n.N3, s1, s2, s0)
+                    factory.ReplaceCell(t, newid, n.N1, n.N2, vp, s(0),, s(2))
+                    factory.AddCell(newid + 1, n.N1, vp, n.N3, s(0), s(1),)
                 Case SideName.S2
-                    factory.ReplaceCell(t, newid, vp, n.N2, n.N3, s1, s2, s0)
-                    factory.AddCell(newid + 1, n.N1, n.N2, vp, s0, s2, s3)
+                    factory.ReplaceCell(t, newid, vp, n.N2, n.N3, s(0), s(1),)
+                    factory.AddCell(newid + 1, n.N1, n.N2, vp,, s(1), s(2))
                 Case SideName.S3
-                    factory.ReplaceCell(t, newid, n.N1, vp, n.N3, s0, s2, s3)
-                    factory.AddCell(newid + 1, vp, n.N2, n.N3, s1, s0, s3)
+                    factory.ReplaceCell(t, newid, n.N1, vp, n.N3,, s(1), s(2))
+                    factory.AddCell(newid + 1, vp, n.N2, n.N3, s(0),, s(2))
                 Case Else
                     Throw New Exception
             End Select
@@ -945,25 +1214,23 @@ Next_Cell:
         ''' <returns></returns>
         Private Function DivideCellsEquilateral(t As Integer, newid As Integer, n As CellNodes, m As List(Of Integer)) As Integer
 
-            Dim s0 As SideType = SideType.none
-            Dim s1 As SideType = data.CellList(t).Edge1.SideType
-            Dim s2 As SideType = data.CellList(t).Edge2.SideType
-            Dim s3 As SideType = data.CellList(t).Edge3.SideType
+            'side types in the existing triangle
+            Dim s() As SideType = GetSideTypes(data.CellList(t))
 
             'replace the original cell
-            factory.ReplaceCell(t, newid, n.N1, m(2), m(1), s0, s2, s3)
+            factory.ReplaceCell(t, newid, n.N1, m(2), m(1),, s(1), (2))
 
             'add three new cells
-            factory.AddCell(newid + 1, n.N2, m(0), m(2), s0, s3, s1)
-            factory.AddCell(newid + 2, n.N3, m(1), m(0), s0, s1, s2)
-            factory.AddCell(newid + 3, m(0), m(1), m(2), s0, s0, s0)
+            factory.AddCell(newid + 1, n.N2, m(0), m(2),, s(2), s(0))
+            factory.AddCell(newid + 2, n.N3, m(1), m(0),, s(0), s(1))
+            factory.AddCell(newid + 3, m(0), m(1), m(2),,,)
 
             Return newid + 4
 
         End Function
 
         ''' <summary>
-        ''' Replace an existing square cell instance with four new square cells
+        ''' Replace an existing rectangular cell instance with four new rectangular cells
         ''' </summary>
         ''' <param name="t"></param>
         ''' <param name="e"></param>
@@ -971,94 +1238,34 @@ Next_Cell:
         ''' <returns></returns>
         Private Function DivideCellsQuads(t As Integer, newid As Integer, n As CellNodes, m As List(Of Integer), c As Integer) As Integer
 
-            Dim s0 As SideType = SideType.none
-            Dim s1 As SideType = data.CellList(t).Edge1.SideType
-            Dim s2 As SideType = data.CellList(t).Edge2.SideType
-            Dim s3 As SideType = data.CellList(t).Edge3.SideType
-            Dim s4 As SideType = data.CellList(t).Edge4.SideType
+            'side types in the existing triangle
+            Dim s() As SideType = GetSideTypes(data.CellList(t))
 
             'replace the original cell
-            factory.ReplaceCellQuad(t, newid, n.N1, m(0), c, m(3), s1, s0, s0, s4)
+            factory.ReplaceCellQuad(t, newid, n.N1, m(0), c, m(3), s(0),,, s(3))
 
             'add three new cells
-            factory.AddQuad(newid + 1, m(0), n.N2, m(1), c, s1, s2, s0, s0)
-            factory.AddQuad(newid + 2, c, m(1), n.N3, m(2), s0, s2, s3, s0)
-            factory.AddQuad(newid + 3, m(3), c, m(2), n.N4, s0, s0, s3, s4)
+            factory.AddQuad(newid + 1, m(0), n.N2, m(1), c, s(0), s(1),,)
+            factory.AddQuad(newid + 2, c, m(1), n.N3, m(2),, s(1), s(2),)
+            factory.AddQuad(newid + 3, m(3), c, m(2), n.N4,,, s(2), s(3))
 
             Return newid + 4
 
         End Function
 
-#End Region
-
-#Region "Static Methods"
-
         ''' <summary>
-        ''' Gets the position vector for the given edge midpoint of a triangular cell
+        ''' Finds the horizontal edge in a euilateral triangle grid boundary cell
         ''' </summary>
+        ''' <param name="t"></param>
         ''' <param name="e"></param>
+        ''' <param name="longSide"></param>
         ''' <returns></returns>
-        Private Shared Function FindMidPoint(e As Edge, r As CellNodeVectors) As Vector2
+        Private Function FindHorizontalEdge(t As Integer, e As Edge, longSide As Edge) As Edge
 
-            Dim rP As Vector2
-
-            Select Case e.SideName
-                Case SideName.S1
-                    rP = Vector2.Add(r.R2, r.R3) * 0.5
-                Case SideName.S2
-                    rP = Vector2.Add(r.R1, r.R3) * 0.5
-                Case SideName.S3
-                    rP = Vector2.Add(r.R1, r.R2) * 0.5
-                Case Else
-                    Throw New Exception
-            End Select
-
-            Return rP
-
-        End Function
-
-        ''' <summary>
-        ''' Gets the position vector for the given edge midpoint of a quad cell
-        ''' </summary>
-        ''' <param name="e"></param>
-        ''' <returns></returns>
-        Private Shared Function FindMidPointQuads(e As Edge, r As CellNodeVectors) As Vector2
-
-            Dim rP As Vector2
-
-            Select Case e.SideName
-                Case SideName.S1
-                    rP = Vector2.Add(r.R2, r.R1) * 0.5
-                Case SideName.S2
-                    rP = Vector2.Add(r.R3, r.R2) * 0.5
-                Case SideName.S3
-                    rP = Vector2.Add(r.R4, r.R3) * 0.5
-                Case SideName.S4
-                    rP = Vector2.Add(r.R1, r.R4) * 0.5
-                Case Else
-                    Throw New Exception
-            End Select
-
-            Return rP
-
-        End Function
-
-        ''' <summary>
-        ''' Determines if a set of position vectors creates a right angle triangle
-        ''' </summary>
-        ''' <param name="positionVectors"></param>
-        ''' <returns></returns>
-        Private Shared Function HasRightAngle(positionVectors As CellNodeVectors) As Boolean
-
-            Dim r1 = Vector2.Subtract(positionVectors.R3, positionVectors.R2)
-            Dim r2 = Vector2.Subtract(positionVectors.R1, positionVectors.R3)
-            Dim r3 = Vector2.Subtract(positionVectors.R2, positionVectors.R1)
-
-            If Vector2.Dot(r3, r2) = 0 Or Vector2.Dot(r1, r3) = 0 Or Vector2.Dot(r2, r1) = 0 Then
-                Return True
-            Else
-                Return False
-            End If
+            Dim h As Edge = (From l In data.CellList(t).Edges
+                             Where l.SideName <> e.SideName And l.SideName <> longSide.SideName
+                             Select l).FirstOrDefault
+            Return h
 
         End Function
 

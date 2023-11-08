@@ -31,7 +31,7 @@ namespace Core.Domain
             V3 = v3;
             V4 = v4;
 
-            NamingScheme = SideNamingScheme.standard;
+            CellType = CellType.quad;
 
             Edge1 = new Edge(SideName.S1, s1);
             Edge2 = new Edge(SideName.S2, s2);

@@ -31,18 +31,6 @@ Namespace Services
 
         End Sub
 
-        Public Sub CreateBorderCellsSquare(farfield As Farfield) Implements IBorderCellBuilder.CreateBorderCellsSquare
-
-#If DEBUG Then
-            '(Debugging) check for incorrectly assigned boundary edges
-            CheckBoundaryEdges(farfield)
-#End If
-            'Call factory to create a set of zero-height border cells around the farfield boundary
-            'these are used to set boundary conditions and simplify cfd calcs
-            factory.AddBorderCellsSquare(farfield)
-
-        End Sub
-
         Private Sub CheckBoundaryEdges(farfield As Farfield) Implements IBorderCellBuilder.CheckBoundaryEdges
             Dim celllist As List(Of Cell) = data.CellList
 

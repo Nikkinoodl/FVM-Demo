@@ -4,22 +4,29 @@
     /// Distinguishes the way in which vertex nodes and sides are numbered. All numbering schemes proceed
     /// clockwise around the cell.
     /// </summary>
-    public enum SideNamingScheme
+    public enum CellType
     {
         none,      //not set
-        triangle,  //side n lies opposite vertex n
-        standard   //side n lies between vertex n and vertex n+1
+        triangle,  //triangular cell, side n lies opposite vertex n
+        quad,      //quadrangular cell, side n lies between vertex n and vertex n+1
+        pent,      //pentagonal cell, side n lies between vertex n and vertex n+1
+        hex,       //hexagonal cell, side n lies between vertex n and vertex n+1
+        oct        //octagonal cell, side n lies between vertex n and vertex n+1
     }
 
     /// <summary>
-    /// Used to distinguish between edges when using the Edges list. Use S4 only for quad meshes
+    /// Used to distinguish between edges when using the Edges list.
     /// </summary>
     public enum SideName
     {
         S1,
         S2,
         S3,
-        S4
+        S4,
+        s5,
+        s6,
+        s7,
+        s8
     }
 
     /// <summary>
@@ -68,7 +75,7 @@
     };
 
     /// <summary>
-    /// Identifies the type of mesh that is constructed
+    /// Identifies the type of base mesh that is constructed prior to performing tiling operations
     /// </summary>
     public enum GridType
     {

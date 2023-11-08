@@ -7,7 +7,7 @@
         Sub CalculateLengths()
 
         ''' <summary>
-        ''' Calculate the mid points of triangular grid cell edges
+        ''' Calculate the mid points
         ''' </summary>
         Sub CalculateMidPoints()
 
@@ -17,12 +17,12 @@
         Sub CalculateFaceVectors()
 
         ''' <summary>
-        ''' Calculate the outward facing normal for each triangular grid cell
+        ''' Calculate the outward facing normals
         ''' </summary>
         Sub CalculateFaceNormals()
 
         ''' <summary>
-        ''' Calculate the area of each triangular grid cell
+        ''' Calculate the area of each cell
         ''' </summary>
         Sub CalculateAreas()
 

@@ -27,14 +27,22 @@ namespace Core.Domain
         public int? V3 { get; set; }
 
         /// <summary>
-        /// An optional node id for use with rectangular grids
+        /// Optional node ids for use with cells with n > 3 sides
         /// </summary>
         public int? V4 { get; set; }
 
+        public int? V5 { get; set; }
+
+        public int? V6 { get; set; }
+
+        public int? V7 { get; set; }
+
+        public int? V8 { get; set; }
+
         /// <summary>
-        /// Distinguishes the way in which vertex nodes and sides are numbered
+        /// Distinguishes cell type and, by implication, the way in which vertex nodes and sides are numbered
         /// </summary>
-        public SideNamingScheme NamingScheme { get; set; }
+        public CellType CellType { get; set; }
 
         //Basic geometry
 
@@ -71,9 +79,17 @@ namespace Core.Domain
         public Edge? Edge3 { get; set; }
 
         /// <summary>
-        /// An optional cell edge for quad grids
+        /// Optional cell edges for n > 3 sided cells
         /// </summary>
         public Edge? Edge4 { get; set; }
+
+        public Edge? Edge5 { get; set; }
+
+        public Edge? Edge6 { get; set; }
+
+        public Edge? Edge7 { get; set; }
+
+        public Edge? Edge8 { get; set; }    
 
         /// <summary>
         /// List of cell edges. Added on cell creation.

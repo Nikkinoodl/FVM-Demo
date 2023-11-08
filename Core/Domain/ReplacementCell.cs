@@ -8,7 +8,7 @@ namespace Core.Domain
     {
 
         /// <summary>
-        /// Deletes a triangular cell in CellList and replaces it with another
+        /// Deletes a cell in CellList and replaces it with a trianglular cell
         /// </summary>
         public ReplacementCell(int t, int id, int v1, int v2, int v3, SideType s1, SideType s2, SideType s3)
         {
@@ -20,7 +20,7 @@ namespace Core.Domain
             V1 = v1;
             V2 = v2;
             V3 = v3;
-            NamingScheme = SideNamingScheme.triangle;
+            CellType = CellType.triangle;
             Edge1 = cell.Edge1;
             Edge2 = cell.Edge2;
             Edge3 = cell.Edge3;
@@ -61,7 +61,7 @@ namespace Core.Domain
             V2 = v2;
             V3 = v3;
             V4 = v4;
-            NamingScheme = SideNamingScheme.standard;
+            CellType = CellType.quad;
             Edge1 = cell.Edge1;
             Edge2 = cell.Edge2;
             Edge3 = cell.Edge3;
@@ -108,7 +108,7 @@ namespace Core.Domain
             V2 = v2;
             V3 = v3;
             V4 = v4;
-            NamingScheme = SideNamingScheme.standard;
+            CellType = CellType.quad;
 
             Edge1 = new Edge(SideName.S1, s1);
             Edge2 = new Edge(SideName.S2, s2);

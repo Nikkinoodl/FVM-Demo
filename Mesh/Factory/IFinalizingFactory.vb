@@ -11,12 +11,6 @@ Namespace Factories
         Sub AddBorderCells(farfield As Farfield)
 
         ''' <summary>
-        ''' Adds zero-height cells that have only one edge around the border of the farfield with square grid type
-        ''' </summary>
-        ''' <param name="farfield"></param>
-        Sub AddBorderCellsSquare(farfield As Farfield)
-
-        ''' <summary>
         ''' Wraps an airfoil surface with a layer of zero height cells that have only one edge
         ''' </summary>
         ''' <param name="farfield"></param>

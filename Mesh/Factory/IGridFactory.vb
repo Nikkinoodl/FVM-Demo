@@ -98,6 +98,74 @@ Namespace Factories
                     Optional s3 As SideType = SideType.none,
                     Optional s4 As SideType = SideType.none)
 
+        ''' <summary>
+        ''' Adds a new pentagonal cell
+        ''' </summary>
+        ''' <param name="this_id"></param>
+        ''' <param name="n1"></param>
+        ''' <param name="n2"></param>
+        ''' <param name="n3"></param>
+        ''' <param name="n4"></param>
+        ''' <param name="n5"></param>
+        ''' <param name="s1"></param>
+        ''' <param name="s2"></param>
+        ''' <param name="s3"></param>
+        ''' <param name="s4"></param>
+        ''' <param name="s5"></param>
+        Sub AddPent(this_id As Integer, n1 As Integer, n2 As Integer, n3 As Integer, n4 As Integer, n5 As Integer,
+                   Optional s1 As SideType = SideType.none, Optional s2 As SideType = SideType.none,
+                   Optional s3 As SideType = SideType.none, Optional s4 As SideType = SideType.none,
+                   Optional s5 As SideType = SideType.none)
+
+        ''' <summary>
+        ''' Adds a new hexagonal cell
+        ''' </summary>
+        ''' <param name="this_id"></param>
+        ''' <param name="n1"></param>
+        ''' <param name="n2"></param>
+        ''' <param name="n3"></param>
+        ''' <param name="n4"></param>
+        ''' <param name="n5"></param>
+        ''' <param name="n6"></param>
+        ''' <param name="s1"></param>
+        ''' <param name="s2"></param>
+        ''' <param name="s3"></param>
+        ''' <param name="s4"></param>
+        ''' <param name="s5"></param>
+        ''' <param name="s6"></param>
+        Sub AddHex(this_id As Integer, n1 As Integer, n2 As Integer, n3 As Integer, n4 As Integer, n5 As Integer,
+                   n6 As Integer, Optional s1 As SideType = SideType.none, Optional s2 As SideType = SideType.none,
+                   Optional s3 As SideType = SideType.none, Optional s4 As SideType = SideType.none,
+                   Optional s5 As SideType = SideType.none, Optional s6 As SideType = SideType.none)
+
+        ''' <summary>
+        ''' Adds an octagonal cell
+        ''' </summary>
+        ''' <param name="this_id"></param>
+        ''' <param name="n1"></param>
+        ''' <param name="n2"></param>
+        ''' <param name="n3"></param>
+        ''' <param name="n4"></param>
+        ''' <param name="n5"></param>
+        ''' <param name="n6"></param>
+        ''' <param name="n7"></param>
+        ''' <param name="n8"></param>
+        ''' <param name="s1"></param>
+        ''' <param name="s2"></param>
+        ''' <param name="s3"></param>
+        ''' <param name="s4"></param>
+        ''' <param name="s5"></param>
+        ''' <param name="s6"></param>
+        ''' <param name="s7"></param>
+        ''' <param name="s8"></param>
+        Sub AddOct(this_id As Integer, n1 As Integer, n2 As Integer, n3 As Integer, n4 As Integer, n5 As Integer,
+                   n6 As Integer, n7 As Integer, n8 As Integer,
+                   Optional s1 As SideType = SideType.none, Optional s2 As SideType = SideType.none,
+                   Optional s3 As SideType = SideType.none, Optional s4 As SideType = SideType.none,
+                   Optional s5 As SideType = SideType.none, Optional s6 As SideType = SideType.none,
+                   Optional s7 As SideType = SideType.none, Optional s8 As SideType = SideType.none)
+
+
 #End Region
 
 #Region "Initial builds"

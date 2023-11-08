@@ -5,20 +5,28 @@ namespace Core.Domain
 {
     public class UpdateCell : Cell
     {
-        // When cell t in the celllist must be updated
-        // To avoid confusion, note that t is the index, not the Id
 
-        public UpdateCell(int this_t, int this_v1, int this_v2, int this_v3, SideType this_s1, SideType this_s2, SideType this_s3)
+        /// <summary>
+        /// Updates the details of an existing triangular cell
+        /// </summary>
+        /// <param name="t">the index of the cell in Celllist</param>
+        /// <param name="v1"></param>
+        /// <param name="v2"></param>
+        /// <param name="v3"></param>
+        /// <param name="s1"></param>
+        /// <param name="s2"></param>
+        /// <param name="s3"></param>
+        public UpdateCell(int t, int v1, int v2, int v3, SideType s1, SideType s2, SideType s3)
         {
-            Cell t = Repository.CellList[this_t];
+            Cell cell = Repository.CellList[t];
 
-            t.V1 = this_v1;
-            t.V2 = this_v2;
-            t.V3 = this_v3;
-            t.Complete = true;
-            t.Edge1.SideType = this_s1;
-            t.Edge2.SideType = this_s2;
-            t.Edge3.SideType = this_s3;
+            cell.V1 = v1;
+            cell.V2 = v2;
+            cell.V3 = v3;
+            cell.Complete = true;
+            cell.Edge1.SideType = s1;
+            cell.Edge2.SideType = s2;
+            cell.Edge3.SideType = s3;
         }
     }
 }

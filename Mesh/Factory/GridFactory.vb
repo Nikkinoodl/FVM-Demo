@@ -107,10 +107,114 @@ Namespace Factories
         End Sub
 
         ''' <summary>
-        ''' Replaces an existing triangular grid cell with a new one
-        ''' To avoid confusion, note that t is the index, not the Id
+        ''' Adds a new pentagonal cell
         ''' </summary>
-        ''' <param name="t">Index</param>
+        ''' <param name="this_id"></param>
+        ''' <param name="n1"></param>
+        ''' <param name="n2"></param>
+        ''' <param name="n3"></param>
+        ''' <param name="n4"></param>
+        ''' <param name="n5"></param>
+        ''' <param name="s1"></param>
+        ''' <param name="s2"></param>
+        ''' <param name="s3"></param>
+        ''' <param name="s4"></param>
+        ''' <param name="s5"></param>
+        Public Sub AddPent(this_id As Integer, n1 As Integer, n2 As Integer, n3 As Integer, n4 As Integer, n5 As Integer,
+                   Optional s1 As SideType = SideType.none, Optional s2 As SideType = SideType.none,
+                   Optional s3 As SideType = SideType.none, Optional s4 As SideType = SideType.none,
+                   Optional s5 As SideType = SideType.none) Implements IGridFactory.AddPent
+
+            Dim e1 As New Edge(0, s1)
+            Dim e2 As New Edge(1, s2)
+            Dim e3 As New Edge(2, s3)
+            Dim e4 As New Edge(3, s4)
+            Dim e5 As New Edge(4, s5)
+
+            Dim newCell As New Cell(this_id, n1, n2, n3, n4, n5, e1, e2, e3, e4, e5)
+
+        End Sub
+
+        ''' <summary>
+        ''' Adds a new hexagonal cell
+        ''' </summary>
+        ''' <param name="this_id"></param>
+        ''' <param name="n1"></param>
+        ''' <param name="n2"></param>
+        ''' <param name="n3"></param>
+        ''' <param name="n4"></param>
+        ''' <param name="n5"></param>
+        ''' <param name="n6"></param>
+        ''' <param name="s1"></param>
+        ''' <param name="s2"></param>
+        ''' <param name="s3"></param>
+        ''' <param name="s4"></param>
+        ''' <param name="s5"></param>
+        ''' <param name="s6"></param>
+        Public Sub AddHex(this_id As Integer, n1 As Integer, n2 As Integer, n3 As Integer, n4 As Integer,
+                    n5 As Integer, n6 As Integer,
+                    Optional s1 As SideType = SideType.none,
+                    Optional s2 As SideType = SideType.none,
+                    Optional s3 As SideType = SideType.none,
+                    Optional s4 As SideType = SideType.none,
+                    Optional s5 As SideType = SideType.none,
+                    Optional s6 As SideType = SideType.none) Implements IGridFactory.AddHex
+
+            Dim e1 As New Edge(0, s1)
+            Dim e2 As New Edge(1, s2)
+            Dim e3 As New Edge(2, s3)
+            Dim e4 As New Edge(3, s4)
+            Dim e5 As New Edge(4, s5)
+            Dim e6 As New Edge(5, s6)
+
+            Dim newCell As New Cell(this_id, n1, n2, n3, n4, n5, n6, e1, e2, e3, e4, e5, e6)
+
+        End Sub
+
+        ''' <summary>
+        ''' Adds a new octagonal cell
+        ''' </summary>
+        ''' <param name="this_id"></param>
+        ''' <param name="n1"></param>
+        ''' <param name="n2"></param>
+        ''' <param name="n3"></param>
+        ''' <param name="n4"></param>
+        ''' <param name="n5"></param>
+        ''' <param name="n6"></param>
+        ''' <param name="n7"></param>
+        ''' <param name="n8"></param>
+        ''' <param name="s1"></param>
+        ''' <param name="s2"></param>
+        ''' <param name="s3"></param>
+        ''' <param name="s4"></param>
+        ''' <param name="s5"></param>
+        ''' <param name="s6"></param>
+        ''' <param name="s7"></param>
+        ''' <param name="s8"></param>
+        Public Sub AddOct(this_id As Integer, n1 As Integer, n2 As Integer, n3 As Integer, n4 As Integer, n5 As Integer,
+                   n6 As Integer, n7 As Integer, n8 As Integer,
+                   Optional s1 As SideType = SideType.none, Optional s2 As SideType = SideType.none,
+                   Optional s3 As SideType = SideType.none, Optional s4 As SideType = SideType.none,
+                   Optional s5 As SideType = SideType.none, Optional s6 As SideType = SideType.none,
+                   Optional s7 As SideType = SideType.none, Optional s8 As SideType = SideType.none) Implements IGridFactory.AddOct
+
+            Dim e1 As New Edge(0, s1)
+            Dim e2 As New Edge(1, s2)
+            Dim e3 As New Edge(2, s3)
+            Dim e4 As New Edge(3, s4)
+            Dim e5 As New Edge(4, s5)
+            Dim e6 As New Edge(5, s6)
+            Dim e7 As New Edge(6, s7)
+            Dim e8 As New Edge(7, s8)
+
+            Dim newCell As New Cell(this_id, n1, n2, n3, n4, n5, n6, n7, n8, e1, e2, e3, e4, e5, e6, e7, e8)
+
+        End Sub
+
+        ''' <summary>
+        ''' Replaces an existing grid cell with a new triangular cell
+        ''' </summary>
+        ''' <param name="t">this index of the cell in Celllist</param>
         ''' <param name="newId"></param>
         ''' <param name="this_n1"></param>
         ''' <param name="this_n2"></param>
@@ -129,7 +233,7 @@ Namespace Factories
         End Sub
 
         ''' <summary>
-        ''' Replaces an existing rectangular grid cell with a new one
+        ''' Replaces an existing quad cell with a new one
         ''' </summary>
         ''' <param name="t"></param>
         ''' <param name="newId"></param>

@@ -261,7 +261,6 @@ namespace Core.Data
             Repository.CellList.Sort((t1, t2) => { int ret = t1.R.X.CompareTo(t2.R.X);
                                                         return ret != 0 ? ret : t2.R.Y.CompareTo(t1.R.Y);
                                                  });
-
         }
 
         /// <summary>
@@ -277,7 +276,7 @@ namespace Core.Data
             (int?, SideName?) result;
 
             Cell? t_adj = (from Cell t in CellList
-                           where (t.V4 == nodePair.nA || t.V3 == nodePair.nA || t.V2 == nodePair.nA || t.V1 == nodePair.nA) && (t.V4 == nodePair.nB || t.V3 == nodePair.nB || t.V2 == nodePair.nB || t.V1 == nodePair.nB)
+                           where (t.V8 == nodePair.nA || t.V7 == nodePair.nA || t.V6 == nodePair.nA || t.V5 == nodePair.nA || t.V4 == nodePair.nA || t.V3 == nodePair.nA || t.V2 == nodePair.nA || t.V1 == nodePair.nA) && (t.V8 == nodePair.nB || t.V7 == nodePair.nB || t.V6 == nodePair.nB || t.V5 == nodePair.nB || t.V4 == nodePair.nB || t.V3 == nodePair.nB || t.V2 == nodePair.nB || t.V1 == nodePair.nB)
                            where t.Id != this_t
                            select t).FirstOrDefault();
 
@@ -289,6 +288,7 @@ namespace Core.Data
                             select e.SideName).FirstOrDefault();
 
                 result = (Repository.CellList.IndexOf(t_adj), sideName);
+
             }
             else
             {
