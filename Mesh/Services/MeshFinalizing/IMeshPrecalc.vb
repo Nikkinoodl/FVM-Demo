@@ -2,7 +2,7 @@
     Public Interface IMeshPrecalc
 
         ''' <summary>
-        ''' Find the adjoining element/face for each triangular cell
+        ''' Find the adjoining element/face for cell element/face
         ''' </summary>
         Sub FindAdjoiningCells()
 

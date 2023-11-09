@@ -10,15 +10,13 @@ Namespace Services
         ''' </summary>
         ''' <param name="t"></param>
         ''' <returns></returns>
-        Public Shared Function GetSideTypes(t As Cell) As Array
+        Friend Shared Function GetSideTypes(t As Cell) As Array
 
             Dim nSides = GetNumberSides(t)
             Dim s(nSides) As SideType
             Dim i As Integer = 0
 
             For Each e As Edge In t.Edges
-
-                Debug.Assert(e.SideType <> SideType.surface)
 
                 s(i) = e.SideType
 
@@ -35,7 +33,7 @@ Namespace Services
         ''' </summary>
         ''' <param name="t"></param>
         ''' <returns></returns>
-        Public Shared Function GetSideNames(t As Cell) As Array
+        Friend Shared Function GetSideNames(t As Cell) As Array
 
             Dim nSides = GetNumberSides(t)
             Dim s(nSides) As SideName
@@ -58,7 +56,7 @@ Namespace Services
         ''' </summary>
         ''' <param name="t"></param>
         ''' <returns></returns>
-        Public Shared Function GetNumberSides(t As Cell) As Integer
+        Friend Shared Function GetNumberSides(t As Cell) As Integer
 
             Select Case t.CellType
                 Case CellType.triangle
@@ -82,43 +80,32 @@ Namespace Services
         ''' </summary>
         ''' <param name="t"></param>
         ''' <returns></returns>
-        Public Shared Function GetNodes(t As Cell) As Array
+        Friend Shared Function GetNodes(t As Cell) As Array
 
             Dim nSides = GetNumberSides(t)
             Dim n(nSides - 1) As Integer
 
             Select Case t.CellType
                 Case CellType.triangle
-                    n(0) = t.V1
-                    n(1) = t.V2
-                    n(2) = t.V3
+
+                    n = {t.V1, t.V2, t.V3}
+
                 Case CellType.quad
-                    n(0) = t.V1
-                    n(1) = t.V2
-                    n(2) = t.V3
-                    n(3) = t.V4
+
+                    n = {t.V1, t.V2, t.V3, t.V4}
+
                 Case CellType.pent
-                    n(0) = t.V1
-                    n(1) = t.V2
-                    n(2) = t.V3
-                    n(3) = t.V4
-                    n(4) = t.V5
+
+                    n = {t.V1, t.V2, t.V3, t.V4, t.V5}
+
                 Case CellType.hex
-                    n(0) = t.V1
-                    n(1) = t.V2
-                    n(2) = t.V3
-                    n(3) = t.V4
-                    n(4) = t.V5
-                    n(5) = t.V6
+
+                    n = {t.V1, t.V2, t.V3, t.V4, t.V5, t.V6}
+
                 Case CellType.oct
-                    n(0) = t.V1
-                    n(1) = t.V2
-                    n(2) = t.V3
-                    n(3) = t.V4
-                    n(4) = t.V5
-                    n(5) = t.V6
-                    n(6) = t.V7
-                    n(7) = t.V8
+
+                    n = {t.V1, t.V2, t.V3, t.V4, t.V5, t.V6, t.V7, t.V8}
+
             End Select
 
             Return n.ToArray
@@ -130,7 +117,7 @@ Namespace Services
         ''' </summary>
         ''' <param name="e"></param>
         ''' <returns></returns>
-        Public Shared Function FindMidPoint(e As Edge, r As CellNodeVectors) As Vector2
+        Friend Shared Function FindMidPoint(e As Edge, r As CellNodeVectors) As Vector2
 
             Dim rP As Vector2
 
@@ -154,7 +141,7 @@ Namespace Services
         ''' </summary>
         ''' <param name="e"></param>
         ''' <returns></returns>
-        Public Shared Function FindMidPointQuads(e As Edge, r As CellNodeVectors) As Vector2
+        Friend Shared Function FindMidPointQuads(e As Edge, r As CellNodeVectors) As Vector2
 
             Dim rP As Vector2
 
@@ -180,13 +167,40 @@ Namespace Services
         ''' </summary>
         ''' <param name="positionVectors"></param>
         ''' <returns></returns>
-        Public Shared Function HasRightAngle(positionVectors As CellNodeVectors) As Boolean
+        Friend Shared Function HasRightAngle(positionVectors As CellNodeVectors) As Boolean
 
             Dim r1 = Vector2.Subtract(positionVectors.R3, positionVectors.R2)
             Dim r2 = Vector2.Subtract(positionVectors.R1, positionVectors.R3)
             Dim r3 = Vector2.Subtract(positionVectors.R2, positionVectors.R1)
 
             If Vector2.Dot(r3, r2) = 0 Or Vector2.Dot(r1, r3) = 0 Or Vector2.Dot(r2, r1) = 0 Then
+                Return True
+            Else
+                Return False
+            End If
+
+        End Function
+
+        ''' <summary>
+        ''' Checks if rP lies outside circumcircle of cell centered on rCenter
+        ''' </summary>
+        ''' <param name="rP"></param>
+        ''' <param name="r1"></param>
+        ''' <param name="rCenter"></param>
+        ''' <returns></returns>
+        Friend Shared Function CheckInCircle(r1 As Vector2, rP As Vector2, rCenter As Vector2) As Boolean
+
+            Dim rad As Double
+            Dim p As Double
+
+            'circumcircle radius
+            rad = Vector2.Distance(rCenter, r1)
+
+            'distance from cell center to rP
+            p = Vector2.Distance(rP, rCenter)
+
+            'compare and return true if in circumcircle
+            If p < rad Then
                 Return True
             Else
                 Return False

@@ -16,6 +16,11 @@ Namespace Services
 
         End Sub
 
+        ''' <summary>
+        ''' Initiates the creation of a layer of cells at the farfield edge which are used for setting
+        ''' boundary conditions
+        ''' </summary>
+        ''' <param name="farfield"></param>
         Public Sub CreateBorderCells(farfield As Farfield) Implements IBorderCellBuilder.CreateBorderCells
 
 #If DEBUG Then
@@ -31,7 +36,12 @@ Namespace Services
 
         End Sub
 
-        Private Sub CheckBoundaryEdges(farfield As Farfield) Implements IBorderCellBuilder.CheckBoundaryEdges
+        ''' <summary>
+        ''' A method for checking each cell edge on the farfield boundary to ensure that compliance
+        ''' with SideType conventions (intended only for debug mode) 
+        ''' </summary>
+        ''' <param name="farfield"></param>
+        Private Sub CheckBoundaryEdges(farfield As Farfield)
             Dim celllist As List(Of Cell) = data.CellList
 
             For Each t As Cell In celllist

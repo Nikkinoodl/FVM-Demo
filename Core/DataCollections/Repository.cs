@@ -14,7 +14,9 @@ namespace Core.DataCollections
         /// </summary>
         public static List<Cell> CellList { get; set; } = new();
 
-        // Clear lists
+        /// <summary>
+        /// Clears data from lists
+        /// </summary>
         static public void ClearLists()
         {
             Nodelist?.Clear();

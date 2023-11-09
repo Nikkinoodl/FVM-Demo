@@ -4,7 +4,7 @@ Imports Core.Common
 Namespace Factories
 
     ''' <summary>
-    ''' This factory is used to create basic grid elements (nodes and cells)
+    ''' This factory creates and updates nodes and cells
     ''' </summary>
     Public Interface IGridFactory
 

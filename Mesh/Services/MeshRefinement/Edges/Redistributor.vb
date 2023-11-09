@@ -1,4 +1,5 @@
-﻿Imports Core.Interfaces
+﻿Imports Core.Common
+Imports Core.Interfaces
 Imports System.Numerics
 
 Namespace Services
@@ -12,9 +13,11 @@ Namespace Services
 
         End Sub
 
-        Public Sub Redistribute(farfield As Object) Implements IRedistributor.Redistribute
-            'Reallocate nodes on the boundary edges to provide a more even distribution
-            'this is intended to be done after refining the grid and requires smoothing afterwards
+        ''' <summary>
+        ''' Reallocates nodes on the farfield boundary edges
+        ''' </summary>
+        ''' <param name="farfield"></param>
+        Public Sub Redistribute(farfield As Farfield) Implements IRedistributor.Redistribute
 
             Dim edges = New String() {"top", "bottom", "right", "left"}
 
@@ -39,9 +42,9 @@ Namespace Services
 
                                             Select Case edge
                                                 Case "top", "bottom"
-                                                    data.Nodelist(id).R = New Vector2(lengthFraction(i) * farfield.width, data.Nodelist(id).R.Y)
+                                                    data.Nodelist(id).R = New Vector2(lengthFraction(i) * farfield.Width, data.Nodelist(id).R.Y)
                                                 Case "left", "right"
-                                                    data.Nodelist(id).R = New Vector2(data.Nodelist(id).R.X, lengthFraction(i) * farfield.height)
+                                                    data.Nodelist(id).R = New Vector2(data.Nodelist(id).R.X, lengthFraction(i) * farfield.Height)
                                                 Case Else
                                                     Throw New Exception
                                             End Select

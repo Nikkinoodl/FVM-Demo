@@ -5,6 +5,10 @@ namespace Core.Data
 {
     public class DataPreparer : IDataPreparer
     {
+
+        /// <summary>
+        /// Prepare the data storage
+        /// </summary>
         public void PrepareRepository()
         {
 

@@ -147,8 +147,7 @@ Namespace Services
 
                                                 Next
 
-                                                'calc areas using linear algebra
-
+                                                'calculate all areas using linear algebra
                                                 For i As Integer = 0 To nSides - 1
 
                                                     'edge vectors

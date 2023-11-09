@@ -4,15 +4,18 @@ Namespace Services
     Public Class Initializer
         Implements IInitializer
 
-        Private ReadOnly data As IDataPreparer
+        Private ReadOnly preparer As IDataPreparer
 
         Public Sub New(dataPreparer As IDataPreparer)
-            data = dataPreparer
+            preparer = dataPreparer
         End Sub
 
+        ''' <summary>
+        ''' Reset working storage
+        ''' </summary>
         Public Sub DataPreparer() Implements IInitializer.DataPreparer
 
-            data.PrepareRepository()
+            preparer.PrepareRepository()
 
         End Sub
 

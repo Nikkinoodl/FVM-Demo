@@ -2,6 +2,7 @@
 
 namespace Core.Common
 {
+
     /// <summary>
     /// A class for handling the read/write of settings to and from an XML file
     /// </summary>
@@ -13,18 +14,27 @@ namespace Core.Common
         protected GridType _gridtype;
         protected Tiling _tiling;
 
-        // on read takes the string and converts to specific type
-        // on write takes a specific type and converts to a string
+        /// <summary>
+        /// Farfield width
+        /// </summary>
         public float Width
         {
             get => float.Parse(_width);
             set => _width = Convert.ToString(value);
         }
+
+        /// <summary>
+        /// Farfield height
+        /// </summary>
         public float Height
         {
             get => float.Parse(_height);
             set => _height = Convert.ToString(value);
         }
+
+        /// <summary>
+        /// Number of times smoothing method is run per call
+        /// </summary>
         public short Smoothingcycles
         {
             get => short.Parse(_smoothingcycles);
@@ -39,18 +49,27 @@ namespace Core.Common
             }
         }
 
+        /// <summary>
+        /// The basic type of grid element that is used to construct the mesh
+        /// </summary>
         public GridType Gridtype
         {
             get => _gridtype;
             set => _gridtype = value;
         }
 
+        /// <summary>
+        /// The type of tiling that is applied to the grid
+        /// </summary>
         public Tiling Tiling
         {
             get => _tiling;
             set => _tiling = value;
         }
 
+        /// <summary>
+        /// Assembles and formats the settings data
+        /// </summary>
         public void CreateSettings()
         {
 
@@ -94,7 +113,10 @@ namespace Core.Common
             }
         }
 
-        // Write settings to the settings.xml file
+        /// <summary>
+        /// Writes settings to the settings.xml file
+        /// </summary>
+        /// <param name="farfield"></param>
         public static void WriteSettings(Farfield farfield)
         {
             XmlDocument xmlDoc = new XmlDocument();

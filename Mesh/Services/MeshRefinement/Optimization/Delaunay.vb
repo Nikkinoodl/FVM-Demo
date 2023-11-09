@@ -3,6 +3,7 @@ Imports Core.Domain
 Imports Core.Common
 Imports Mesh.Factories
 Imports System.Numerics
+Imports Mesh.Services.SharedUtilities
 
 Namespace Services
     Public Class Delaunay : Implements IDelaunay
@@ -155,33 +156,6 @@ Namespace Services
                 Next
             Next
         End Sub
-
-        ''' <summary>
-        ''' Checks if rP lies outside circumcircle of cell centered on rCenter
-        ''' </summary>
-        ''' <param name="rP"></param>
-        ''' <param name="r1"></param>
-        ''' <param name="rCenter"></param>
-        ''' <returns></returns>
-        Private Shared Function CheckInCircle(r1 As Vector2, rP As Vector2, rCenter As Vector2) As Boolean
-
-            Dim rad As Double
-            Dim p As Double
-
-            'circumcircle radius
-            rad = Vector2.Distance(rCenter, r1)
-
-            'distance from cell center to rP
-            p = Vector2.Distance(rP, rCenter)
-
-            'compare and return true if in circumcircle
-            If p < rad Then
-                Return True
-            Else
-                Return False
-            End If
-
-        End Function
 
         ''' <summary>
         ''' Returns a tuple of position vectors

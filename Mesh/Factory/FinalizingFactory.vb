@@ -4,6 +4,10 @@ Imports Core.Interfaces
 Imports Mesh.Services.SharedUtilities
 
 Namespace Factories
+
+    ''' <summary>
+    ''' This factory adds cells around the edge of the fairfield that allow the setting of boundary conditions
+    ''' </summary>
     Public Class FinalizingFactory : Implements IFinalizingFactory
 #Region "Fields"
 
@@ -22,8 +26,7 @@ Namespace Factories
 #Region "Finalizing Methods"
 
         ''' <summary>
-        ''' Adds zero-height cells that have only one edge around the border of the farfield with triangular mesh. These are
-        ''' used to set boundary conditions
+        ''' Adds zero-height cells that have only one edge around the border of the farfield
         ''' </summary>
         ''' <param name="farfield"></param>
         Public Sub AddBorderCells(farfield As Farfield) Implements IFinalizingFactory.AddBorderCells
@@ -141,7 +144,7 @@ Namespace Factories
                                 v1 = t.V5
                                 v2 = t.V4
 
-                            ElseIf e.SideName = SideName.S5 Then
+                            ElseIf e.SideName = SideName.s5 Then
 
                                 v1 = t.V6
                                 v2 = t.V5
@@ -175,17 +178,17 @@ Namespace Factories
                                 v1 = t.V5
                                 v2 = t.V4
 
-                            ElseIf e.SideName = SideName.S5 Then
+                            ElseIf e.SideName = SideName.s5 Then
 
                                 v1 = t.V6
                                 v2 = t.V5
 
-                            ElseIf e.SideName = SideName.S6 Then
+                            ElseIf e.SideName = SideName.s6 Then
 
                                 v1 = t.V7
                                 v2 = t.V6
 
-                            ElseIf e.SideName = SideName.S7 Then
+                            ElseIf e.SideName = SideName.s7 Then
 
                                 v1 = t.V8
                                 v2 = t.V7
@@ -222,7 +225,7 @@ Namespace Factories
 
         ''' <summary>
         ''' Wraps an airfoil surface with a layer of zero height cells that have only one edge. This method is
-        ''' restricted to triangular grids.
+        ''' restricted to use on irregular triangule grids only.
         ''' </summary>
         ''' <param name="farfield"></param>
         Public Sub AddAirfoilBorderCells(farfield As Farfield) Implements IFinalizingFactory.AddAirfoilBorderCells

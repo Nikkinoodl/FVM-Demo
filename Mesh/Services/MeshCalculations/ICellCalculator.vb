@@ -22,7 +22,7 @@
         Sub CalculateFaceNormals()
 
         ''' <summary>
-        ''' Calculate the area of each cell
+        ''' Calculates the inverse area of each cell
         ''' </summary>
         Sub CalculateAreas()
 
