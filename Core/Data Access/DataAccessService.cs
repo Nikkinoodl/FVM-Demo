@@ -3,6 +3,7 @@ using Core.Interfaces;
 using Core.DataCollections;
 using Core.Common;
 using System.Numerics;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Core.Data
 {
@@ -20,6 +21,32 @@ namespace Core.Data
         /// A list of all nodes
         /// </summary>
         public List<Node> Nodelist { get; set; } = Repository.Nodelist;
+
+        /// <summary>
+        /// Returns a list of all interior nodes
+        /// </summary>
+        /// <returns></returns>
+        public List<Node> InteriorNodes()
+        {
+
+            var nodeList = (from node in Nodelist
+                            where node.Boundary == false
+                            select node).ToList();
+
+            return nodeList;
+        }
+
+        /// <summary>
+        /// Returns a list of all nodes
+        /// </summary>
+        /// <returns></returns>
+        public List<Node> AllNodes()
+        {
+            var nodeList = (from node in Nodelist
+                            select node).ToList();
+
+            return nodeList;
+        }
 
         /// <summary>
         /// Returns the maximum cell Id
@@ -122,7 +149,7 @@ namespace Core.Data
             {
                 var thisNode = (from node in Nodelist
                                 where node.Id == n
-                                select node).AsParallel().Single();
+                                select node).Single();
 
                 return thisNode;
             }
@@ -181,6 +208,38 @@ namespace Core.Data
         }
 
         /// <summary>
+        /// Counts the number of cells that share a given node
+        /// </summary>
+        /// <param name="thisnode"></param>
+        /// <returns></returns>
+        public int CellClusterCount(int thisnode, CellType cellType)
+        {
+
+            var total = (from cell in CellList
+                         where cell.CellType == cellType
+                         where cell.V1 == thisnode || cell.V2 == thisnode || cell.V3 == thisnode
+                         select cell).Count();
+        
+            return total;
+        }
+
+        /// <summary>
+        /// Returns a list of cells that share a given node
+        /// </summary>
+        /// <param name="thisnode"></param>
+        /// <returns></returns>
+        public List<Cell> CellCluster(int thisnode, CellType cellType)
+        {
+            var cluster = (from cell in CellList
+                           where cell.CellType == cellType
+                           where cell.V1 == thisnode || cell.V2 == thisnode || cell.V3 == thisnode
+                           select cell);
+
+            return cluster.ToList();
+
+        }
+
+        /// <summary>
         /// Returns a list of nodes that are candidates for smoothing. Surface and boundary nodes are excluded
         /// </summary>
         /// <returns></returns>
@@ -204,7 +263,7 @@ namespace Core.Data
 
             var thislist = (from cell in CellList
                            .Where(c => c.Edges.Any(e => e.SideType == SideType.boundary))
-                           select cell).AsParallel();
+                           select cell);
 
             return thislist.ToList();
         }
@@ -234,8 +293,8 @@ namespace Core.Data
         {
 
             var boundarynodes = (from node in Nodelist
-                                where node.Boundary == true || node.Surface == true
-                                select node).AsParallel();
+                                where node.R.X == 0 || node.R.X == farfield.Width || node.R.Y == 0 || node.R.Y == farfield.Height
+                                select node);
 
             return boundarynodes.ToList();
         }
@@ -279,12 +338,6 @@ namespace Core.Data
                            let values = new[] { t.V1, t.V2, t.V3, t.V4, t.V5, t.V6, t.V7, t.V8 }
                            where values.Contains(nodePair.nA) && values.Contains(nodePair.nB) && t.Id != this_t
                            select t).FirstOrDefault();
-
-            ////original, clunky version
-            //Cell? t_adj = (from Cell t in CellList
-            //               where (t.V8 == nodePair.nA || t.V7 == nodePair.nA || t.V6 == nodePair.nA || t.V5 == nodePair.nA || t.V4 == nodePair.nA || t.V3 == nodePair.nA || t.V2 == nodePair.nA || t.V1 == nodePair.nA) && (t.V8 == nodePair.nB || t.V7 == nodePair.nB || t.V6 == nodePair.nB || t.V5 == nodePair.nB || t.V4 == nodePair.nB || t.V3 == nodePair.nB || t.V2 == nodePair.nB || t.V1 == nodePair.nB)
-            //               where t.Id != this_t
-            //               select t).FirstOrDefault();
 
             if (t_adj != null)
             {
@@ -522,6 +575,23 @@ namespace Core.Data
                      select c).AsParallel().First();
 
             return e;
+        }
+
+        /// <summary>
+        /// Finds the third edge in a triangle
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="vertSide"></param>
+        /// <param name="longSide"></param>
+        /// <returns></returns>
+        public Array FindHorizontalEdge(int t, Edge vertSide, Edge longSide)
+        {
+            var h = from l in CellList[t].Edges
+                     where l.SideName != vertSide.SideName & l.SideName != longSide.SideName
+                     select l;
+
+            //returning an array forces imediate execution
+            return h.ToArray();
         }
 
         /// <summary>

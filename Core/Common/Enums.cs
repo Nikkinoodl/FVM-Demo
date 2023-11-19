@@ -23,10 +23,10 @@
         S2,
         S3,
         S4,
-        s5,
-        s6,
-        s7,
-        s8
+        S5,
+        S6,
+        S7,
+        S8
     }
 
     /// <summary>
@@ -93,7 +93,8 @@
         Kis,                //join nodes to center of cell
         Join,               //join edge centers to center of cell
         KisAndJoin,         //apply both kis and join (like tetrakis on square cell)
-        Trunc               //truncate cell vertices
+        Trunc,              //truncate cell vertices
+        TruncAndCombine     //truncate cell vertices, combine offcuts into single cells
     }
 
     /// <summary>

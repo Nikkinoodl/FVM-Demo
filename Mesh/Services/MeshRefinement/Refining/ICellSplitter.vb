@@ -38,5 +38,16 @@ Namespace Services
         ''' <param name="farfield"></param>
         Sub DivideTrunc(farfield As Farfield)
 
+        ''' <summary>
+        ''' Combines corner offcuts of the quad trunc tiling operations into single cells
+        ''' </summary>
+        Sub CombineQuadGrid(farfield As Farfield)
+
+        ''' <summary>
+        ''' Combines corner offcuts of the triangle trunc tiling operations into single cells
+        ''' </summary>
+        ''' <param name="farfield"></param>
+        Sub CombineTriangleGrid(farfield As Farfield)
+
     End Interface
 End Namespace

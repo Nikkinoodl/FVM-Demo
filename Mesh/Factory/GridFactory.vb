@@ -1,6 +1,7 @@
 ﻿Imports Core.Domain
 Imports Core.Common
 Imports System.Numerics
+Imports Core.DataCollections
 
 Namespace Factories
 
@@ -278,6 +279,41 @@ Namespace Factories
 
         End Sub
 
+        Public Sub ReplaceTriWithPent(t As Integer, newId As Integer, n1 As Integer, n2 As Integer, n3 As Integer, n4 As Integer, n5 As Integer,
+                              Optional s1 As SideType = SideType.none,
+                              Optional s2 As SideType = SideType.none,
+                              Optional s3 As SideType = SideType.none,
+                              Optional s4 As SideType = SideType.none,
+                              Optional s5 As SideType = SideType.none) Implements IGridFactory.ReplaceTriWithPent
+
+            Dim upgradeCell As Cell = New UpgradeCell(t, newId, n1, n2, n3, n4, n5, s1, s2, s3, s4, s5)
+
+        End Sub
+
+        ''' <summary>
+        ''' Replaces a triangular cell with a hexagon
+        ''' </summary>
+        ''' <param name="t"></param>
+        ''' <param name="newId"></param>
+        ''' <param name="n1"></param>
+        ''' <param name="n2"></param>
+        ''' <param name="n3"></param>
+        ''' <param name="n4"></param>
+        ''' <param name="n5"></param>
+        ''' <param name="n6"></param>
+        ''' <param name=""></param>
+        Public Sub ReplaceTriWithHex(t As Integer, newId As Integer, n1 As Integer, n2 As Integer, n3 As Integer, n4 As Integer, n5 As Integer, n6 As Integer,
+                              Optional s1 As SideType = SideType.none,
+                              Optional s2 As SideType = SideType.none,
+                              Optional s3 As SideType = SideType.none,
+                              Optional s4 As SideType = SideType.none,
+                              Optional s5 As SideType = SideType.none,
+                              Optional s6 As SideType = SideType.none) Implements IGridFactory.ReplaceTriWithHex
+
+            Dim upgradeCell As Cell = New UpgradeCell(t, newId, n1, n2, n3, n4, n5, n6, s1, s2, s3, s4, s5, s6)
+
+        End Sub
+
         ''' <summary>
         ''' Update the properties of an existing triangular grid cell
         ''' To avoid confusion, note that t is the index, not the Id
@@ -297,6 +333,28 @@ Namespace Factories
             Dim updateCell As Cell = New UpdateCell(t, this_n1, this_n2, this_n3, sideType1, sideType2, sideType3)
 
         End Sub
+
+        ''' <summary>
+        ''' Deletes a node
+        ''' </summary>
+        ''' <param name="n"></param>
+        Public Sub DeleteNode(n As Node) Implements IGridFactory.DeleteNode
+
+            Repository.Nodelist.Remove(n)
+
+        End Sub
+
+
+        ''' <summary>
+        ''' Deletes a cell
+        ''' </summary>
+        ''' <param name="t"></param>
+        Public Sub DeleteCell(t As Integer) Implements IGridFactory.DeleteCell
+
+            Repository.CellList.Remove(Repository.CellList(t))
+
+        End Sub
+
 #End Region
 
 #Region "Empty Space Build Methods"

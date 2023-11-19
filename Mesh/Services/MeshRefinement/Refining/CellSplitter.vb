@@ -4,6 +4,9 @@ Imports Mesh.Factories
 Imports System.Numerics
 Imports Core.Domain
 Imports Mesh.Services.SharedUtilities
+Imports System.Text.Json.Nodes
+Imports Core.DataCollections
+Imports System.Runtime.InteropServices.Marshalling
 
 Namespace Services
     Public Class CellSplitter : Implements ICellSplitter
@@ -659,11 +662,16 @@ Next_Cell:
 
                     For Each e As Edge In data.CellList(t).Edges
 
-                        'this identifies the left/right edge cells and vertical side
+                        'this identifies cells with a left/right vertical edge
                         If e.R.X = 0 Or e.R.X = farfield.Width Then
 
                             Dim LR As Integer       'is cell aligned to the left edge or right edge?
                             Dim PSD As Integer      'is it pointy side down (is apex below the base)?
+
+                            'determine long side and horizontal side (use array for horizontal side as we will
+                            'be overwriting it)
+                            Dim longSide As Edge = data.FindLongestSide(t)
+                            Dim h() As Edge = data.FindHorizontalEdge(t, e, longSide)
 
                             If e.R.X = 0 Then
                                 LR = 1
@@ -693,13 +701,8 @@ Next_Cell:
 
                             n = CreateNewNode(e, vp(1, 1), r(1, 1), nodeTypeCollection)
 
-
                             'configuration determines the orientation of the cell
                             Dim config As Integer = LR + PSD
-
-                            'determine long side and horizontal side
-                            Dim longSide As Edge = data.FindLongestSide(t)
-                            Dim h As Edge = FindHorizontalEdge(t, e, longSide)
 
                             'two new nodes will be created on the longest side and one on the horizontal side
                             If config = 1 Or config = 4 Then
@@ -707,15 +710,14 @@ Next_Cell:
                                 r(2, 1) = Vector2.Subtract(longSide.R, delta * longSide.Lv)
                                 r(2, 2) = Vector2.Add(longSide.R, delta * longSide.Lv)
 
-                                r(3, 1) = Vector2.Add(h.R, delta * h.Lv)
-
+                                r(3, 1) = Vector2.Add(h(0).R, delta * h(0).Lv)
 
                             Else     'config = 2 or 3
 
                                 r(2, 1) = Vector2.Add(longSide.R, delta * longSide.Lv)
                                 r(2, 2) = Vector2.Subtract(longSide.R, delta * longSide.Lv)
 
-                                r(3, 1) = Vector2.Subtract(h.R, delta * h.Lv)
+                                r(3, 1) = Vector2.Subtract(h(0).R, delta * h(0).Lv)
 
                             End If
 
@@ -726,9 +728,10 @@ Next_Cell:
                                     'point vp to the existing node
                                     vp(2, j) = data.FindNode(r(2, j))
 
-                                Else                           'else create a new node (default and most common behavior)
+                                Else                           'else create a new node
 
-                                    vp(2, j) = n                     'assign index to new node
+                                    'assign id to new node
+                                    vp(2, j) = n
 
                                     'Create a new node at the np point and return incremented n
                                     n = CreateNewNode(longSide, vp(2, j), r(2, j), nodeTypeCollection)
@@ -742,12 +745,12 @@ Next_Cell:
                                 'point vp to the existing node
                                 vp(3, 1) = data.FindNode(r(3, 1))
 
-                            Else                           'else create a new node (default and most common behavior)
+                            Else                           'else create a new node
 
                                 vp(3, 1) = n                     'assign index to new node
 
                                 'Create a new node at the np point and return incremented n
-                                n = CreateNewNode(h, vp(3, 1), r(3, 1), nodeTypeCollection)
+                                n = CreateNewNode(h(0), vp(3, 1), r(3, 1), nodeTypeCollection)
 
                             End If
 
@@ -765,36 +768,12 @@ Next_Cell:
                             '
                             ' 3                                4 
                             '                  vp(3,1)                vp(3,1)
-                            '               B ____ C              B  ____ A
+                            '               B ____ C              B  ____ C
                             '                |  \/ vp(2,2)   vp(2,2) \/  |
                             '        vp(1,1) |__/ vp(2,1)     vp(2,1) \__| vp(1,1)
                             '                | /                       \ |
                             '                |/                         \|
                             '               A                            A
-
-                            Dim triSide2 As SideType = SideType.none
-                            Dim triSide3 As SideType = SideType.none
-
-                            Dim pSide1 As SideType = h.SideType
-                            Dim pSide2 As SideType = SideType.none
-                            Dim pSide5 As SideType = SideType.none
-
-                            'order new nodes to make cell creation easier - side types
-                            'depend on cell orientation
-                            Dim k As (Integer, Integer)
-                            Dim m As (Integer, Integer)
-
-                            If config = 1 Or config = 4 Then
-                                k = (vp(2, 1), vp(1, 1))
-                                m = (vp(3, 1), vp(2, 2))
-                                triSide2 = SideType.boundary
-                                pSide2 = e.SideType
-                            Else
-                                k = (vp(1, 1), vp(2, 1))
-                                m = (vp(2, 2), vp(3, 1))
-                                triSide3 = SideType.boundary
-                                pSide5 = e.SideType
-                            End If
 
                             'put cell nodes into group, order as A, B, C in above diagram
                             Dim newNodes As (Integer, Integer, Integer)
@@ -815,17 +794,22 @@ Next_Cell:
                             End If
 
                             'replace and add cells
-                            factory.ReplaceCell(t, newId, newNodes.Item1, k.Item1, k.Item2,, triSide2, triSide3)
-
                             If config = 1 Or config = 4 Then
 
-                                factory.AddCell(newId + 1, newNodes.Item2, vp(3, 1), vp(2, 2),,, h.SideType)
-                                factory.AddPent(newId + 2, vp(3, 1), newNodes.Item3, vp(1, 1), vp(2, 1), vp(2, 2), h.SideType, pSide2,,,)
+                                'replace cell
+                                factory.ReplaceCell(t, newId, newNodes.Item1, vp(2, 1), vp(1, 1),, SideType.boundary,)
 
-                            Else
+                                'add new triangle, first node at 'B' or 'C' vertex depending on configuration
+                                factory.AddCell(newId + 1, newNodes.Item2, vp(3, 1), vp(2, 2),,,)
 
-                                factory.AddCell(newId + 1, newNodes.Item3, vp(2, 2), vp(3, 1), , h.SideType,)
-                                factory.AddPent(newId + 2, newNodes.Item2, vp(3, 1), vp(2, 2), vp(2, 1), vp(1, 1), h.SideType,,,, pSide5)
+                                'add new pentagon - first node at 'B' or 'C' vertex depending on configuration
+                                factory.AddPent(newId + 2, newNodes.Item3, vp(1, 1), vp(2, 1), vp(2, 2), vp(3, 1), SideType.boundary,,,,)
+
+                            Else     'config 2 or 3
+
+                                factory.ReplaceCell(t, newId, newNodes.Item1, vp(1, 1), vp(2, 1),,, SideType.boundary)
+                                factory.AddCell(newId + 1, newNodes.Item3, vp(2, 2), vp(3, 1),,,)
+                                factory.AddPent(newId + 2, newNodes.Item2, vp(3, 1), vp(2, 2), vp(2, 1), vp(1, 1),,,,, SideType.boundary)
 
                             End If
 
@@ -841,7 +825,6 @@ Next_Cell:
                 End If
 
                 'interior equilateral cells, all irregular triangle cells, all quad cells
-
                 Dim i As Integer = 1
 
                 'cycle through each edge and create new nodes
@@ -892,18 +875,96 @@ Next_Cell:
                     factory.ReplaceCell(t, newId, nodes.N1, vp(3, 1), vp(2, 2),, s(1), s(2))
                     factory.AddCell(newId + 1, nodes.N2, vp(1, 1), vp(3, 2),, s(2), s(0))
                     factory.AddCell(newId + 2, nodes.N3, vp(2, 1), vp(1, 2),, s(0), s(1))
-                    factory.AddHex(newId + 3, vp(1, 1), vp(1, 2), vp(2, 1), vp(2, 2), vp(3, 1), vp(3, 2), (0),, s(1),, (2),)
+                    factory.AddHex(newId + 3, vp(1, 1), vp(1, 2), vp(2, 1), vp(2, 2), vp(3, 1), vp(3, 2), s(0),, s(1),, s(2),)
 
                     newId += 4
 
                 End If
-
 
 Next_Cell:
             Next
 
         End Sub
 
+        ''' <summary>
+        ''' Combines corner offcuts of the quad trunc tiling operations into single cells
+        ''' </summary>
+        ''' <param name="farfield"></param>
+        Public Sub CombineQuadGrid(farfield As Farfield) Implements ICellSplitter.CombineQuadGrid
+
+            'current max id in celllist and new id for cell inserts
+            Dim maxId = data.CellList.Max(Function(p) p.Id)
+            Dim newId = maxId + 1
+
+            'first transform interior clusters into quads
+            For Each n As Node In data.InteriorNodes
+
+                Dim cluster As List(Of Cell) = data.CellCluster(n.Id, CellType.triangle)
+                Dim size = data.CellClusterCount(n.Id, CellType.triangle)
+
+                If size = 4 Then            'interior cluster
+
+                    newId = CombineCluster(newId, n, cluster, size)
+
+                End If
+
+            Next
+
+            'second, transform edge clusters into triangles
+            For Each n As Node In data.BoundaryNode(farfield)
+
+                Dim cluster As List(Of Cell) = data.CellCluster(n.Id, CellType.triangle)
+                Dim size = data.CellClusterCount(n.Id, CellType.triangle)
+
+                If size = 2 Then        'edge cases
+
+                    newId = CombineEdgeCluster(newId, n, cluster, size, farfield)
+
+                End If
+
+            Next
+
+        End Sub
+
+        ''' <summary>
+        ''' Combines corner offcuts of the triangular trunc tiling operations into single cells
+        ''' </summary>
+        ''' <param name="farfield"></param>
+        Public Sub CombineTriangleGrid(farfield As Farfield) Implements ICellSplitter.CombineTriangleGrid
+
+            'current max id in celllist and new id for cell inserts
+            Dim maxId = data.CellList.Max(Function(p) p.Id)
+            Dim newId = maxId + 1
+
+            'first, transform interior clusters into hexagons
+            For Each n As Node In data.InteriorNodes
+
+                Dim cluster As List(Of Cell) = data.CellCluster(n.Id, CellType.triangle)
+                Dim size = data.CellClusterCount(n.Id, CellType.triangle)
+
+                If size = 6 Then        'interior cluster
+
+                    newId = CombineCluster(newId, n, cluster, size)
+
+                End If
+
+            Next
+
+            'Second, transform clusters on the farfield edge into quads And pentagons
+            For Each n As Node In data.BoundaryNode(farfield)
+
+                Dim cluster As List(Of Cell) = data.CellCluster(n.Id, CellType.triangle)
+                Dim size = data.CellClusterCount(n.Id, CellType.triangle)
+
+                If size > 1 Then  'edge case (3 or 4), corner case (2)
+
+                    newId = CombineEdgeCluster(newId, n, cluster, size, farfield)
+
+                End If
+
+            Next
+
+        End Sub
 #End Region
 
 #Region "Private Methods"
@@ -1032,11 +1093,17 @@ Next_Cell:
             Dim l3 = Vector2.Subtract(positionVectors.R2, positionVectors.R1).Length
 
             If l1 > l2 And l1 > l3 Then
+
                 Return data.CellList(t).Edge1
+
             ElseIf l2 > l1 And l2 > l3 Then
+
                 Return data.CellList(t).Edge2
+
             Else
+
                 Return data.CellList(t).Edge3
+
             End If
 
         End Function
@@ -1089,14 +1156,23 @@ Next_Cell:
             'Boundary node identification must come from the existing cell (not the nodes) as lines between nodes
             'can cut across corners of the calc domain
             Select Case e.SideName
+
                 Case SideName.S1
+
                     factory.RequestNode(vp, rP, s.S2 And s.S3, IIf(e.SideType = SideType.boundary, True, False))
+
                 Case SideName.S2
+
                     factory.RequestNode(vp, rP, s.S1 And s.S3, IIf(e.SideType = SideType.boundary, True, False))
+
                 Case SideName.S3
+
                     factory.RequestNode(vp, rP, s.S2 And s.S1, IIf(e.SideType = SideType.boundary, True, False))
+
                 Case Else
+
                     Throw New Exception
+
             End Select
 
             Return vp + 1
@@ -1150,18 +1226,27 @@ Next_Cell:
 
             'refer to the diagram at the SplitCells sub for better understanding of what is being done.
             Select Case e.SideName
+
                 Case SideName.S1
+
                     'The new face must always be of SideType.none : other faces inherit their existing state.
                     factory.ReplaceCell(t, newid, n.N1, n.N2, vp, s(0),, s(2))
                     factory.AddCell(newid + 1, n.N1, vp, n.N3, s(0), s(1),)
+
                 Case SideName.S2
+
                     factory.ReplaceCell(t, newid, vp, n.N2, n.N3, s(0), s(1),)
                     factory.AddCell(newid + 1, n.N1, n.N2, vp,, s(1), s(2))
+
                 Case SideName.S3
+
                     factory.ReplaceCell(t, newid, n.N1, vp, n.N3,, s(1), s(2))
                     factory.AddCell(newid + 1, vp, n.N2, n.N3, s(0),, s(2))
+
                 Case Else
+
                     Throw New Exception
+
             End Select
 
             Return newid + 2
@@ -1258,18 +1343,219 @@ Next_Cell:
         End Function
 
         ''' <summary>
-        ''' Finds the horizontal edge in a euilateral triangle grid boundary cell
+        ''' Combines a cluster of triangular cells in the interior of the farfield
+        ''' into a single quad cell
         ''' </summary>
-        ''' <param name="t"></param>
-        ''' <param name="e"></param>
-        ''' <param name="longSide"></param>
+        ''' <param name="newId"></param>
+        ''' <param name="n"></param>
+        ''' <param name="cluster"></param>
+        ''' <param name="size"></param>
         ''' <returns></returns>
-        Private Function FindHorizontalEdge(t As Integer, e As Edge, longSide As Edge) As Edge
+        Private Function CombineCluster(newId As Integer, n As Node, cluster As List(Of Cell), size As Integer) As Integer
 
-            Dim h As Edge = (From l In data.CellList(t).Edges
-                             Where l.SideName <> e.SideName And l.SideName <> longSide.SideName
-                             Select l).FirstOrDefault
-            Return h
+            'select distinct nodes in cluster, exclude n  (Id, R, angle to first node)
+            Dim nodeArray As New List(Of (Integer, Vector2, Double))
+
+            For Each c As Cell In cluster
+
+                'read cell nodes into array
+                Dim nArray() As Integer = GetNodes(c)
+
+                'arrays for vectors
+                Dim rArray(3) As Vector2
+
+                'loop through the array of cell nodes
+                For i As Integer = 0 To 2
+
+                    'skip the center node
+                    If nArray(i) <> n.Id Then
+
+                        Dim j = i
+
+                        'skip duplicates already in the new array
+                        If nodeArray.Any(Function(x) x.Item1 = nArray(j)) = False Then
+
+                            'position vector of node
+                            rArray(i) = data.NodeV(nArray(i)).R
+
+                            'find the angle between the vector joining the center to the node and the Y axis
+                            Dim theta = CalcAngleToYAxis(rArray(i), n)
+
+                            nodeArray.Add((nArray(i), rArray(i), theta))
+
+                        End If
+
+                    End If
+
+                Next
+
+            Next
+
+            'sort by theta
+            Dim sortedNodes = nodeArray.OrderBy(Function(x) x.Item3)
+
+            If sortedNodes.Count() = 4 Then
+
+                'replace first cell with new quad - all sidetypes default to sidetype.none
+                factory.ReplaceTriWithQuad(data.CellList.IndexOf(cluster(0)), newId, sortedNodes(0).Item1, sortedNodes(1).Item1, sortedNodes(2).Item1, sortedNodes(3).Item1,,,,)
+
+            ElseIf sortedNodes.Count() = 6 Then
+
+                'replace first cell with new hexagon - all sidetypes default to sidetype.none
+                factory.ReplaceTriWithHex(data.CellList.IndexOf(cluster(0)), newId, sortedNodes(0).Item1, sortedNodes(1).Item1, sortedNodes(2).Item1, sortedNodes(3).Item1, sortedNodes(4).Item1, sortedNodes(5).Item1,,,,,,)
+
+            End If
+
+            'delete remaining cells
+            For i As Integer = 1 To size - 1
+
+                factory.DeleteCell(data.CellList.IndexOf(cluster(i)))
+
+            Next
+
+            'delete shared node
+            factory.DeleteNode(n)
+
+            Return newId + 1
+
+        End Function
+
+        ''' <summary>
+        ''' Combines a cluster of triangular cells at the farfield boundary into a single cell
+        ''' </summary>
+        ''' <param name="newId"></param>
+        ''' <param name="n"></param>
+        ''' <param name="cluster"></param>
+        ''' <param name="size"></param>
+        ''' <returns></returns>
+        Private Function CombineEdgeCluster(newId As Integer, n As Node, cluster As List(Of Cell),
+                                            size As Integer, farfield As Farfield) As Integer
+
+
+            '1. combine distinct cluster nodes into a single array
+            Dim nodeArray As New List(Of (Integer, Vector2, Double))
+
+            For Each c As Cell In cluster
+
+                'read cell nodes into array
+                Dim nArray() As Integer = GetNodes(c)
+
+                'array for node position vectors
+                Dim rArray(3) As Vector2
+
+                'loop through the array of nodes
+                For i As Integer = 0 To 2
+
+                    'shared node is only retained if it sits in a corner
+                    If nArray(i) = n.Id And IsCornerNode(nArray(i), farfield) = False Then
+
+                        Continue For
+
+                    End If
+
+                    Dim j = i
+
+                    If nodeArray.Any(Function(x) x.Item1 = nArray(j)) = False Then   'skip duplicate nodes
+
+                        'position vector of node
+                        rArray(i) = data.NodeV(nArray(i)).R
+
+                        'find the angle between the vector joining the cluster center to node n and the Y axis
+                        'this calc works better if the center of rotation is slightly pulled back from n
+                        Dim theta = CalcAngleToYAxis(rArray(i), 0.99 * n.R)
+
+                        nodeArray.Add((nArray(i), rArray(i), theta))
+
+                    End If
+
+                Next
+
+            Next
+
+            '2.sort by theta
+            Dim sortedNodes = nodeArray.OrderBy(Function(x) x.Item3)
+
+            '3. replace original cluster with a single cell
+            Dim nodeCount = sortedNodes.Count()
+            Dim s(nodeCount) As SideType
+
+            'must use number of nodes to determine new geometry
+            If nodeCount = 3 Then   'combine into triangle
+
+                s(0) = IIf(data.NodeV(sortedNodes(1).Item1).Boundary = True And data.NodeV(sortedNodes(2).Item1).Boundary = True, SideType.boundary, SideType.none)
+                s(1) = IIf(data.NodeV(sortedNodes(0).Item1).Boundary = True And data.NodeV(sortedNodes(2).Item1).Boundary = True, SideType.boundary, SideType.none)
+                s(2) = IIf(data.NodeV(sortedNodes(0).Item1).Boundary = True And data.NodeV(sortedNodes(1).Item1).Boundary = True, SideType.boundary, SideType.none)
+
+                'convert first cell in cluster to fill whole cluster space
+                factory.ReplaceCell(data.CellList.IndexOf(cluster(0)), newId, sortedNodes(0).Item1, sortedNodes(1).Item1, sortedNodes(2).Item1, s(0), s(1), s(2))
+
+            Else
+
+                For i As Integer = 0 To nodeCount - 1
+
+                    If i < nodeCount - 1 Then
+
+                        s(i) = IIf(data.NodeV(sortedNodes(i).Item1).Boundary And data.NodeV(sortedNodes(i + 1).Item1).Boundary, SideType.boundary, SideType.none)
+
+                    Else      'close the loop
+
+                        s(i) = IIf(data.NodeV(sortedNodes(i).Item1).Boundary And data.NodeV(sortedNodes(0).Item1).Boundary, SideType.boundary, SideType.none)
+
+                    End If
+
+                Next
+
+                If nodeCount = 4 Then
+
+                    'convert first cell in cluster to fill whole cluster space
+                    factory.ReplaceTriWithQuad(data.CellList.IndexOf(cluster(0)), newId, sortedNodes(0).Item1, sortedNodes(1).Item1, sortedNodes(2).Item1, sortedNodes(3).Item1, s(0), s(1), s(2), s(3))
+
+                ElseIf nodeCount = 5 Then
+
+                    'convert first cell in cluster to fill whole cluster space
+                    factory.ReplaceTriWithPent(data.CellList.IndexOf(cluster(0)), newId, sortedNodes(0).Item1, sortedNodes(1).Item1, sortedNodes(2).Item1, sortedNodes(3).Item1, sortedNodes(4).Item1, s(0), s(1), s(2), s(3), s(4))
+
+                End If
+
+            End If
+
+            '4. delete any remaining cells that were part of the cluster
+            For i As Integer = 1 To size - 1
+
+                factory.DeleteCell(data.CellList.IndexOf(cluster(i)))
+
+            Next
+
+            '5. delete shared node if not in a corner
+            If IsCornerNode(n.Id, farfield) = False Then
+
+                factory.DeleteNode(n)
+
+            End If
+
+            Return newId + 1
+
+        End Function
+
+        ''' <summary>
+        ''' Determines if a node lies in the corner of the farfield
+        ''' </summary>
+        ''' <param name="n"></param>
+        ''' <param name="farfield"></param>
+        ''' <returns></returns>
+        Private Function IsCornerNode(n As Integer, farfield As Farfield)
+
+            Dim r As Vector2 = data.NodeV(n).R
+
+            If (r.X = 0 Or r.X = farfield.Width) And (r.Y = 0 Or r.Y = farfield.Height) Then
+
+                Return True
+
+            Else
+
+                Return False
+
+            End If
 
         End Function
 

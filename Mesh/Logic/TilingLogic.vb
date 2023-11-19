@@ -50,6 +50,21 @@ Namespace Logic
 
                 splitter.DivideTrunc(farfield)
 
+            ElseIf farfield.Tiling = Tiling.TruncAndCombine Then
+
+                splitter.DivideTrunc(farfield)
+                checker.CheckBoundaryNodes(farfield)
+
+                If farfield.Gridtype = GridType.Quads Then
+
+                    splitter.CombineQuadGrid(farfield)
+
+                Else
+
+                    splitter.CombineTriangleGrid(farfield)
+
+                End If
+
             End If
 
             'calculate lengths, make sure all nodes on boundary have .boundary = True

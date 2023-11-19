@@ -190,8 +190,7 @@ Namespace Services
         ''' <returns></returns>
         Friend Shared Function CheckInCircle(r1 As Vector2, rP As Vector2, rCenter As Vector2) As Boolean
 
-            Dim rad As Double
-            Dim p As Double
+            Dim rad, p As Double
 
             'circumcircle radius
             rad = Vector2.Distance(rCenter, r1)
@@ -201,10 +200,46 @@ Namespace Services
 
             'compare and return true if in circumcircle
             If p < rad Then
+
                 Return True
+
             Else
+
                 Return False
+
             End If
+
+        End Function
+
+        ''' <summary>
+        ''' Calculates the angle between the vector from n to r and the Y axis
+        ''' </summary>
+        ''' <param name="r"></param>
+        ''' <param name="n"></param>
+        ''' <returns></returns>
+        Friend Shared Function CalcAngleToYAxis(r As Vector2, n As Node) As Double
+
+            Dim dot, det As Single
+            Dim theta As Double
+
+            dot = Vector2.Dot(Vector2.Subtract(r, n.R), Vector2.UnitY)
+            det = Vector2.Subtract(r, n.R).X * 1
+            theta = Math.Atan2(det, dot)
+
+            Return theta
+
+        End Function
+
+        Friend Shared Function CalcAngleToYAxis(r As Vector2, rC As Vector2) As Double
+
+            Dim dot, det As Single
+            Dim theta As Double
+
+            dot = Vector2.Dot(Vector2.Subtract(r, rC), Vector2.UnitY)
+            det = Vector2.Subtract(r, rC).X * 1
+            theta = Math.Atan2(det, dot)
+
+            Return theta
 
         End Function
 

@@ -17,6 +17,18 @@ namespace Core.Interfaces
         List<Node> Nodelist { get; set; }
 
         /// <summary>
+        /// A list of all nodes in the interior of the farfield
+        /// </summary>
+        /// <returns></returns>
+        List<Node> InteriorNodes();
+
+        /// <summary>
+        /// A list of all nodes
+        /// </summary>
+        /// <returns></returns>
+        List<Node> AllNodes();
+
+        /// <summary>
         /// Returns the current maximum cell Id
         /// </summary>
         /// <returns></returns>
@@ -76,6 +88,20 @@ namespace Core.Interfaces
         /// <param name="thisnode"></param>
         /// <returns>List of Cell</returns>
         List<Cell> SmoothCell(int thisnode);
+
+        /// <summary>
+        /// Counts the number of cells that share a given node
+        /// </summary>
+        /// <param name="thisnode"></param>
+        /// <returns></returns>
+        int CellClusterCount(int thisnode, CellType cellType);
+
+        /// <summary>
+        /// Returns a list of cells that share a given node
+        /// </summary>
+        /// <param name="thisnode"></param>
+        /// <returns></returns>
+        List<Cell> CellCluster(int thisnode, CellType cellType);
 
         /// <summary>
         /// Returns a list of nodes that are candidates for smoothing. Surface and boundary nodes are excluded
@@ -179,6 +205,15 @@ namespace Core.Interfaces
         /// <param name="t"></param>
         /// <returns></returns>
         Edge FindLongestSide(Cell t);
+
+        /// <summary>
+        /// Finds the third edge in a triangle
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="e"></param>
+        /// <param name="longSide"></param>
+        /// <returns></returns>
+        Array FindHorizontalEdge(int t, Edge vertSide, Edge longSide);
 
         Cell TopLeft(Farfield farfield);
 

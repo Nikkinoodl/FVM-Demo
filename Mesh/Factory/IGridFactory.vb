@@ -1,5 +1,6 @@
 ﻿Imports System.Numerics
 Imports Core.Common
+Imports Core.Domain
 
 Namespace Factories
 
@@ -243,6 +244,52 @@ Namespace Factories
                               Optional s3 As SideType = SideType.none,
                               Optional s4 As SideType = SideType.none)
 
+        ''' <summary>
+        ''' Replaces a triangular cell with a pentagon
+        ''' </summary>
+        ''' <param name="t"></param>
+        ''' <param name="newId"></param>
+        ''' <param name="n1"></param>
+        ''' <param name="n2"></param>
+        ''' <param name="n3"></param>
+        ''' <param name="n4"></param>
+        ''' <param name="n5"></param>
+        ''' <param name="s1"></param>
+        ''' <param name="s2"></param>
+        ''' <param name="s3"></param>
+        ''' <param name="s4"></param>
+        ''' <param name="s5"></param>
+        Sub ReplaceTriWithPent(t As Integer, newId As Integer, n1 As Integer, n2 As Integer, n3 As Integer, n4 As Integer, n5 As Integer,
+                              Optional s1 As SideType = SideType.none,
+                              Optional s2 As SideType = SideType.none,
+                              Optional s3 As SideType = SideType.none,
+                              Optional s4 As SideType = SideType.none,
+                              Optional s5 As SideType = SideType.none)
+
+        ''' <summary>
+        ''' Replaces a triangular cell with a hexagon
+        ''' </summary>
+        ''' <param name="t"></param>
+        ''' <param name="newId"></param>
+        ''' <param name="n1"></param>
+        ''' <param name="n2"></param>
+        ''' <param name="n3"></param>
+        ''' <param name="n4"></param>
+        ''' <param name="n5"></param>
+        ''' <param name="n6"></param>
+        ''' <param name="s1"></param>
+        ''' <param name="s2"></param>
+        ''' <param name="s3"></param>
+        ''' <param name="s4"></param>
+        ''' <param name="s5"></param>
+        ''' <param name="s6"></param>
+        Sub ReplaceTriWithHex(t As Integer, newId As Integer, n1 As Integer, n2 As Integer, n3 As Integer, n4 As Integer, n5 As Integer, n6 As Integer,
+                              Optional s1 As SideType = SideType.none,
+                              Optional s2 As SideType = SideType.none,
+                              Optional s3 As SideType = SideType.none,
+                              Optional s4 As SideType = SideType.none,
+                              Optional s5 As SideType = SideType.none,
+                              Optional s6 As SideType = SideType.none)
 
         ''' <summary>
         ''' Updates the nodes and optionally the side types of an existing triangle
@@ -258,6 +305,18 @@ Namespace Factories
                            Optional sideType1 As SideType = SideType.none,
                            Optional sideType2 As SideType = SideType.none,
                            Optional sideType3 As SideType = SideType.none)
+
+        ''' <summary>
+        ''' Deletes a node
+        ''' </summary>
+        ''' <param name="n"></param>
+        Sub DeleteNode(n As Node)
+
+        ''' <summary>
+        ''' Deletes a cell
+        ''' </summary>
+        ''' <param name="t"></param>
+        Sub DeleteCell(t As Integer)
 
 #End Region
 

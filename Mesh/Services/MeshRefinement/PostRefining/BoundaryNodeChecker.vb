@@ -13,8 +13,7 @@ Namespace Services
         End Sub
 
         ''' <summary>
-        ''' Fixes occasional blips where boundary nodes can be misclassified, leading to problems
-        ''' with the smoothing cycle. this is a legacy from the early stages of development
+        ''' Ensure that all nodes on the edge of the farfield have the correct flag set
         ''' </summary>
         ''' <param name="farfield"></param>
         Public Sub CheckBoundaryNodes(farfield As Farfield) Implements IBoundaryNodeChecker.CheckBoundaryNodes
