@@ -1,7 +1,4 @@
-﻿using Core.Common;
-using System.Collections;
-
-namespace Core.Domain
+﻿namespace Core.Domain
 
 {
     public abstract class BaseTriangle

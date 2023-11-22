@@ -9,7 +9,7 @@
         public const string FILELOCATION = @"C:\Users\Simon\Projects\Apps";
         public const string MSGCOMPLETE = "Complete";
         public const string MSGINITIALIZE = "Initializing";
-        public const string MSGDELAUNAY = "Starting Delaunay Trianguation";
+        public const string MSGDELAUNAY = "Starting Delaunay Triangulation";
         public const string MSGDIVIDE = "Refining Grid";
         public const string MSGLOADED = "Data Loaded From File";
         public const string MSGCONSTRUCT = "Building Grid";

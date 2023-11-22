@@ -123,11 +123,11 @@ Namespace Services
 
             Select Case e.SideName
                 Case SideName.S1
-                    rP = Vector2.Add(r.R2, r.R3) * 0.5
+                    rP = (r.R2 + r.R3) * 0.5
                 Case SideName.S2
-                    rP = Vector2.Add(r.R1, r.R3) * 0.5
+                    rP = (r.R1 + r.R3) * 0.5
                 Case SideName.S3
-                    rP = Vector2.Add(r.R1, r.R2) * 0.5
+                    rP = (r.R1 + r.R2) * 0.5
                 Case Else
                     Throw New Exception
             End Select
@@ -147,13 +147,13 @@ Namespace Services
 
             Select Case e.SideName
                 Case SideName.S1
-                    rP = Vector2.Add(r.R2, r.R1) * 0.5
+                    rP = (r.R2 + r.R1) * 0.5
                 Case SideName.S2
-                    rP = Vector2.Add(r.R3, r.R2) * 0.5
+                    rP = (r.R3 + r.R2) * 0.5
                 Case SideName.S3
-                    rP = Vector2.Add(r.R4, r.R3) * 0.5
+                    rP = (r.R4 + r.R3) * 0.5
                 Case SideName.S4
-                    rP = Vector2.Add(r.R1, r.R4) * 0.5
+                    rP = (r.R1 + r.R4) * 0.5
                 Case Else
                     Throw New Exception
             End Select
@@ -165,19 +165,15 @@ Namespace Services
         ''' <summary>
         ''' Determines if a set of position vectors creates a right angle triangle
         ''' </summary>
-        ''' <param name="positionVectors"></param>
+        ''' <param name="pV"></param>
         ''' <returns></returns>
-        Friend Shared Function HasRightAngle(positionVectors As CellNodeVectors) As Boolean
+        Friend Shared Function HasRightAngle(pV As CellNodeVectors) As Boolean
 
-            Dim r1 = Vector2.Subtract(positionVectors.R3, positionVectors.R2)
-            Dim r2 = Vector2.Subtract(positionVectors.R1, positionVectors.R3)
-            Dim r3 = Vector2.Subtract(positionVectors.R2, positionVectors.R1)
+            Dim r1 = pV.R3 - pV.R2
+            Dim r2 = pV.R1 - pV.R3
+            Dim r3 = pV.R2 - pV.R1
 
-            If Vector2.Dot(r3, r2) = 0 Or Vector2.Dot(r1, r3) = 0 Or Vector2.Dot(r2, r1) = 0 Then
-                Return True
-            Else
-                Return False
-            End If
+            Return Vector2.Dot(r3, r2) = 0 Or Vector2.Dot(r1, r3) = 0 Or Vector2.Dot(r2, r1) = 0
 
         End Function
 
@@ -199,15 +195,7 @@ Namespace Services
             p = Vector2.Distance(rP, rCenter)
 
             'compare and return true if in circumcircle
-            If p < rad Then
-
-                Return True
-
-            Else
-
-                Return False
-
-            End If
+            Return p < rad
 
         End Function
 
@@ -220,26 +208,53 @@ Namespace Services
         Friend Shared Function CalcAngleToYAxis(r As Vector2, n As Node) As Double
 
             Dim dot, det As Single
-            Dim theta As Double
 
-            dot = Vector2.Dot(Vector2.Subtract(r, n.R), Vector2.UnitY)
-            det = Vector2.Subtract(r, n.R).X * 1
-            theta = Math.Atan2(det, dot)
 
-            Return theta
+            dot = Vector2.Dot(r - n.R, Vector2.UnitY)
+            det = (r - n.R).X * 1
+
+            Return Math.Atan2(det, dot)
 
         End Function
 
+        ''' <summary>
+        ''' Calculates the angle between a vector and the Y axis
+        ''' </summary>
+        ''' <param name="r"></param>
+        ''' <param name="rC"></param>
+        ''' <returns></returns>
         Friend Shared Function CalcAngleToYAxis(r As Vector2, rC As Vector2) As Double
 
             Dim dot, det As Single
-            Dim theta As Double
 
-            dot = Vector2.Dot(Vector2.Subtract(r, rC), Vector2.UnitY)
-            det = Vector2.Subtract(r, rC).X * 1
-            theta = Math.Atan2(det, dot)
+            dot = Vector2.Dot(r - rC, Vector2.UnitY)
+            det = (r - rC).X * 1
 
-            Return theta
+            Return Math.Atan2(det, dot)
+
+        End Function
+
+        ''' <summary>
+        ''' Returns a number to indicate whether edge lies on left (1) or right (2) of farfield
+        ''' </summary>
+        ''' <param name="e"></param>
+        ''' <param name="farfield"></param>
+        ''' <returns></returns>
+        Friend Shared Function LeftOrRightEdge(e As Edge, farfield As Farfield) As SByte
+
+            If e.R.X = 0 Then
+
+                Return 1
+
+            ElseIf e.R.X = farfield.Width Then
+
+                Return 2
+
+            Else
+
+                Return 0
+
+            End If
 
         End Function
 

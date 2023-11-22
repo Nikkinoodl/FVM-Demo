@@ -63,7 +63,7 @@ Namespace Services
                                                         Dim n3 = cell.V3
 
                                                         'aggregate the position vector of all nodes
-                                                        thisr = Vector2.Add(data.Nodelist(n1).R, Vector2.Add(data.Nodelist(n2).R, Vector2.Add(data.Nodelist(n3).R, thisr)))
+                                                        thisr = data.Nodelist(n1).R + data.Nodelist(n2).R + data.Nodelist(n3).R + thisr
 
                                                     Next
 

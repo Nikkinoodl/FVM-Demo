@@ -3,7 +3,7 @@ using Core.Interfaces;
 using Core.DataCollections;
 using Core.Common;
 using System.Numerics;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Microsoft.VisualBasic;
 
 namespace Core.Data
 {
@@ -132,9 +132,9 @@ namespace Core.Data
 
             var thislist = (from node in Nodelist
                            where node.Boundary == false && node.Surface == false  // nodes on the surface or boundary aren't selected
-                           select node).OrderBy(n => n.R.X).ThenBy(n => n.R.Y);
+                           select node).OrderBy(n => n.R.X).ThenBy(n => n.R.Y).ToList();
 
-            return thislist.ToList();
+            return thislist;
         }
 
         /// <summary>
@@ -167,11 +167,11 @@ namespace Core.Data
         public List<Cell> IncompleteCells()
         {
 
-            var incomplete = from cell in CellList
+            var incompleteList = (from cell in CellList
                              where cell.Complete == false
-                             select cell;
+                             select cell).ToList();
 
-            return incomplete.ToList();
+            return incompleteList;
         }
 
         /// <summary>
@@ -182,13 +182,14 @@ namespace Core.Data
         public List<Cell> CalcCells()
         {
 
-            var cellList = (from t in CellList
-                        where t.BorderCell == false
-                        orderby t.R.X ascending
-                        orderby t.R.Y ascending
-                        select t).AsParallel();
-                        
-            return cellList.ToList();
+            var cellList = CellList
+                .Where(t => !t.BorderCell)
+                .OrderBy(t => t.R.X)
+                .ThenBy(t => t.R.Y)
+                .AsParallel()
+                .ToList();
+
+            return cellList;
         }
 
         /// <summary>
@@ -199,12 +200,12 @@ namespace Core.Data
         public List<Cell> SmoothCell(int thisnode)
         {
 
-            var thislist = (from cell in CellList
-                           where cell.V1 == thisnode || cell.V2 == thisnode || cell.V3 == thisnode
-                           orderby cell.R.X
-                           select cell).AsParallel();
+            var thisList = CellList
+               .Where(cell => cell.V1 == thisnode || cell.V2 == thisnode || cell.V3 == thisnode)
+               .OrderBy(cell => cell.R.X)
+               .AsParallel().ToList();
 
-            return thislist.ToList();
+            return thisList;
         }
 
         /// <summary>
@@ -215,11 +216,9 @@ namespace Core.Data
         public int CellClusterCount(int thisnode, CellType cellType)
         {
 
-            var total = (from cell in CellList
-                         where cell.CellType == cellType
-                         where cell.V1 == thisnode || cell.V2 == thisnode || cell.V3 == thisnode
-                         select cell).Count();
-        
+            var total = CellList
+                .Count(cell => cell.CellType == cellType && (cell.V1 == thisnode || cell.V2 == thisnode || cell.V3 == thisnode));           
+
             return total;
         }
 
@@ -230,12 +229,12 @@ namespace Core.Data
         /// <returns></returns>
         public List<Cell> CellCluster(int thisnode, CellType cellType)
         {
-            var cluster = (from cell in CellList
-                           where cell.CellType == cellType
-                           where cell.V1 == thisnode || cell.V2 == thisnode || cell.V3 == thisnode
-                           select cell);
 
-            return cluster.ToList();
+            var cluster = CellList
+                        .Where(cell => cell.CellType == cellType && (cell.V1 == thisnode || cell.V2 == thisnode || cell.V3 == thisnode))
+                        .ToList();
+
+            return cluster;
 
         }
 
@@ -248,9 +247,9 @@ namespace Core.Data
 
             var thislist = (from node in Nodelist
                            where node.Boundary == false && node.Surface == false  // nodes on the surface or boundary aren't moved
-                           select node).AsParallel();
+                           select node).AsParallel().ToList();
 
-            return thislist.ToList();
+            return thislist;
         }
 
         /// <summary>
@@ -263,9 +262,9 @@ namespace Core.Data
 
             var thislist = (from cell in CellList
                            .Where(c => c.Edges.Any(e => e.SideType == SideType.boundary))
-                           select cell);
+                           select cell).ToList();
 
-            return thislist.ToList();
+            return thislist;
         }
 
         /// <summary>
@@ -278,9 +277,9 @@ namespace Core.Data
 
             var thislist = (from cell in CellList
                            .Where(c => c.Edges.Any(e => e.SideType == SideType.surface))
-                           select cell).AsParallel();
+                           select cell).AsParallel().ToList();
 
-            return thislist.ToList();
+            return thislist;
         }
 
 
@@ -294,9 +293,9 @@ namespace Core.Data
 
             var boundarynodes = (from node in Nodelist
                                 where node.R.X == 0 || node.R.X == farfield.Width || node.R.Y == 0 || node.R.Y == farfield.Height
-                                select node);
+                                select node).ToList();
 
-            return boundarynodes.ToList();
+            return boundarynodes;
         }
 
         /// <summary>
@@ -409,9 +408,9 @@ namespace Core.Data
                             throw new Exception();
                         }
                 }
-            }).AsParallel();
+            }).AsParallel().ToList();
 
-            return filterquery.ToList();
+            return filterquery;
         }
 
         /// <summary>
@@ -479,8 +478,9 @@ namespace Core.Data
                             throw new Exception();
                         }
                 }
-            }).AsParallel();
-            return orderquery.ToList();
+            }).AsParallel().ToList();
+
+            return orderquery;
         }
 
         /// <summary>
@@ -493,8 +493,7 @@ namespace Core.Data
         public List<Cell> GetElementsByBoundary(string edge, Farfield farfield)
         {
             var basequery = (from cell in CellList
-                            where cell.BorderCell == true
-                            where cell.BorderCellType == BorderType.Farfield
+                            where cell.BorderCell == true && cell.BorderCellType == BorderType.Farfield
                             select cell).AsParallel();
 
             var filterquery = basequery.Where(t =>
@@ -526,9 +525,9 @@ namespace Core.Data
                             throw new Exception();
                         }
                   }
-            }).AsParallel();
+            }).AsParallel().ToList();
 
-            return filterquery.ToList();
+            return filterquery;
         }
 
 
@@ -540,11 +539,10 @@ namespace Core.Data
         {
 
             var basequery = (from cell in CellList
-                            where cell.BorderCell == true
-                            where cell.BorderCellType == BorderType.Airfoil
-                            select cell).AsParallel();
+                            where cell.BorderCell == true && cell.BorderCellType == BorderType.Airfoil
+                            select cell).AsParallel().ToList();
 
-            return basequery.ToList();
+            return basequery;
         }
 
         /// <summary>
@@ -586,12 +584,12 @@ namespace Core.Data
         /// <returns></returns>
         public Array FindHorizontalEdge(int t, Edge vertSide, Edge longSide)
         {
-            var h = from l in CellList[t].Edges
-                     where l.SideName != vertSide.SideName & l.SideName != longSide.SideName
-                     select l;
+            var h = (from l in CellList[t].Edges
+                     where l.SideName != vertSide.SideName && l.SideName != longSide.SideName
+                     select l).ToArray();
 
             //returning an array forces imediate execution
-            return h.ToArray();
+            return h;
         }
 
         /// <summary>

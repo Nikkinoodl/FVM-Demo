@@ -1,5 +1,4 @@
-﻿Imports Core.Domain
-Imports Core.Common
+﻿Imports Core.Common
 
 Namespace Factories
 

@@ -81,7 +81,7 @@ Namespace Services
                                                          nodePair.e.AdjoiningEdge = result.sideName
 
                                                          'calculate position vectors and ratios
-                                                         nodePair.e.Rk = Vector2.Subtract(data.CellList(result.t_adj).R, t.R)
+                                                         nodePair.e.Rk = data.CellList(result.t_adj).R - t.R
 
                                                          'determine weighting. Note that this will be 0.5 on regular shaped cells,
                                                          'and 1.0 on boundary cells

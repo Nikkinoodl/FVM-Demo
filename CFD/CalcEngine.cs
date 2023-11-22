@@ -137,11 +137,11 @@ namespace CFD
                     foreach (Edge e in p.Edges)
                     {
                         //since we don't need to derive the second derivative, we use face values for P
-                        gradP = Vector2.Add(_data.CellList[e.AdjoiningCell].P * e.W * e.L * e.N, gradP);
+                        gradP += _data.CellList[e.AdjoiningCell].P * e.W * e.L * e.N;
                     }
 
                     //do corrector step
-                    p.Vel = Vector2.Subtract(p.VelStar, gradP * calc.Dt * p.AreaI * rhoi);
+                    p.Vel = p.VelStar - gradP * calc.Dt * p.AreaI * rhoi;
 
                 });
             }

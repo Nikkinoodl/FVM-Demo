@@ -35,7 +35,7 @@ Namespace Services
                                                     r(i) = data.NodeV(n(i)).R
 
                                                     'cell center
-                                                    t.R = Vector2.Add(t.R, r(i))
+                                                    t.R += r(i)
 
                                                 Next
 
@@ -50,9 +50,9 @@ Namespace Services
                                                     t.Edge3.L = Vector2.Distance(r(1), r(0))
 
                                                     'calculate edge vectors
-                                                    t.Edge1.Lv = Vector2.Subtract(r(2), r(1))
-                                                    t.Edge2.Lv = Vector2.Subtract(r(0), r(2))
-                                                    t.Edge3.Lv = Vector2.Subtract(r(1), r(0))
+                                                    t.Edge1.Lv = r(2) - r(1)
+                                                    t.Edge2.Lv = r(0) - r(2)
+                                                    t.Edge3.Lv = r(1) - r(0)
 
                                                 Else
 
@@ -62,11 +62,11 @@ Namespace Services
                                                         'edge vectors
                                                         If i < nSides - 1 Then
 
-                                                            t.Edges(i).Lv = Vector2.Subtract(r(i + 1), r(i))
+                                                            t.Edges(i).Lv = r(i + 1) - r(i)
 
                                                         Else     'closing the loop on the cell
 
-                                                            t.Edges(i).Lv = Vector2.Subtract(r(0), r(i))
+                                                            t.Edges(i).Lv = r(0) - r(i)
 
                                                         End If
 
@@ -100,9 +100,9 @@ Namespace Services
 
                                                 If nSides = 3 Then
 
-                                                    t.Edge1.R = Vector2.Add(r(1), r(2)) * 0.5
-                                                    t.Edge2.R = Vector2.Add(r(0), r(2)) * 0.5
-                                                    t.Edge3.R = Vector2.Add(r(0), r(1)) * 0.5
+                                                    t.Edge1.R = (r(1) + r(2)) * 0.5
+                                                    t.Edge2.R = (r(0) + r(2)) * 0.5
+                                                    t.Edge3.R = (r(0) + r(1)) * 0.5
 
                                                 Else           'all other cells use standard side naming
 
@@ -111,11 +111,11 @@ Namespace Services
                                                         'calculate mid points
                                                         If i < nSides - 1 Then
 
-                                                            t.Edges(i).R = Vector2.Add(r(i), r(i + 1)) * 0.5
+                                                            t.Edges(i).R = (r(i) + r(i + 1)) * 0.5
 
                                                         Else  'close the loop on the cell
 
-                                                            t.Edges(i).R = Vector2.Add(r(i), r(0)) * 0.5
+                                                            t.Edges(i).R = (r(i) + r(0)) * 0.5
 
                                                         End If
 
@@ -153,11 +153,11 @@ Namespace Services
                                                     'edge vectors
                                                     If i < nSides - 1 Then
 
-                                                        area += (r(i).X * r(i + 1).Y - r(i).Y * r(i + 1).X)
+                                                        area += r(i).X * r(i + 1).Y - r(i).Y * r(i + 1).X
 
                                                     Else  'close the loop on the cell
 
-                                                        area += (r(i).X * r(0).Y - r(i).Y * r(0).X)
+                                                        area += r(i).X * r(0).Y - r(i).Y * r(0).X
 
                                                     End If
 
@@ -179,7 +179,7 @@ Namespace Services
                                                 For Each e As Edge In t.Edges
 
                                                     'face vectors calculated by subtracting vector to cell center 
-                                                    e.Rp = Vector2.Subtract(e.R, t.R)
+                                                    e.Rp = e.R - t.R
 
                                                 Next
                                             End Sub)

@@ -1,7 +1,6 @@
 ﻿Imports Core.Common
 Imports Core.Domain
 Imports Core.Interfaces
-Imports Mesh.Services.SharedUtilities
 
 Namespace Factories
 

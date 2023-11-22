@@ -48,7 +48,7 @@ namespace CFD
         public void NeumannConditions(Farfield farfield, CalcDomain calc)
         {
 
-            //Setting dp/dx and dp/dy to zero on the top, left, right and bottom edges means
+            //setting dp/dx and dp/dy to zero on the top, left, right and bottom edges means
             //setting P at the zero-height border cells to be the same as on their adjoining cell.
 
             List<Cell> borderCells;
