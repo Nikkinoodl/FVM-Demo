@@ -3,7 +3,6 @@ using Core.Interfaces;
 using Core.DataCollections;
 using Core.Common;
 using System.Numerics;
-using Microsoft.VisualBasic;
 
 namespace Core.Data
 {
@@ -340,7 +339,8 @@ namespace Core.Data
 
             if (t_adj != null)
             {
-                //matching sides is easy because we can match on the mid point position vector 
+                //matching sides is easy because we can match on the mid point position vectors
+                //of the edges in this cell
                 sideName = (from Edge e in t_adj.Edges
                             where e.R == nodePair.r
                             select e.SideName).FirstOrDefault();
@@ -368,49 +368,26 @@ namespace Core.Data
         public List<Cell> AdjacentCells(int configuration, CellNodes n)
         {
 
-            var basequery = IncompleteCells();
-
-            var filterquery = basequery.Where(t =>
+            var configurationToCondition = new Dictionary<int, Func<Cell, bool>>
             {
-                switch (configuration)
-                {
-                    case 1:
-                        {
-                            return t.V1 == n.N1 && t.V3 == n.N2;
-                        }
+                {1, t => t.V1 == n.N1 && t.V3 == n.N2},
+                {2, t => t.V2 == n.N2 && t.V1 == n.N3},
+                {3, t => t.V2 == n.N1 && t.V3 == n.N3},
+                {4, t => t.V2 == n.N1 && t.V1 == n.N2},
+                {5, t => t.V3 == n.N2 && t.V2 == n.N3},
+                {6, t => t.V3 == n.N1 && t.V1 == n.N3}
+            };
 
-                    case 2:
-                        {
-                            return t.V2 == n.N2 && t.V1 == n.N3;
-                        }
+            if (!configurationToCondition.TryGetValue(configuration, out Func<Cell, bool>? value))
+            {
+                throw new Exception();
+            }
 
-                    case 3:
-                        {
-                            return t.V2 == n.N1 && t.V3 == n.N3;
-                        }
-
-                    case 4:
-                        {
-                            return t.V2 == n.N1 && t.V1 == n.N2 ;
-                        }
-
-                    case 5:
-                        {
-                            return t.V3 == n.N2 && t.V2 == n.N3;
-                        }
-
-                    case 6:
-                        {
-                            return t.V3 == n.N1 && t.V1 == n.N3;
-                        }
-                    default:
-                        {
-                            throw new Exception();
-                        }
-                }
-            }).AsParallel().ToList();
+            var basequery = IncompleteCells();
+            var filterquery = basequery.Where(value).AsParallel().ToList();
 
             return filterquery;
+
         }
 
         /// <summary>
@@ -424,63 +401,33 @@ namespace Core.Data
         public List<Node> EdgeBoundary(string edge, Farfield farfield)
         {
 
+            var edgeToCondition = new Dictionary<string, Func<Node, bool>>
+            {
+                {"top", n => n.R.Y == farfield.Height && n.R.X != 0 && n.R.X != farfield.Width},
+                {"bottom", n => n.R.Y == 0 && n.R.X != 0 && n.R.X != farfield.Width},
+                {"right", n => n.R.X == farfield.Width && n.R.Y != 0 && n.R.Y != farfield.Height},
+                {"left", n => n.R.X == 0 && n.R.Y != 0 && n.R.Y != farfield.Height}
+            };
+
+            var edgeToOrder = new Dictionary<string, Func<Node, double>>
+            {
+                {"top", n => n.R.X},
+                {"bottom", n => n.R.X},
+                {"right", n => n.R.Y},
+                {"left", n => n.R.Y}
+            };
+
+            if (!edgeToCondition.TryGetValue(edge, out Func<Node, bool>? conditionValue) || !edgeToOrder.TryGetValue(edge, out Func<Node, double>? orderValue))
+            {
+                throw new Exception();
+            }
+
             var basequery = Nodelist;
-
-            var filterquery = basequery.Where(n =>
-            {
-                switch (edge)
-                {
-                    case "top":
-                        {
-                            return n.R.Y == farfield.Height && n.R.X != 0 && n.R.X != farfield.Width;
-                        }
-
-                    case "bottom":
-                        {
-                            return n.R.Y == 0 && n.R.X != 0 && n.R.X != farfield.Width;
-                        }
-
-                    case "right":
-                        {
-                            return n.R.X == farfield.Width && n.R.Y != 0 && n.R.Y != farfield.Height;
-                        }
-
-                    case "left":
-                        {
-                            return n.R.X == 0 && n.R.Y != 0 && n.R.Y != farfield.Height;
-                        }
-
-                    default:
-                        {
-                            throw new Exception();
-                        }
-                }
-            }).AsParallel();
-
-            var orderquery = filterquery.OrderBy(n =>
-            {
-                switch (edge)
-                {
-                    case "top":
-                    case "bottom":
-                        {
-                            return n.R.X;
-                        }
-
-                    case "left":
-                    case "right":
-                        {
-                            return n.R.Y;
-                        }
-
-                    default:
-                        {
-                            throw new Exception();
-                        }
-                }
-            }).AsParallel().ToList();
+            var filterquery = basequery.Where(conditionValue).AsParallel();
+            var orderquery = filterquery.OrderBy(orderValue).AsParallel().ToList();
 
             return orderquery;
+
         }
 
         /// <summary>
@@ -492,42 +439,29 @@ namespace Core.Data
         /// <returns></returns>
         public List<Cell> GetElementsByBoundary(string edge, Farfield farfield)
         {
-            var basequery = (from cell in CellList
-                            where cell.BorderCell == true && cell.BorderCellType == BorderType.Farfield
-                            select cell).AsParallel();
 
-            var filterquery = basequery.Where(t =>
+            var edgeToCondition = new Dictionary<string, Func<Cell, bool>>
             {
-                switch (edge)
-                {
-                    case "top":
-                        {
-                            return t.Edge1.R.Y == farfield.Height;
-                        }
-                    case "bottom":
-                        {
-                            return t.Edge1.R.Y == 0;
-                        }
-                    case "left":
-                        {
-                            return t.Edge1.R.X == 0;
-                        }
-                    case "right":
-                        {
-                            return t.Edge1.R.X == farfield.Width;
-                        }
-                    case "all":
-                        {
-                            return true;
-                        }
-                    default:
-                        {
-                            throw new Exception();
-                        }
-                  }
-            }).AsParallel().ToList();
+                {"top", t => t.Edge1.R.Y == farfield.Height},
+                {"bottom", t => t.Edge1.R.Y == 0},
+                {"left", t => t.Edge1.R.X == 0},
+                {"right", t => t.Edge1.R.X == farfield.Width},
+                {"all", t => true}
+            };
+
+            if (!edgeToCondition.TryGetValue(edge, out Func<Cell, bool>? value))
+            {
+                throw new Exception();
+            }
+
+            var basequery = (from cell in CellList
+                             where cell.BorderCell == true && cell.BorderCellType == BorderType.Farfield
+                             select cell).AsParallel();
+
+            var filterquery = basequery.Where(value).AsParallel().ToList();
 
             return filterquery;
+
         }
 
 
@@ -623,4 +557,3 @@ namespace Core.Data
         }
     }
 }
-

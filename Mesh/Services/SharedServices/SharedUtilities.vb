@@ -82,33 +82,24 @@ Namespace Services
         ''' <returns></returns>
         Friend Shared Function GetNodes(t As Cell) As Array
 
-            Dim nSides = GetNumberSides(t)
-            Dim n(nSides - 1) As Integer
+            Dim n() As Integer
 
             Select Case t.CellType
                 Case CellType.triangle
-
                     n = {t.V1, t.V2, t.V3}
-
                 Case CellType.quad
-
                     n = {t.V1, t.V2, t.V3, t.V4}
-
                 Case CellType.pent
-
                     n = {t.V1, t.V2, t.V3, t.V4, t.V5}
-
                 Case CellType.hex
-
                     n = {t.V1, t.V2, t.V3, t.V4, t.V5, t.V6}
-
                 Case CellType.oct
-
                     n = {t.V1, t.V2, t.V3, t.V4, t.V5, t.V6, t.V7, t.V8}
-
+                Case Else
+                    Throw New Exception()
             End Select
 
-            Return n.ToArray
+            Return n
 
         End Function
 
