@@ -1,6 +1,8 @@
-﻿Imports Core.Common
+﻿Imports System.Xml.XPath
+Imports Core.Common
 Imports Core.Domain
 Imports Core.Interfaces
+Imports Mesh.Services.SharedUtilities
 
 Namespace Factories
 
@@ -49,170 +51,35 @@ Namespace Factories
                             .AdjoiningEdge = e.SideName
                         }
 
-                        If t.CellType = CellType.triangle Then      'triangular cell
+                        'create a dictionary to assign v1 and v2 nodes based on matching cell type and side name
+                        Dim nodeAssignment = CreateNodeAssignment(t)
 
-                            If e.SideName = SideName.S1 Then
+                        Dim key As Tuple(Of CellType, SideName) = Tuple.Create(t.CellType, e.SideName)
 
-                                v1 = t.V2
-                                v2 = t.V3
+                        Dim value As (Integer?, Integer?) = Nothing
 
-                            ElseIf e.SideName = SideName.S2 Then
+                        'check if the key exists in the dictionary
+                        If nodeAssignment.TryGetValue(key, value) Then
 
-                                v1 = t.V1
-                                v2 = t.V3
+                            Dim result As (Integer, Integer) = value
 
-                            Else
+                            'set v1 and v2 using the values returned from the dictionary
+                            v1 = result.Item1
+                            v2 = result.Item2
 
-                                v1 = t.V1
-                                v2 = t.V2
+                            'add new border cell
+                            Dim bc As New BorderCell(newId, v1, v2, borderCellEdge)
 
-                            End If
+                            'set the new border cell id as the adjoining cell on the existing boundary edge
+                            e.AdjoiningCell = newId
 
-                        ElseIf t.CellType = CellType.quad Then
-
-                            If e.SideName = SideName.S1 Then
-
-                                v1 = t.V2
-                                v2 = t.V1
-
-                            ElseIf e.SideName = SideName.S2 Then
-
-                                v1 = t.V3
-                                v2 = t.V2
-
-                            ElseIf e.SideName = SideName.S3 Then
-
-                                v1 = t.V4
-                                v2 = t.V3
-
-                            Else
-
-                                v1 = t.V1
-                                v2 = t.V4
-
-                            End If
-
-                        ElseIf t.CellType = CellType.pent Then
-
-                            If e.SideName = SideName.S1 Then
-
-                                v1 = t.V2
-                                v2 = t.V1
-
-                            ElseIf e.SideName = SideName.S2 Then
-
-                                v1 = t.V3
-                                v2 = t.V2
-
-                            ElseIf e.SideName = SideName.S3 Then
-
-                                v1 = t.V4
-                                v2 = t.V3
-
-                            ElseIf e.SideName = SideName.S4 Then
-
-                                v1 = t.V5
-                                v2 = t.V4
-
-                            Else
-
-                                v1 = t.V1
-                                v2 = t.V5
-
-                            End If
-
-                        ElseIf t.CellType = CellType.hex Then
-
-                            If e.SideName = SideName.S1 Then
-
-                                v1 = t.V2
-                                v2 = t.V1
-
-                            ElseIf e.SideName = SideName.S2 Then
-
-                                v1 = t.V3
-                                v2 = t.V2
-
-                            ElseIf e.SideName = SideName.S3 Then
-
-                                v1 = t.V4
-                                v2 = t.V3
-
-                            ElseIf e.SideName = SideName.S4 Then
-
-                                v1 = t.V5
-                                v2 = t.V4
-
-                            ElseIf e.SideName = SideName.s5 Then
-
-                                v1 = t.V6
-                                v2 = t.V5
-
-                            Else
-
-                                v1 = t.V1
-                                v2 = t.V6
-
-                            End If
-
-                        ElseIf t.CellType = CellType.oct Then
-
-                            If e.SideName = SideName.S1 Then
-
-                                v1 = t.V2
-                                v2 = t.V1
-
-                            ElseIf e.SideName = SideName.S2 Then
-
-                                v1 = t.V3
-                                v2 = t.V2
-
-                            ElseIf e.SideName = SideName.S3 Then
-
-                                v1 = t.V4
-                                v2 = t.V3
-
-                            ElseIf e.SideName = SideName.S4 Then
-
-                                v1 = t.V5
-                                v2 = t.V4
-
-                            ElseIf e.SideName = SideName.s5 Then
-
-                                v1 = t.V6
-                                v2 = t.V5
-
-                            ElseIf e.SideName = SideName.s6 Then
-
-                                v1 = t.V7
-                                v2 = t.V6
-
-                            ElseIf e.SideName = SideName.s7 Then
-
-                                v1 = t.V8
-                                v2 = t.V7
-
-                            Else
-
-                                v1 = t.V1
-                                v2 = t.V8
-
-                            End If
+                            newId += 1
 
                         Else
 
                             Throw New Exception()
 
                         End If
-
-
-                        'add new border cell
-                        Dim bc As New BorderCell(newId, v1, v2, borderCellEdge)
-
-                        'set the new border cell id as the adjoining cell on the existing boundary edge
-                        e.AdjoiningCell = newId
-
-                        newId += 1
 
                     End If
 
@@ -224,7 +91,7 @@ Namespace Factories
 
         ''' <summary>
         ''' Wraps an airfoil surface with a layer of zero height cells that have only one edge. This method is
-        ''' restricted to use on irregular triangule grids only.
+        ''' restricted to use on irregular triangle grids only.
         ''' </summary>
         ''' <param name="farfield"></param>
         Public Sub AddAirfoilBorderCells(farfield As Farfield) Implements IFinalizingFactory.AddAirfoilBorderCells
@@ -241,8 +108,8 @@ Namespace Factories
                     'we only want a border cell on the airfoil edge, so ignore all other types of edges
                     If e.SideType = SideType.surface Then
 
-                        Dim this_v2 As Integer
-                        Dim this_v3 As Integer
+                        Dim v2 As Integer
+                        Dim v3 As Integer
 
                         Dim this_edge As New Edge(SideName.S1, SideType.border) With {
                             .R = e.R,
@@ -251,36 +118,48 @@ Namespace Factories
                             .AdjoiningEdge = e.SideName
                         }
 
-                        If e.SideName = SideName.S1 Then
+                        'create a dictionary to assign v1 and v2 nodes based on matching cell type and side name
+                        Dim nodeAssignment = CreateNodeAssignment(t)
 
-                            this_v2 = t.V3
-                            this_v3 = t.V2
+                        Dim key As Tuple(Of CellType, SideName) = Tuple.Create(t.CellType, e.SideName)
 
-                        ElseIf e.SideName = SideName.S2 Then
+                        Dim value As (Integer?, Integer?) = Nothing
 
-                            this_v2 = t.V3
-                            this_v3 = t.V1
+                        'check if the key exists in the dictionary
+                        If nodeAssignment.TryGetValue(key, value) Then
+
+                            Dim result As (Integer, Integer) = value
+
+                            'set v1 and v2 using the values returned from the dictionary
+                            v2 = result.Item1
+                            v3 = result.Item2
+
+                            Dim bc As New BorderCell(newId, v2, v3, this_edge, BorderType.Airfoil)
+
+                            'set the new border cell id as the adjoining cell on the existing boundary edge
+                            e.AdjoiningCell = newId
+
+                            newId += 1
 
                         Else
 
-                            this_v2 = t.V2
-                            this_v3 = t.V1
+                            Throw New Exception()
 
                         End If
 
-                        Dim bc As New BorderCell(newId, this_v2, this_v3, this_edge, BorderType.Airfoil)
-
-                        'set the new border cell id as the adjoining cell on the existing boundary edge
-                        e.AdjoiningCell = newId
-
-                        newId += 1
-
                     End If
-                Next
-            Next
 
+                Next
+
+            Next
 
         End Sub
 #End Region
+
+#Region "Private Methods"
+
+
+#End Region
+
     End Class
 End Namespace

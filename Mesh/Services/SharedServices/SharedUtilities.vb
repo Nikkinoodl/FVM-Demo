@@ -58,20 +58,17 @@ Namespace Services
         ''' <returns></returns>
         Friend Shared Function GetNumberSides(t As Cell) As Integer
 
-            Select Case t.CellType
-                Case CellType.triangle
-                    Return 3
-                Case CellType.quad
-                    Return 4
-                Case CellType.pent
-                    Return 5
-                Case CellType.hex
-                    Return 6
-                Case CellType.oct
-                    Return 8
-                Case Else
-                    Throw New Exception()
-            End Select
+            Dim sideMap As New Dictionary(Of CellType, Integer) From {
+                {CellType.triangle, 3},
+                {CellType.quad, 4},
+                {CellType.pent, 5},
+                {CellType.hex, 6},
+                {CellType.oct, 8}}
+
+            Dim value As Integer = Nothing
+            If Not sideMap.TryGetValue(t.CellType, value) Then Throw New Exception()
+
+            Return value
 
         End Function
 
@@ -82,24 +79,18 @@ Namespace Services
         ''' <returns></returns>
         Friend Shared Function GetNodes(t As Cell) As Array
 
-            Dim n() As Integer
+            Dim nodeMap As New Dictionary(Of CellType, Integer?()) From {
+                {CellType.triangle, {t.V1, t.V2, t.V3}},
+                {CellType.quad, {t.V1, t.V2, t.V3, t.V4}},
+                {CellType.pent, {t.V1, t.V2, t.V3, t.V4, t.V5}},
+                {CellType.hex, {t.V1, t.V2, t.V3, t.V4, t.V5, t.V6}},
+                {CellType.oct, {t.V1, t.V2, t.V3, t.V4, t.V5, t.V6, t.V7, t.V8}}}
 
-            Select Case t.CellType
-                Case CellType.triangle
-                    n = {t.V1, t.V2, t.V3}
-                Case CellType.quad
-                    n = {t.V1, t.V2, t.V3, t.V4}
-                Case CellType.pent
-                    n = {t.V1, t.V2, t.V3, t.V4, t.V5}
-                Case CellType.hex
-                    n = {t.V1, t.V2, t.V3, t.V4, t.V5, t.V6}
-                Case CellType.oct
-                    n = {t.V1, t.V2, t.V3, t.V4, t.V5, t.V6, t.V7, t.V8}
-                Case Else
-                    Throw New Exception()
-            End Select
+            Dim value As Integer?() = Nothing
 
-            Return n
+            If Not nodeMap.TryGetValue(t.CellType, value) Then Throw New Exception()
+
+            Return value.Where(Function(x) x.HasValue).Select(Function(x) x.Value).ToArray()
 
         End Function
 
@@ -110,20 +101,18 @@ Namespace Services
         ''' <returns></returns>
         Friend Shared Function FindMidPoint(e As Edge, r As CellNodeVectors) As Vector2
 
-            Dim rP As Vector2
+            Dim sideCalculations As New Dictionary(Of SideName, Func(Of Vector2)) From {
+                {SideName.S1, Function() (r.R2 + r.R3) * 0.5},
+                {SideName.S2, Function() (r.R1 + r.R3) * 0.5},
+                {SideName.S3, Function() (r.R1 + r.R2) * 0.5}}
 
-            Select Case e.SideName
-                Case SideName.S1
-                    rP = (r.R2 + r.R3) * 0.5
-                Case SideName.S2
-                    rP = (r.R1 + r.R3) * 0.5
-                Case SideName.S3
-                    rP = (r.R1 + r.R2) * 0.5
-                Case Else
-                    Throw New Exception
-            End Select
+            Dim value As Func(Of Vector2) = Nothing
 
-            Return rP
+            If Not sideCalculations.TryGetValue(e.SideName, value) Then
+                Throw New Exception("Invalid SideName")
+            End If
+
+            Return value.Invoke()
 
         End Function
 
@@ -134,22 +123,19 @@ Namespace Services
         ''' <returns></returns>
         Friend Shared Function FindMidPointQuads(e As Edge, r As CellNodeVectors) As Vector2
 
-            Dim rP As Vector2
+            Dim sideCalculations As New Dictionary(Of SideName, Func(Of Vector2)) From {
+                {SideName.S1, Function() (r.R1 + r.R2) * 0.5},
+                {SideName.S2, Function() (r.R2 + r.R3) * 0.5},
+                {SideName.S3, Function() (r.R3 + r.R4) * 0.5},
+                {SideName.S4, Function() (r.R4 + r.R1) * 0.5}}
 
-            Select Case e.SideName
-                Case SideName.S1
-                    rP = (r.R2 + r.R1) * 0.5
-                Case SideName.S2
-                    rP = (r.R3 + r.R2) * 0.5
-                Case SideName.S3
-                    rP = (r.R4 + r.R3) * 0.5
-                Case SideName.S4
-                    rP = (r.R1 + r.R4) * 0.5
-                Case Else
-                    Throw New Exception
-            End Select
+            Dim value As Func(Of Vector2) = Nothing
 
-            Return rP
+            If Not sideCalculations.TryGetValue(e.SideName, value) Then
+                Throw New Exception("Invalid SideName")
+            End If
+
+            Return value.Invoke()
 
         End Function
 
@@ -249,6 +235,88 @@ Namespace Services
 
         End Function
 
+        ''' <summary>
+        ''' Dictionary of node assignments for matching the nodes of border cells to adjoining cells
+        ''' </summary>
+        ''' <param name="t"></param>
+        ''' <param name="v1"></param>
+        ''' <param name="v2"></param>
+        ''' <returns></returns>
+        Friend Shared Function CreateNodeAssignment(t As Cell) As Dictionary(Of Tuple(Of CellType, SideName), (Integer?, Integer?))
+
+            Return New Dictionary(Of Tuple(Of CellType, SideName), (Integer?, Integer?)) From {
+                            {Tuple.Create(CellType.triangle, SideName.S1), (t.V2, t.V3)},
+                            {Tuple.Create(CellType.triangle, SideName.S2), (t.V1, t.V3)},
+                            {Tuple.Create(CellType.triangle, SideName.S3), (t.V1, t.V2)},
+                            {Tuple.Create(CellType.quad, SideName.S1), (t.V2, t.V1)},
+                            {Tuple.Create(CellType.quad, SideName.S2), (t.V3, t.V2)},
+                            {Tuple.Create(CellType.quad, SideName.S3), (t.V4, t.V3)},
+                            {Tuple.Create(CellType.quad, SideName.S4), (t.V1, t.V4)},
+                            {Tuple.Create(CellType.pent, SideName.S1), (t.V2, t.V1)},
+                            {Tuple.Create(CellType.pent, SideName.S2), (t.V3, t.V2)},
+                            {Tuple.Create(CellType.pent, SideName.S3), (t.V4, t.V3)},
+                            {Tuple.Create(CellType.pent, SideName.S4), (t.V5, t.V4)},
+                            {Tuple.Create(CellType.pent, SideName.S5), (t.V1, t.V5)},
+                            {Tuple.Create(CellType.hex, SideName.S1), (t.V2, t.V1)},
+                            {Tuple.Create(CellType.hex, SideName.S2), (t.V3, t.V2)},
+                            {Tuple.Create(CellType.hex, SideName.S3), (t.V4, t.V3)},
+                            {Tuple.Create(CellType.hex, SideName.S4), (t.V5, t.V4)},
+                            {Tuple.Create(CellType.hex, SideName.S5), (t.V6, t.V5)},
+                            {Tuple.Create(CellType.hex, SideName.S6), (t.V1, t.V6)},
+                            {Tuple.Create(CellType.oct, SideName.S1), (t.V2, t.V1)},
+                            {Tuple.Create(CellType.oct, SideName.S2), (t.V3, t.V2)},
+                            {Tuple.Create(CellType.oct, SideName.S3), (t.V4, t.V3)},
+                            {Tuple.Create(CellType.oct, SideName.S4), (t.V5, t.V4)},
+                            {Tuple.Create(CellType.oct, SideName.S5), (t.V6, t.V5)},
+                            {Tuple.Create(CellType.oct, SideName.S6), (t.V7, t.V6)},
+                            {Tuple.Create(CellType.oct, SideName.S7), (t.V8, t.V7)},
+                            {Tuple.Create(CellType.oct, SideName.S8), (t.V1, t.V8)}}
+
+        End Function
+
+        ''' <summary>
+        ''' Returns triangular edge cell nodes in a standard order
+        ''' </summary>
+        ''' <param name="nodes"></param>
+        ''' <param name="positionVectors"></param>
+        ''' <returns></returns>
+        Friend Shared Function EdgeCellNodes(nodes As CellNodes, positionVectors As CellNodeVectors) As (Integer, Integer, Integer)
+
+            'apex is first item, base is second and third
+            Dim conditions As New List(Of Tuple(Of Boolean, (Integer, Integer, Integer))) From {
+                New Tuple(Of Boolean, (Integer, Integer, Integer))(positionVectors.R1.Y = positionVectors.R2.Y, (nodes.N3, nodes.N1, nodes.N2)),
+                New Tuple(Of Boolean, (Integer, Integer, Integer))(positionVectors.R2.Y = positionVectors.R3.Y, (nodes.N1, nodes.N2, nodes.N3)),
+                New Tuple(Of Boolean, (Integer, Integer, Integer))(positionVectors.R3.Y = positionVectors.R1.Y, (nodes.N2, nodes.N3, nodes.N1))}
+
+            Return conditions.First(Function(tuple) tuple.Item1).Item2
+
+        End Function
+
+        ''' <summary>
+        ''' For Delaunay Triangulation, sets target vertex of the adjoining cell that will be tested
+        ''' to see if it lies inside the circumcircle
+        ''' </summary>
+        ''' <param name="configuration"></param>
+        ''' <param name="adjacentCells"></param>
+        Friend Shared Function ProcessAdjacent(configuration As Integer, t_adj As Cell) As Integer
+
+            Dim configMap As New Dictionary(Of Integer, Func(Of Integer)) From {
+                {1, Function() t_adj.V2},
+                {2, Function() t_adj.V3},
+                {3, Function() t_adj.V1},
+                {4, Function() t_adj.V3},
+                {5, Function() t_adj.V1},
+                {6, Function() t_adj.V2}}
+
+            Dim value As Func(Of Integer) = Nothing
+
+            If Not configMap.TryGetValue(configuration, value) Then
+                Throw New Exception("Invalid configuration")
+            End If
+
+            Return value.Invoke()
+
+        End Function
     End Class
 
 End Namespace

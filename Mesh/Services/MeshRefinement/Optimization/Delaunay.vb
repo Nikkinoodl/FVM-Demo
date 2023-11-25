@@ -144,10 +144,12 @@ Namespace Services
                                 Dim position As (r1 As Vector2, rP As Vector2) = GetCoords(nodes.N1, np)
                                 Dim rCenter = GetCellCenter(t)
 
-                                'If np is in cell circumcircle
+                                'if np is in cell circumcircle
                                 If CheckInCircle(position.r1, position.rP, rCenter) And t <> t2 Then
-                                    'Flip the cells
+
+                                    'flip the cells
                                     FlipCells(config, t, t2, np, nodes)
+
                                 End If
 
                             End If
@@ -224,42 +226,21 @@ Namespace Services
         ''' <returns></returns>
         Private Function JoiningSide(configuration As Integer, t As Integer) As SideType
 
-            Select Case configuration
-                Case 1, 4
-                    Return data.CellList(t).Edge3.SideType
-                Case 2, 5
-                    Return data.CellList(t).Edge1.SideType
-                Case 3, 6
-                    Return data.CellList(t).Edge2.SideType
-                Case Else
-                    Throw New Exception()
-            End Select
+            Dim configMap As New Dictionary(Of Integer, Func(Of SideType)) From {
+                {1, Function() data.CellList(t).Edge3.SideType},
+                {2, Function() data.CellList(t).Edge1.SideType},
+                {3, Function() data.CellList(t).Edge2.SideType},
+                {4, Function() data.CellList(t).Edge3.SideType},
+                {5, Function() data.CellList(t).Edge1.SideType},
+                {6, Function() data.CellList(t).Edge2.SideType}}
 
-        End Function
+            Dim value As Func(Of SideType) = Nothing
 
-        ''' <summary>
-        ''' Sets target vertex of the adjoining cell that will be tested to see if it lies inside or
-        ''' outside the circumcircle
-        ''' </summary>
-        ''' <param name="configuration"></param>
-        ''' <param name="adjacentCells"></param>
-        Private Function ProcessAdjacent(configuration As Integer, t_adj As Cell) As Integer
-            'Sets np for adjacent cell
-            Dim np As Integer
-            Dim t2 = data.CellList.IndexOf(t_adj)
+            If Not configMap.TryGetValue(configuration, value) Then
+                Throw New Exception("Invalid configuration")
+            End If
 
-            Select Case configuration
-                Case 1, 6
-                    np = t_adj.V2
-                Case 2, 4
-                    np = t_adj.V3
-                Case 3, 5
-                    np = t_adj.V1
-                Case Else
-                    Throw New Exception()
-            End Select
-
-            Return np
+            Return value.Invoke()
 
         End Function
 
