@@ -6,9 +6,75 @@ namespace Core.Domain
     public class Cell : BaseCell
     {
 
+        #region Constructor
         public Cell() { }
 
-        #region Constructor
+        /// <summary>
+        /// Creates a cell where n, edges are supplied as arrays. CellType is inferred.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="n"></param>
+        /// <param name="edges"></param>
+        /// <exception cref="Exception"></exception>
+        public Cell(int id, int[] n, Edge[] edges)
+        {
+
+            var cellDict = new Dictionary<int, CellType>
+            {
+                {2, CellType.none},
+                {3, CellType.triangle},
+                {4, CellType.quad},
+                {5, CellType.pent},
+                {6, CellType.hex},
+                {8, CellType.oct}
+            };
+
+            var nodeCount = n.Length;
+
+            if (!cellDict.TryGetValue(nodeCount, out CellType value))
+            {
+                throw new Exception();
+            }
+
+            Id = id;
+            Complete = false;
+            CellType = value;
+            Edges = new List<Edge>();
+
+
+            // Create arrays of properties
+            var nodeProperties = new[] { "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8" };
+            var edgeProperties = new[] { "Edge1", "Edge2", "Edge3", "Edge4", "Edge5", "Edge6", "Edge7", "Edge8" };
+
+            // Use a loop to assign the values
+            for (int i = 0; i < nodeCount; i++)
+            {
+
+                var nProperty = GetType().GetProperty(nodeProperties[i]);
+                var eProperty = GetType().GetProperty(edgeProperties[i]);
+                
+                if (nProperty != null && eProperty != null)
+                {
+                    nProperty.SetValue(this, n[i]);
+
+                    if (edges[i] != null)
+                    {
+
+                        eProperty.SetValue(this, edges[i]);
+                        Edges.Add(edges[i]);
+
+                    }
+
+                }
+                else
+                {
+                    throw new Exception($"Property {nodeProperties[i]} or {edgeProperties[i]} does not exist");
+                }
+
+            }
+
+            Repository.CellList.Add(this);
+        }
 
         /// <summary>
         /// Create cell with 1-3 sides

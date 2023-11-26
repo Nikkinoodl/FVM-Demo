@@ -137,12 +137,6 @@ namespace Core.Interfaces
         List<Cell> CalcCells();
 
         /// <summary>
-        /// Sets all nodes on the boundary to be boundary type
-        /// </summary>
-        /// <param name="farfield"></param>
-        void CheckBoundaryNode(Farfield farfield);
-
-        /// <summary>
         /// Sorts cells in the repository to set a calc order for the mesh, working from left to right
         /// and bottom to top
         /// </summary>

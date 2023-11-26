@@ -62,9 +62,23 @@ Namespace Factories
         ''' <param name="this_y"></param>
         Sub AddAirfoilNode(this_id As Integer, this_x As Single, this_y As Single)
 
+        ''' <summary>
+        ''' Sets all nodes on the boundary to be boundary type
+        ''' </summary>
+        ''' <param name="farfield"></param>
+        Sub CheckBoundaryNode(farfield As Farfield)
+
 #End Region
 
 #Region "Cells"
+
+        ''' <summary>
+        ''' Add a cell with nodes and edges passed in arrays. Cell type is inferred.
+        ''' </summary>
+        ''' <param name="this_id"></param>
+        ''' <param name="n"></param>
+        ''' <param name="edges"></param>
+        Sub AddCell(this_id As Integer, n As Integer(), edges As Edge())
 
         ''' <summary>
         ''' Adds a new triangular cell

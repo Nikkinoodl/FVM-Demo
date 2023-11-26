@@ -183,10 +183,8 @@ namespace Core.Data
 
             var cellList = CellList
                 .Where(t => !t.BorderCell)
-                .OrderBy(t => t.R.X)
-                .ThenBy(t => t.R.Y)
-                .AsParallel()
-                .ToList();
+                .OrderBy(t => t.R.X).ThenBy(t => t.R.Y)
+                .AsParallel().ToList();
 
             return cellList;
         }
@@ -295,17 +293,6 @@ namespace Core.Data
                                 select node).ToList();
 
             return boundarynodes;
-        }
-
-        /// <summary>
-        /// Ensures that all nodes on the boundary have the correct attribute set
-        /// </summary>
-        /// <param name="farfield"></param>
-        public void CheckBoundaryNode(Farfield farfield)
-        {
-
-            foreach (var node in BoundaryNode(farfield))
-                node.Boundary = true;
         }
 
         /// <summary>

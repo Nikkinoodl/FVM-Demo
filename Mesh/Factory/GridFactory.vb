@@ -2,6 +2,8 @@
 Imports Core.Common
 Imports System.Numerics
 Imports Core.DataCollections
+Imports Core.Interfaces
+Imports System.Windows.Forms.VisualStyles
 
 Namespace Factories
 
@@ -10,14 +12,18 @@ Namespace Factories
     ''' </summary>
     Public Class GridFactory : Implements IGridFactory
 
+        Private ReadOnly data As IDataAccessService
+
 #Region "Constructor"
 
-        Public Sub New()
+        Public Sub New(data As IDataAccessService)
+
+            Me.data = data
 
         End Sub
 #End Region
 
-#Region "Simple Create/Update/Replace Methods"
+#Region "Create/Replace/Update/Delete Methods"
         ''' <summary>
         ''' Add a new node which optionally lies on the boundary or airfoil surface
         ''' </summary>
@@ -26,7 +32,9 @@ Namespace Factories
         ''' <param name="this_surface"></param>
         ''' <param name="this_boundary"></param>
         Public Sub RequestNode(this_id As Integer, r As Vector2, this_surface As Boolean, this_boundary As Boolean) Implements IGridFactory.RequestNode
+
             Dim newNode As New Node(this_id, r, this_surface, this_boundary)
+
         End Sub
 
         ''' <summary>
@@ -35,7 +43,9 @@ Namespace Factories
         ''' <param name="this_id"></param>
         ''' <param name="thisPosition"></param>
         Public Sub AddNode(this_id As Integer, thisPosition As Vector2) Implements IGridFactory.AddNode
+
             Dim newNode As New Node(this_id, thisPosition)
+
         End Sub
 
         ''' <summary>
@@ -45,7 +55,9 @@ Namespace Factories
         ''' <param name="this_x"></param>
         ''' <param name="this_y"></param>
         Public Sub AddBoundaryNode(this_id As Integer, this_x As Single, this_y As Single) Implements IGridFactory.AddBoundaryNode
+
             Dim newNode As New Node(this_id, this_x, this_y, False, True)
+
         End Sub
 
         ''' <summary>
@@ -55,7 +67,21 @@ Namespace Factories
         ''' <param name="this_x"></param>
         ''' <param name="this_y"></param>
         Public Sub AddAirfoilNode(this_id As Integer, this_x As Single, this_y As Single) Implements IGridFactory.AddAirfoilNode
+
             Dim newNode As New Node(this_id, this_x, this_y, True, False)
+
+        End Sub
+
+        ''' <summary>
+        ''' Add a cell with nodes and edges passed in arrays. Cell type is inferred.
+        ''' </summary>
+        ''' <param name="this_id"></param>
+        ''' <param name="n"></param>
+        ''' <param name="edges"></param>
+        Public Sub AddCell(this_id As Integer, n As Integer(), edges As Edge()) Implements IGridFactory.AddCell
+
+            Dim newCell As New Cell(this_id, n, edges)
+
         End Sub
 
         ''' <summary>
@@ -68,7 +94,7 @@ Namespace Factories
         ''' <param name="this_s1"></param>
         ''' <param name="this_s2"></param>
         ''' <param name="this_s3"></param>
-        Public Sub AddCell(this_id As Integer, this_n1 As Integer, this_n2 As Integer, this_n3 As Integer,
+        Public Sub AddCell(this_id As Integer, n1 As Integer, n2 As Integer, n3 As Integer,
                                Optional sideType1 As SideType = SideType.none,
                                Optional sideType2 As SideType = SideType.none,
                                Optional sideType3 As SideType = SideType.none) Implements IGridFactory.AddCell
@@ -77,7 +103,7 @@ Namespace Factories
             Dim edge2 As New Edge(1, sideType2)
             Dim edge3 As New Edge(2, sideType3)
 
-            Dim newCell As New Cell(this_id, this_n1, this_n2, this_n3, edge1, edge2, edge3)
+            Dim newCell As New Cell(this_id, n1, n2, n3, edge1, edge2, edge3)
 
         End Sub
 
@@ -335,6 +361,20 @@ Namespace Factories
         End Sub
 
         ''' <summary>
+        ''' Ensures that all nodes on the boundary have the correct attribute set
+        ''' </summary>
+        ''' <param name="farfield"></param>
+        Public Sub CheckBoundaryNode(farfield As Farfield) Implements IGridFactory.CheckBoundaryNode
+
+            For Each node As Node In data.BoundaryNode(farfield)
+
+                node.Boundary = True
+
+            Next
+        End Sub
+
+
+        ''' <summary>
         ''' Deletes a node
         ''' </summary>
         ''' <param name="n"></param>
@@ -427,6 +467,7 @@ Namespace Factories
             AddQuad(0, 0, 1, 2, 3, SideType.boundary, SideType.boundary, SideType.boundary, SideType.boundary)
 
         End Sub
+
 #End Region
     End Class
 End Namespace

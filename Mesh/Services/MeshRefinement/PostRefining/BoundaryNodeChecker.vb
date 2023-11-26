@@ -1,14 +1,14 @@
 ﻿Imports Core.Common
 Imports Core.Interfaces
+Imports Mesh.Factories
 
 Namespace Services
     Public Class BoundaryNodeChecker : Implements IBoundaryNodeChecker
 
-        Private ReadOnly data As IDataAccessService
+        Private ReadOnly factory As IGridFactory
+        Public Sub New(factory As IGridFactory)
 
-        Public Sub New(data As IDataAccessService)
-
-            Me.data = data
+            Me.factory = factory
 
         End Sub
 
@@ -18,7 +18,7 @@ Namespace Services
         ''' <param name="farfield"></param>
         Public Sub CheckBoundaryNodes(farfield As Farfield) Implements IBoundaryNodeChecker.CheckBoundaryNodes
 
-            data.CheckBoundaryNode(farfield)
+            factory.CheckBoundaryNode(farfield)
 
         End Sub
 
