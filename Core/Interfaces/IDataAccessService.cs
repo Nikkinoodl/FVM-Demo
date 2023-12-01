@@ -29,6 +29,27 @@ namespace Core.Interfaces
         List<Node> AllNodes();
 
         /// <summary>
+        /// Returns the node ids of a triangular or quad cell
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        CellNodes GetNodeDetails(int t);
+
+        /// <summary>
+        /// Returns the position vectors associated with each node of a triangular or quad cell
+        /// </summary>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        CellNodeVectors GetPositionVectors(CellNodes n);
+
+        /// <summary>
+        /// Returns the surface types of the nodes of a triangular cell
+        /// </summary>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        CellNodeTypes GetNodeSurface(CellNodes n);
+
+        /// <summary>
         /// Returns the current maximum cell Id
         /// </summary>
         /// <returns></returns>
@@ -199,6 +220,13 @@ namespace Core.Interfaces
         /// <param name="t"></param>
         /// <returns></returns>
         Edge FindLongestSide(Cell t);
+
+        /// <summary>
+        /// Gets the SideType of each edge in a cell
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        CellSideTypes GetSideTypes(int t);
 
         /// <summary>
         /// Finds the third edge in a triangle

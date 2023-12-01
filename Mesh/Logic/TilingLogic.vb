@@ -52,6 +52,14 @@ Namespace Logic
 
             ElseIf farfield.Tiling = Tiling.TruncAndCombine Then
 
+                If farfield.Gridtype = GridType.Triangles Then
+
+                    MsgBox("Unable to perform this tiling on irregular triangle grids")
+
+                    Exit Sub
+
+                End If
+
                 splitter.DivideTrunc(farfield)
                 checker.CheckBoundaryNodes(farfield)
 

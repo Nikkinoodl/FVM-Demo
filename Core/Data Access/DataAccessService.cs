@@ -48,6 +48,65 @@ namespace Core.Data
         }
 
         /// <summary>
+        /// Returns the node ids of a triangular or quad cell
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public CellNodes GetNodeDetails(int t)
+        {
+            var result = new CellNodes()
+            {
+                N1 = (int)CellList[t].V1,
+                N2 = (int)CellList[t].V2,
+                N3 = (int)CellList[t].V3
+            };
+
+            if (CellList[t].V4 != null)
+            {
+                result.N4 = CellList[t].V4;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the surface types of the nodes of a triangular cell
+        /// </summary>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        public CellNodeTypes GetNodeSurface(CellNodes n)
+        {
+            return new CellNodeTypes()
+            {
+                S1 = NodeV(n.N1).Surface,
+                S2 = NodeV(n.N2).Surface,
+                S3 = NodeV(n.N3).Surface
+            };
+        }
+
+        /// <summary>
+        /// Returns the position vectors associated with each node of a triangular or quad cell
+        /// </summary>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        public CellNodeVectors GetPositionVectors(CellNodes n)
+        {
+            var result = new CellNodeVectors()
+            {
+                R1 = NodeV(n.N1).R,
+                R2 = NodeV(n.N2).R,
+                R3 = NodeV(n.N3).R
+            };
+
+            if (n.N4 != null)
+            {
+                result.R4 = NodeV(n.N4).R;
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Returns the maximum cell Id
         /// </summary>
         /// <returns></returns>
@@ -355,15 +414,7 @@ namespace Core.Data
         public List<Cell> AdjacentCells(int configuration, CellNodes n)
         {
 
-            var configurationToCondition = new Dictionary<int, Func<Cell, bool>>
-            {
-                {1, t => t.V1 == n.N1 && t.V3 == n.N2},
-                {2, t => t.V2 == n.N2 && t.V1 == n.N3},
-                {3, t => t.V2 == n.N1 && t.V3 == n.N3},
-                {4, t => t.V2 == n.N1 && t.V1 == n.N2},
-                {5, t => t.V3 == n.N2 && t.V2 == n.N3},
-                {6, t => t.V3 == n.N1 && t.V1 == n.N3}
-            };
+            var configurationToCondition = Dictionaries.ConfigurationToCondition(n);
 
             if (!configurationToCondition.TryGetValue(configuration, out Func<Cell, bool>? value))
             {
@@ -388,21 +439,8 @@ namespace Core.Data
         public List<Node> EdgeBoundary(string edge, Farfield farfield)
         {
 
-            var edgeToCondition = new Dictionary<string, Func<Node, bool>>
-            {
-                {"top", n => n.R.Y == farfield.Height && n.R.X != 0 && n.R.X != farfield.Width},
-                {"bottom", n => n.R.Y == 0 && n.R.X != 0 && n.R.X != farfield.Width},
-                {"right", n => n.R.X == farfield.Width && n.R.Y != 0 && n.R.Y != farfield.Height},
-                {"left", n => n.R.X == 0 && n.R.Y != 0 && n.R.Y != farfield.Height}
-            };
-
-            var edgeToOrder = new Dictionary<string, Func<Node, double>>
-            {
-                {"top", n => n.R.X},
-                {"bottom", n => n.R.X},
-                {"right", n => n.R.Y},
-                {"left", n => n.R.Y}
-            };
+            var edgeToCondition = Dictionaries.EdgeToCondition(farfield);
+            var edgeToOrder = Dictionaries.EdgeToOrder();
 
             if (!edgeToCondition.TryGetValue(edge, out Func<Node, bool>? conditionValue) || !edgeToOrder.TryGetValue(edge, out Func<Node, double>? orderValue))
             {
@@ -427,14 +465,7 @@ namespace Core.Data
         public List<Cell> GetElementsByBoundary(string edge, Farfield farfield)
         {
 
-            var edgeToCondition = new Dictionary<string, Func<Cell, bool>>
-            {
-                {"top", t => t.Edge1.R.Y == farfield.Height},
-                {"bottom", t => t.Edge1.R.Y == 0},
-                {"left", t => t.Edge1.R.X == 0},
-                {"right", t => t.Edge1.R.X == farfield.Width},
-                {"all", t => true}
-            };
+            var edgeToCondition = Dictionaries.EdgeOnBoundary(farfield);
 
             if (!edgeToCondition.TryGetValue(edge, out Func<Cell, bool>? value))
             {
@@ -451,7 +482,6 @@ namespace Core.Data
 
         }
 
-
         /// <summary>
         /// Returns a list of the zero-height border cells which lie on the airfoil surface
         /// </summary>
@@ -464,6 +494,22 @@ namespace Core.Data
                             select cell).AsParallel().ToList();
 
             return basequery;
+        }
+
+        /// <summary>
+        /// Gets the SideType of each edge in a triangular cell
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public CellSideTypes GetSideTypes(int t)
+        {
+            return new CellSideTypes()
+            {
+                S1 = CellList[t].Edge1.SideType,
+                S2 = CellList[t].Edge2.SideType,
+                S3 = CellList[t].Edge3.SideType
+            };
+
         }
 
         /// <summary>

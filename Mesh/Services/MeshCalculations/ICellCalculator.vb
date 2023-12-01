@@ -1,15 +1,28 @@
-﻿Namespace Services
+﻿Imports Core.Domain
+
+Namespace Services
     Public Interface ICellCalculator
 
         ''' <summary>
-        ''' Calculate the lengths and cell centers of triangular grid cells
+        ''' Calculate the lengths and cell centers of grid cells
         ''' </summary>
         Sub CalculateLengths()
 
         ''' <summary>
-        ''' Calculate the mid points
+        ''' Calculates the length and cell center of a single cell
+        ''' </summary>
+        ''' <param name="t"></param>
+        Sub CalculateLength(t As Cell)
+
+        ''' <summary>
+        ''' Calculates the mid points of all cells
         ''' </summary>
         Sub CalculateMidPoints()
+
+        ''' <summary>
+        ''' Calculates the mid point of each edge of a single cell
+        ''' </summary>
+        Sub CalculateMidPoint(t As Cell)
 
         ''' <summary>
         ''' Calculate the vector from the cell center to the center of each cell edge

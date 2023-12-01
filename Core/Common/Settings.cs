@@ -119,7 +119,7 @@ namespace Core.Common
         /// <param name="farfield"></param>
         public static void WriteSettings(Farfield farfield)
         {
-            XmlDocument xmlDoc = new XmlDocument();
+            XmlDocument xmlDoc = new();
             xmlDoc.Load("Settings.xml");
 
             XmlNodeList nodelist = xmlDoc.SelectNodes("settings");

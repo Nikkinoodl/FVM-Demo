@@ -1,5 +1,6 @@
 ﻿Imports System.Xml.XPath
 Imports Core.Common
+Imports Core.Data
 Imports Core.Domain
 Imports Core.Interfaces
 Imports Mesh.Services.SharedUtilities
@@ -52,16 +53,14 @@ Namespace Factories
                         }
 
                         'create a dictionary to assign v1 and v2 nodes based on matching cell type and side name
-                        Dim nodeAssignment = CreateNodeAssignment(t)
-
+                        Dim nodeAssignment = Dictionaries.CreateNodeAssignment(t)
                         Dim key As Tuple(Of CellType, SideName) = Tuple.Create(t.CellType, e.SideName)
-
-                        Dim value As (Integer?, Integer?) = Nothing
+                        Dim value As Tuple(Of Integer?, Integer?) = Nothing
 
                         'check if the key exists in the dictionary
                         If nodeAssignment.TryGetValue(key, value) Then
 
-                            Dim result As (Integer, Integer) = value
+                            Dim result As Tuple(Of Integer?, Integer?) = value
 
                             'set v1 and v2 using the values returned from the dictionary
                             v1 = result.Item1
@@ -119,16 +118,14 @@ Namespace Factories
                         }
 
                         'create a dictionary to assign v1 and v2 nodes based on matching cell type and side name
-                        Dim nodeAssignment = CreateNodeAssignment(t)
-
+                        Dim nodeAssignment = Dictionaries.CreateNodeAssignment(t)
                         Dim key As Tuple(Of CellType, SideName) = Tuple.Create(t.CellType, e.SideName)
-
-                        Dim value As (Integer?, Integer?) = Nothing
+                        Dim value As Tuple(Of Integer?, Integer?) = Nothing
 
                         'check if the key exists in the dictionary
                         If nodeAssignment.TryGetValue(key, value) Then
 
-                            Dim result As (Integer, Integer) = value
+                            Dim result As Tuple(Of Integer?, Integer?) = value
 
                             'set v1 and v2 using the values returned from the dictionary
                             v2 = result.Item1

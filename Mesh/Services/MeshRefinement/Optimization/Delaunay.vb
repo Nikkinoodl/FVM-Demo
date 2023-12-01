@@ -4,6 +4,7 @@ Imports Core.Common
 Imports Mesh.Factories
 Imports System.Numerics
 Imports Mesh.Services.SharedUtilities
+Imports Core.Data
 
 Namespace Services
     Public Class Delaunay : Implements IDelaunay
@@ -116,45 +117,37 @@ Namespace Services
                 'To avoid confusion, note that t is the index of the cell, not the Id
                 For t = 0 To numcells - 1
 
-                    'exclude if already processed
-                    If Not data.CellList(t).Complete Then
+                    'find SideType of joining side
+                    Dim side = JoiningSide(config, t)
 
-                        'find SideType of joining side
-                        Dim side = JoiningSide(config, t)
+                    'exclude if joining side is boundary or surface
+                    If (side = SideType.boundary Or side = SideType.surface) Then Continue For
 
-                        'exclude if joining side is boundary or surface
-                        If Not (side = SideType.boundary Or side = SideType.surface) Then
+                    'get this cell vertex nodes
+                    'GetCellData(t)
+                    Dim nodes As CellNodes = data.GetNodeDetails(t)
 
-                            'get this cell vertex nodes
-                            'GetCellData(t)
-                            Dim nodes As CellNodes = GetNodeDetails(t)
+                    'identify adjacent cells
+                    Dim adjacentCells = data.AdjacentCells(config, nodes)
 
-                            'identify adjacent cells
-                            Dim adjacentCells = data.AdjacentCells(config, nodes)
+                    'make sure we're only doing this if there is an adjacent cell on this side
+                    If adjacentCells.Count() = 0 Then Continue For
 
-                            'make sure we're only doing this if there is an adjacent cell on this side
-                            If adjacentCells.Count() = 1 Then
+                    'identify which node will be np
+                    Dim np = ProcessAdjacent(config, adjacentCells.First)
 
-                                'identify which node will be np
-                                Dim np = ProcessAdjacent(config, adjacentCells.First)
+                    Dim t2 = data.CellList.IndexOf(adjacentCells.First)
 
-                                Dim t2 = data.CellList.IndexOf(adjacentCells.First)
+                    'get position vectors
+                    Dim position As (r1 As Vector2, rP As Vector2) = GetCoords(nodes.N1, np)
+                    Dim rCenter = GetCellCenter(t)
 
-                                'get position vectors
-                                Dim position As (r1 As Vector2, rP As Vector2) = GetCoords(nodes.N1, np)
-                                Dim rCenter = GetCellCenter(t)
+                    'we only do Delaunay when np is in cell circumcircle
+                    If Not CheckInCircle(position.r1, position.rP, rCenter) Or t = t2 Then Continue For
 
-                                'if np is in cell circumcircle
-                                If CheckInCircle(position.r1, position.rP, rCenter) And t <> t2 Then
+                    'flip the cells
+                    FlipCells(config, t, t2, np, nodes)
 
-                                    'flip the cells
-                                    FlipCells(config, t, t2, np, nodes)
-
-                                End If
-
-                            End If
-                        End If
-                    End If
                 Next
             Next
         End Sub
@@ -168,40 +161,6 @@ Namespace Services
             Dim rP = data.NodeV(np).R
 
             Return (r1, rP)
-
-        End Function
-
-        ''' <summary>
-        ''' Gets the node ids of the vertices of the given cell
-        ''' </summary>
-        ''' <param name="t"></param>
-        ''' <returns></returns>
-        Private Function GetNodeDetails(t As Integer) As CellNodes
-
-            Dim result = New CellNodes With {
-                .N1 = data.CellList(t).V1,
-                .N2 = data.CellList(t).V2,
-                .N3 = data.CellList(t).V3
-            }
-
-            Return result
-
-        End Function
-
-        ''' <summary>
-        ''' Returns the side types of the given cell
-        ''' </summary>
-        ''' <param name="t"></param>
-        ''' <returns></returns>
-        Private Function GetSideTypes(t As Integer) As CellSideTypes
-
-            Dim result = New CellSideTypes With {
-                .S1 = data.CellList(t).Edge1.SideType,
-                .S2 = data.CellList(t).Edge2.SideType,
-                .S3 = data.CellList(t).Edge3.SideType
-            }
-
-            Return result
 
         End Function
 
@@ -226,14 +185,7 @@ Namespace Services
         ''' <returns></returns>
         Private Function JoiningSide(configuration As Integer, t As Integer) As SideType
 
-            Dim configMap As New Dictionary(Of Integer, Func(Of SideType)) From {
-                {1, Function() data.CellList(t).Edge3.SideType},
-                {2, Function() data.CellList(t).Edge1.SideType},
-                {3, Function() data.CellList(t).Edge2.SideType},
-                {4, Function() data.CellList(t).Edge3.SideType},
-                {5, Function() data.CellList(t).Edge1.SideType},
-                {6, Function() data.CellList(t).Edge2.SideType}}
-
+            Dim configMap = Dictionaries.ConfigToSideType(data.CellList(t))
             Dim value As Func(Of SideType) = Nothing
 
             If Not configMap.TryGetValue(configuration, value) Then
@@ -245,14 +197,15 @@ Namespace Services
         End Function
 
         ''' <summary>
-        ''' Flips the adjoining edge of a pair of cells
+        ''' Flips the adjoining edge of a pair of cells. See the diagram in the comments above to
+        ''' understand how nodes are assigned.
         ''' </summary>
         ''' <param name="configuration"></param>
         ''' <param name="factory"></param>
         Private Sub FlipCells(configuration As Integer, t As Integer, t2 As Integer, np As Integer, n As CellNodes)
 
-            Dim s1 = GetSideTypes(t)
-            Dim s2 = GetSideTypes(t2)
+            Dim s1 = data.GetSideTypes(t)
+            Dim s2 = data.GetSideTypes(t2)
 
             Select Case configuration
                 Case 1
