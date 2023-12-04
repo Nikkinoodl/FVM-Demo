@@ -48,62 +48,39 @@ namespace Core.Data
         }
 
         /// <summary>
-        /// Returns the node ids of a triangular or quad cell
+        /// Returns the surface types of the nodes in a triangular cell as an array
         /// </summary>
-        /// <param name="t"></param>
+        /// <param name="n"></param>
+        /// <param name="nSides"></param>
         /// <returns></returns>
-        public CellNodes GetNodeDetails(int t)
+        public bool[] GetNodeSurfaceAsArray(int[] n)
         {
-            var result = new CellNodes()
-            {
-                N1 = (int)CellList[t].V1,
-                N2 = (int)CellList[t].V2,
-                N3 = (int)CellList[t].V3
-            };
+            bool[] surfaceArray = { NodeV(n[0]).Surface, NodeV(n[1]).Surface, NodeV(n[2]).Surface };
 
-            if (CellList[t].V4 != null)
-            {
-                result.N4 = CellList[t].V4;
-            }
-
-            return result;
+            return surfaceArray;
         }
 
         /// <summary>
-        /// Returns the surface types of the nodes of a triangular cell
+        /// Returns the position vectors of a cell as an array
         /// </summary>
         /// <param name="n"></param>
+        /// <param name="nSides"></param>
         /// <returns></returns>
-        public CellNodeTypes GetNodeSurface(CellNodes n)
+        public Vector2[] GetPositionVectorsAsArray(int[] n)
         {
-            return new CellNodeTypes()
-            {
-                S1 = NodeV(n.N1).Surface,
-                S2 = NodeV(n.N2).Surface,
-                S3 = NodeV(n.N3).Surface
-            };
-        }
 
-        /// <summary>
-        /// Returns the position vectors associated with each node of a triangular or quad cell
-        /// </summary>
-        /// <param name="n"></param>
-        /// <returns></returns>
-        public CellNodeVectors GetPositionVectors(CellNodes n)
-        {
-            var result = new CellNodeVectors()
-            {
-                R1 = NodeV(n.N1).R,
-                R2 = NodeV(n.N2).R,
-                R3 = NodeV(n.N3).R
-            };
+            var r = new Vector2[n.Length];
 
-            if (n.N4 != null)
+            //find position vectors for all nodes in cell
+            for (int i = 0; i < n.Length; i++)
             {
-                result.R4 = NodeV(n.N4).R;
+
+                r[i] = NodeV(n[i]).R;
+
             }
 
-            return result;
+            return r;
+
         }
 
         /// <summary>
@@ -411,7 +388,7 @@ namespace Core.Data
         /// <param name="n3"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public List<Cell> AdjacentCells(int configuration, CellNodes n)
+        public List<Cell> AdjacentCells(int configuration, int[] n)
         {
 
             var configurationToCondition = Dictionaries.ConfigurationToCondition(n);
@@ -497,22 +474,6 @@ namespace Core.Data
         }
 
         /// <summary>
-        /// Gets the SideType of each edge in a triangular cell
-        /// </summary>
-        /// <param name="t"></param>
-        /// <returns></returns>
-        public CellSideTypes GetSideTypes(int t)
-        {
-            return new CellSideTypes()
-            {
-                S1 = CellList[t].Edge1.SideType,
-                S2 = CellList[t].Edge2.SideType,
-                S3 = CellList[t].Edge3.SideType
-            };
-
-        }
-
-        /// <summary>
         /// Finds the longest side of a cell
         /// </summary>
         /// <param name="t"></param>
@@ -549,7 +510,7 @@ namespace Core.Data
         /// <param name="vertSide"></param>
         /// <param name="longSide"></param>
         /// <returns></returns>
-        public Array FindHorizontalEdge(int t, Edge vertSide, Edge longSide)
+        public Edge[]? FindHorizontalEdge(int t, Edge vertSide, Edge longSide)
         {
             var h = (from l in CellList[t].Edges
                      where l.SideName != vertSide.SideName && l.SideName != longSide.SideName
@@ -559,34 +520,5 @@ namespace Core.Data
             return h;
         }
 
-        /// <summary>
-        /// Returns the top left most border cell on the lid
-        /// </summary>
-        /// <param name="farfield"></param>
-        /// <returns>Cell</returns>
-        public Cell TopLeft(Farfield farfield)
-        {
-
-            Cell result = (from c in GetElementsByBoundary("top", farfield)
-                           orderby c.R.X ascending
-                           select c).AsParallel().First();
-
-            return result;
-        }
-
-        /// <summary>
-        /// Returns the top right-most border cell on the lid boundary
-        /// </summary>
-        /// <param name="farfield"></param>
-        /// <returns>Cell</returns>
-        public Cell TopRight(Farfield farfield)
-        {
-
-            Cell result = (from c in GetElementsByBoundary("top", farfield)
-                           orderby c.R.X descending
-                           select c).AsParallel().First();
-
-            return result;
-        }
     }
 }

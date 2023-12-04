@@ -30,25 +30,21 @@ Namespace Services
         End Function
 
         ''' <summary>
-        ''' Returns an array of the side names of the edges of the given cell
+        ''' Returns the side types of a cell as an array
         ''' </summary>
         ''' <param name="t"></param>
         ''' <returns></returns>
-        Friend Shared Function GetSideNames(t As Cell) As Array
+        Friend Shared Function GetSideTypesAsArray(t As Cell) As SideType()
 
-            Dim nSides = GetNumberSides(t)
-            Dim s(nSides) As SideName
-            Dim i As Integer = 0
+            Dim sides = New List(Of SideType)
 
             For Each e As Edge In t.Edges
 
-                s(i) = e.SideName
-
-                i += 1
+                sides.Add(e.SideType)
 
             Next
 
-            Return s.ToArray
+            Return sides.ToArray()
 
         End Function
 
@@ -73,7 +69,7 @@ Namespace Services
         ''' </summary>
         ''' <param name="t"></param>
         ''' <returns></returns>
-        Friend Shared Function GetNodes(t As Cell) As Array
+        Friend Shared Function GetNodes(t As Cell) As Integer()
 
             Dim nodeMap = Dictionaries.NodeMap(t)
             Dim value As Integer?() = Nothing
@@ -88,24 +84,7 @@ Namespace Services
         ''' Gets the position vector of the midpoint of a triangular cell edge
         ''' </summary>
         ''' <param name="e"></param>
-        ''' <returns></returns>
-        Friend Shared Function FindMidPoint(e As Edge, r As CellNodeVectors) As Vector2
-
-            Dim sideCalculations = Dictionaries.SideMidPointsTriangle(r)
-            Dim value As Func(Of Vector2) = Nothing
-
-            If Not sideCalculations.TryGetValue(e.SideName, value) Then
-                Throw New Exception("Invalid SideName")
-            End If
-
-            Return value.Invoke()
-
-        End Function
-
-        ''' <summary>
-        ''' Gets the position vector of the midpoint of a triangular cell edge
-        ''' </summary>
-        ''' <param name="e"></param>
+        ''' <param name="r"></param>
         ''' <returns></returns>
         Friend Shared Function FindMidPoint(e As Edge, r As Vector2()) As Vector2
 
@@ -121,7 +100,137 @@ Namespace Services
         End Function
 
         ''' <summary>
-        ''' Returns the longest edge of a cell when the cell edge lengths are known
+        ''' Gets the position vector of all edge midpoint of a triangular cell edge
+        ''' </summary>
+        ''' <param name="e"></param>
+        ''' <param name="r"></param>
+        ''' <returns></returns>
+        Friend Shared Sub FindTriangleMidPoints(t As Cell, r As Vector2())
+
+            Dim sideCalculations = Dictionaries.SideMidPointsTriangle(r)
+            Dim value As Func(Of Vector2) = Nothing
+
+            For Each e As Edge In t.Edges
+
+                If Not sideCalculations.TryGetValue(e.SideName, value) Then
+                    Throw New Exception("Invalid SideName")
+                End If
+
+                e.R = value.Invoke()
+
+            Next
+
+        End Sub
+
+        ''' <summary>
+        ''' Calculates mid point of all edges on a non-triangular cell
+        ''' </summary>
+        ''' <param name="t"></param>
+        ''' <param name="r"></param>
+        ''' <param name="nSides"></param>
+        Friend Shared Sub FindMidPoints(t As Cell, r As Vector2(), nSides As Integer)
+
+            For i As Integer = 0 To nSides - 1
+
+                'calculate mid points
+                If i < nSides - 1 Then
+
+                    t.Edges(i).R = (r(i) + r(i + 1)) * 0.5
+
+                Else  'close the loop on the cell
+
+                    t.Edges(i).R = (r(i) + r(0)) * 0.5
+
+                End If
+
+            Next
+
+        End Sub
+
+        ''' <summary>
+        ''' Calculates and sets the center of a cell
+        ''' </summary>
+        ''' <param name="t"></param>
+        ''' <param name="r"></param>
+        ''' <param name="nSides"></param>
+        Friend Shared Sub CalculateCellCenter(t As Cell, r As Vector2(), nSides As Integer)
+
+            'calculate cell center
+            t.R = Vector2.Zero
+
+            For i As Integer = 0 To nSides - 1
+
+                'cell center
+                t.R += r(i)
+
+            Next
+
+            'divide by number of nodes (same as number of sides)
+            t.R /= nSides
+
+        End Sub
+
+        ''' <summary>
+        ''' Calculates length of all edges on a non-triangular cell
+        ''' </summary>
+        ''' <param name="t"></param>
+        ''' <param name="r"></param>
+        ''' <param name="nSides"></param>
+        Friend Shared Sub CalculateEdgeLengths(t As Cell, r As Vector2(), nSides As Integer)
+
+            For i As Integer = 0 To nSides - 1
+
+                'edge vectors
+                If i < nSides - 1 Then
+
+                    t.Edges(i).Lv = r(i + 1) - r(i)
+
+                Else     'closing the loop on the cell
+
+                    t.Edges(i).Lv = r(0) - r(i)
+
+                End If
+
+                'lengths
+                t.Edges(i).L = t.Edges(i).Lv.Length
+
+            Next
+
+        End Sub
+
+        ''' <summary>
+        ''' Calculates the area of a cell
+        ''' </summary>
+        ''' <param name="t"></param>
+        ''' <param name="r"></param>
+        ''' <param name="nSides"></param>
+        Friend Shared Sub CalculateCellArea(t As Cell, r As Vector2(), nSides As Integer)
+
+            Dim area As Single
+
+            'calculate area using linear algebra
+            For i As Integer = 0 To nSides - 1
+
+                'edge vectors
+                If i < nSides - 1 Then
+
+                    area += r(i).X * r(i + 1).Y - r(i).Y * r(i + 1).X
+
+                Else  'close the loop on the cell
+
+                    area += r(i).X * r(0).Y - r(i).Y * r(0).X
+
+                End If
+
+            Next
+
+            t.AreaI = 1 / (0.5 * Math.Abs(area))
+
+
+        End Sub
+
+        ''' <summary>
+        ''' Returns the longest edge of a cell when the cell edge lengths are already set
         ''' </summary>
         ''' <param name="t"></param>
         ''' <param name="positionVectors"></param>
@@ -142,7 +251,7 @@ Namespace Services
         ''' </summary>
         ''' <param name="e"></param>
         ''' <returns></returns>
-        Friend Shared Function FindMidPointQuads(e As Edge, r As CellNodeVectors) As Vector2
+        Friend Shared Function FindMidPointQuads(e As Edge, r As Vector2()) As Vector2
 
             Dim sideCalculations = Dictionaries.SideMidPoints(r)
             Dim value As Func(Of Vector2) = Nothing
@@ -205,7 +314,7 @@ Namespace Services
         ''' <param name="r"></param>
         ''' <param name="n"></param>
         ''' <returns></returns>
-        Friend Shared Function CalcAngleToYAxis(r As Vector2, n As Node) As Double
+        Friend Shared Function CalcAngleToYAxis(r As Vector2, n As Node) As Single
 
             Dim dot, det As Single
 
@@ -222,7 +331,7 @@ Namespace Services
         ''' <param name="r"></param>
         ''' <param name="rC"></param>
         ''' <returns></returns>
-        Friend Shared Function CalcAngleToYAxis(r As Vector2, rC As Vector2) As Double
+        Friend Shared Function CalcAngleToYAxis(r As Vector2, rC As Vector2) As Single
 
             Dim dot, det As Single
 
@@ -258,12 +367,12 @@ Namespace Services
         End Function
 
         ''' <summary>
-        ''' Returns triangular edge cell nodes in a standard order
+        ''' Returns triangular edge cell nodes in a standard order (N1, N2, N3)
         ''' </summary>
         ''' <param name="nodes"></param>
         ''' <param name="positionVectors"></param>
         ''' <returns></returns>
-        Friend Shared Function EdgeCellNodes(nodes As CellNodes, positionVectors As CellNodeVectors) As (Integer, Integer, Integer)
+        Friend Shared Function EdgeCellNodes(nodes As Integer(), positionVectors As Vector2()) As (Integer, Integer, Integer)
 
             Dim orderedNodes = Dictionaries.OrderedNodes(nodes, positionVectors)
 
@@ -281,6 +390,25 @@ Namespace Services
 
             Dim configMap = Dictionaries.ConfigMap(t_adj)
             Dim value As Func(Of Integer?) = Nothing
+
+            If Not configMap.TryGetValue(configuration, value) Then
+                Throw New Exception("Invalid configuration")
+            End If
+
+            Return value.Invoke()
+
+        End Function
+
+        ''' <summary>
+        ''' Identifies the side type of the adjoining edge for Delaunay Triangulation
+        ''' </summary>
+        ''' <param name="configuration"></param>
+        ''' <param name="t"></param>
+        ''' <returns></returns>
+        Friend Shared Function JoiningSide(configuration As Integer, t As Cell) As SideType
+
+            Dim configMap = Dictionaries.ConfigToSideType(t)
+            Dim value As Func(Of SideType) = Nothing
 
             If Not configMap.TryGetValue(configuration, value) Then
                 Throw New Exception("Invalid configuration")

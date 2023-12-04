@@ -29,25 +29,20 @@ namespace Core.Interfaces
         List<Node> AllNodes();
 
         /// <summary>
-        /// Returns the node ids of a triangular or quad cell
-        /// </summary>
-        /// <param name="t"></param>
-        /// <returns></returns>
-        CellNodes GetNodeDetails(int t);
-
-        /// <summary>
-        /// Returns the position vectors associated with each node of a triangular or quad cell
+        /// Returns the position vectors of a non-triangular cell as an array
         /// </summary>
         /// <param name="n"></param>
+        /// <param name="nSides"></param>
         /// <returns></returns>
-        CellNodeVectors GetPositionVectors(CellNodes n);
+        Vector2[] GetPositionVectorsAsArray(int[] n);
 
         /// <summary>
-        /// Returns the surface types of the nodes of a triangular cell
+        /// Returns the surface types of the nodes in a triangular cell as an array
         /// </summary>
         /// <param name="n"></param>
+        /// <param name="nSides"></param>
         /// <returns></returns>
-        CellNodeTypes GetNodeSurface(CellNodes n);
+        Boolean[] GetNodeSurfaceAsArray(int[] n);
 
         /// <summary>
         /// Returns the current maximum cell Id
@@ -180,7 +175,7 @@ namespace Core.Interfaces
         /// <param name="n3"></param>
         /// <returns>List of Cell</returns>
         /// <exception cref="Exception"></exception>
-        List<Cell> AdjacentCells(int configuration, CellNodes n);
+        List<Cell> AdjacentCells(int configuration, int[] n);
 
         /// <summary>
         /// Returns an ordered list of nodes on the edge of the farfield boundary. Note that this
@@ -222,24 +217,13 @@ namespace Core.Interfaces
         Edge FindLongestSide(Cell t);
 
         /// <summary>
-        /// Gets the SideType of each edge in a cell
-        /// </summary>
-        /// <param name="t"></param>
-        /// <returns></returns>
-        CellSideTypes GetSideTypes(int t);
-
-        /// <summary>
         /// Finds the third edge in a triangle
         /// </summary>
         /// <param name="t"></param>
         /// <param name="e"></param>
         /// <param name="longSide"></param>
         /// <returns></returns>
-        Array FindHorizontalEdge(int t, Edge vertSide, Edge longSide);
-
-        Cell TopLeft(Farfield farfield);
-
-        Cell TopRight(Farfield farfield);
+        Edge[]? FindHorizontalEdge(int t, Edge vertSide, Edge longSide);
 
     }
 }

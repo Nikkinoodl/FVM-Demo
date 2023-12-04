@@ -1,10 +1,8 @@
 ﻿Imports Core.Interfaces
-Imports Core.Domain
 Imports Core.Common
 Imports Mesh.Factories
 Imports System.Numerics
 Imports Mesh.Services.SharedUtilities
-Imports Core.Data
 
 Namespace Services
     Public Class Delaunay : Implements IDelaunay
@@ -117,15 +115,18 @@ Namespace Services
                 'To avoid confusion, note that t is the index of the cell, not the Id
                 For t = 0 To numcells - 1
 
+                    Dim cell = data.CellList(t)
+
                     'find SideType of joining side
-                    Dim side = JoiningSide(config, t)
+                    Dim side = JoiningSide(config, cell)
 
                     'exclude if joining side is boundary or surface
                     If (side = SideType.boundary Or side = SideType.surface) Then Continue For
 
                     'get this cell vertex nodes
                     'GetCellData(t)
-                    Dim nodes As CellNodes = data.GetNodeDetails(t)
+                    'Dim nodes As CellNodes = data.GetNodeDetails(t)
+                    Dim nodes = GetNodes(cell)
 
                     'identify adjacent cells
                     Dim adjacentCells = data.AdjacentCells(config, nodes)
@@ -139,7 +140,7 @@ Namespace Services
                     Dim t2 = data.CellList.IndexOf(adjacentCells.First)
 
                     'get position vectors
-                    Dim position As (r1 As Vector2, rP As Vector2) = GetCoords(nodes.N1, np)
+                    Dim position As (r1 As Vector2, rP As Vector2) = GetCoords(nodes(0), np)
                     Dim rCenter = GetCellCenter(t)
 
                     'we only do Delaunay when np is in cell circumcircle
@@ -178,58 +179,40 @@ Namespace Services
         End Function
 
         ''' <summary>
-        ''' Identifies the side type of the adjoining edge
-        ''' </summary>
-        ''' <param name="configuration"></param>
-        ''' <param name="t"></param>
-        ''' <returns></returns>
-        Private Function JoiningSide(configuration As Integer, t As Integer) As SideType
-
-            Dim configMap = Dictionaries.ConfigToSideType(data.CellList(t))
-            Dim value As Func(Of SideType) = Nothing
-
-            If Not configMap.TryGetValue(configuration, value) Then
-                Throw New Exception("Invalid configuration")
-            End If
-
-            Return value.Invoke()
-
-        End Function
-
-        ''' <summary>
         ''' Flips the adjoining edge of a pair of cells. See the diagram in the comments above to
         ''' understand how nodes are assigned.
         ''' </summary>
         ''' <param name="configuration"></param>
         ''' <param name="factory"></param>
-        Private Sub FlipCells(configuration As Integer, t As Integer, t2 As Integer, np As Integer, n As CellNodes)
+        Private Sub FlipCells(configuration As Integer, t As Integer, t2 As Integer, np As Integer, n As Integer())
 
-            Dim s1 = data.GetSideTypes(t)
-            Dim s2 = data.GetSideTypes(t2)
+            Dim s1 = GetSideTypesAsArray(data.CellList(t))
+            Dim s2 = GetSideTypesAsArray(data.CellList(t2))
 
             Select Case configuration
                 Case 1
-                    factory.UpdateCell(t, np, n.N2, n.N3, s1.S1, SideType.none, s2.S1)
-                    factory.UpdateCell(t2, np, n.N3, n.N1, s1.S2, s2.S3, SideType.none)
+                    factory.UpdateCell(t, np, n(1), n(2), s1(0), SideType.none, s2(0))
+                    factory.UpdateCell(t2, np, n(2), n(0), s1(1), s2(2), SideType.none)
                 Case 2
-                    factory.UpdateCell(t, np, n.N3, n.N1, s1.S2, SideType.none, s2.S2)
-                    factory.UpdateCell(t2, np, n.N1, n.N2, s1.S3, s2.S1, SideType.none)
+                    factory.UpdateCell(t, np, n(2), n(0), s1(1), SideType.none, s2(1))
+                    factory.UpdateCell(t2, np, n(0), n(1), s1(2), s2(0), SideType.none)
                 Case 3
-                    factory.UpdateCell(t, np, n.N1, n.N2, s1.S3, SideType.none, s2.S3)
-                    factory.UpdateCell(t2, np, n.N2, n.N3, s1.S1, s2.S2, SideType.none)
+                    factory.UpdateCell(t, np, n(0), n(1), s1(2), SideType.none, s2(2))
+                    factory.UpdateCell(t2, np, n(1), n(2), s1(0), s2(1), SideType.none)
                 Case 4
-                    factory.UpdateCell(t, np, n.N2, n.N3, s1.S1, SideType.none, s2.S2)
-                    factory.UpdateCell(t2, np, n.N3, n.N1, s1.S2, s2.S1, SideType.none)
+                    factory.UpdateCell(t, np, n(1), n(2), s1(0), SideType.none, s2(1))
+                    factory.UpdateCell(t2, np, n(2), n(0), s1(1), s2(0), SideType.none)
                 Case 5
-                    factory.UpdateCell(t, np, n.N3, n.N1, s1.S2, SideType.none, s2.S3)
-                    factory.UpdateCell(t2, np, n.N1, n.N2, s1.S3, s2.S2, SideType.none)
+                    factory.UpdateCell(t, np, n(2), n(0), s1(1), SideType.none, s2(2))
+                    factory.UpdateCell(t2, np, n(0), n(1), s1(2), s2(1), SideType.none)
                 Case 6
-                    factory.UpdateCell(t, np, n.N1, n.N2, s1.S3, SideType.none, s2.S1)
-                    factory.UpdateCell(t2, np, n.N2, n.N3, s1.S1, s2.S3, SideType.none)
+                    factory.UpdateCell(t, np, n(0), n(1), s1(2), SideType.none, s2(0))
+                    factory.UpdateCell(t2, np, n(1), n(2), s1(0), s2(2), SideType.none)
                 Case Else
                     Throw New Exception
             End Select
         End Sub
+
     End Class
 End Namespace
 

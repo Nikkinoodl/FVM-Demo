@@ -10,18 +10,18 @@ namespace Core.Data
         #region "Cell Geometry"
 
         /// <summary>
-        /// The sequence in which a new triangular cell's nodes should be ordered when one side is horizontal
+        /// The sequence in which triangular cell nodes should be ordered when one side is horizontal
         /// </summary>
         /// <param name="nodes"></param>
         /// <param name="pV"></param>
         /// <returns></returns>
-        public static List<Tuple<bool, (int, int, int)>> OrderedNodes(CellNodes nodes, CellNodeVectors pV)
+        public static List<Tuple<bool, (int, int, int)>> OrderedNodes(int[] nodes, Vector2[] pV)
         {
             return new List<Tuple<bool, (int, int, int)>>()
             {
-                new(pV.R1.Y == pV.R2.Y, (nodes.N3, nodes.N1, nodes.N2)),
-                new(pV.R2.Y == pV.R3.Y, (nodes.N1, nodes.N2, nodes.N3)),
-                new(pV.R3.Y == pV.R1.Y, (nodes.N2, nodes.N3, nodes.N1))
+                new(pV[0].Y == pV[1].Y, (nodes[2], nodes[0], nodes[1])),
+                new(pV[1].Y == pV[2].Y, (nodes[0], nodes[1], nodes[2])),
+                new(pV[2].Y == pV[0].Y, (nodes[1], nodes[2], nodes[0]))
             };
         }
 
@@ -30,29 +30,14 @@ namespace Core.Data
         /// </summary>
         /// <param name="r"></param>
         /// <returns></returns>
-        public static Dictionary<SideName, Func<Vector2>> SideMidPoints(CellNodeVectors r)
+        public static Dictionary<SideName, Func<Vector2>> SideMidPoints(Vector2[] r)
         {
             return new Dictionary<SideName, Func<Vector2>>
             {
-                {SideName.S1, () => (r.R1 + r.R2) * 0.5F},
-                {SideName.S2, () => (r.R2 + r.R3) * 0.5F},
-                {SideName.S3, () => (r.R3 + r.R4) * 0.5F},
-                {SideName.S4, () => (r.R4 + r.R1) * 0.5F}
-            };
-        }
-
-        /// <summary>
-        /// A formula for finding the mid point of each triangular cell edge
-        /// </summary>
-        /// <param name="r"></param>
-        /// <returns></returns>
-        public static Dictionary<SideName, Func<Vector2>> SideMidPointsTriangle(CellNodeVectors r)
-        {
-            return new Dictionary<SideName, Func<Vector2>>
-            {
-                {SideName.S1, () => (r.R2 + r.R3) * 0.5F},
-                {SideName.S2, () => (r.R1 + r.R3) * 0.5F},
-                {SideName.S3, () => (r.R1 + r.R2) * 0.5F}
+                {SideName.S1, () => (r[0] + r[1]) * 0.5F},
+                {SideName.S2, () => (r[1] + r[2]) * 0.5F},
+                {SideName.S3, () => (r[2] + r[3]) * 0.5F},
+                {SideName.S4, () => (r[3] + r[0]) * 0.5F}
             };
         }
 
@@ -148,16 +133,15 @@ namespace Core.Data
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static Dictionary<SideName, Tuple<bool, bool>> SideNodeMap(CellNodeTypes s)
+        public static Dictionary<SideName, Tuple<bool, bool>> SideNodeMap(bool[] s)
         {
             return new Dictionary<SideName, Tuple<bool, bool>>()
             {
-                {SideName.S1, new Tuple<bool, bool>(s.S2, s.S3)},
-                {SideName.S2, new Tuple<bool, bool>(s.S1, s.S3)},
-                {SideName.S3, new Tuple<bool, bool>(s.S2, s.S1)}
+                {SideName.S1, new Tuple<bool, bool>(s[1], s[2])},
+                {SideName.S2, new Tuple<bool, bool>(s[0], s[2])},
+                {SideName.S3, new Tuple<bool, bool>(s[1], s[0])}
             };
         }
-
 
         #endregion
 
@@ -204,16 +188,16 @@ namespace Core.Data
         /// </summary>
         /// <param name="n"></param>
         /// <returns></returns>
-        public static Dictionary<int, Func<Cell, bool>> ConfigurationToCondition(CellNodes n)
+        public static Dictionary<int, Func<Cell, bool>> ConfigurationToCondition(int[] n)
         {
             return new Dictionary<int, Func<Cell, bool>>
             {
-                {1, t  => t.V1 == n.N1 && t.V3 == n.N2},
-                {2, t  => t.V2 == n.N2 && t.V1 == n.N3},
-                {3, t  => t.V2 == n.N1 && t.V3 == n.N3},
-                {4, t  => t.V2 == n.N1 && t.V1 == n.N2},
-                {5, t  => t.V3 == n.N2 && t.V2 == n.N3},
-                {6, t  => t.V3 == n.N1 && t.V1 == n.N3}
+                {1, t  => t.V1 == n[0] && t.V3 == n[1]},
+                {2, t  => t.V2 == n[1] && t.V1 == n[2]},
+                {3, t  => t.V2 == n[0] && t.V3 == n[2]},
+                {4, t  => t.V2 == n[0] && t.V1 == n[1]},
+                {5, t  => t.V3 == n[1] && t.V2 == n[2]},
+                {6, t  => t.V3 == n[0] && t.V1 == n[2]}
             };
         }
         #endregion
