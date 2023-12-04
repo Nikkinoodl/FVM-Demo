@@ -58,27 +58,23 @@ Namespace Factories
                         Dim value As Tuple(Of Integer?, Integer?) = Nothing
 
                         'check if the key exists in the dictionary
-                        If nodeAssignment.TryGetValue(key, value) Then
+                        If nodeAssignment.TryGetValue(key, value) = False Then
 
-                            Dim result As Tuple(Of Integer?, Integer?) = value
-
-                            'set v1 and v2 using the values returned from the dictionary
-                            v1 = result.Item1
-                            v2 = result.Item2
-
-                            'add new border cell
-                            Dim bc As New BorderCell(newId, v1, v2, borderCellEdge)
-
-                            'set the new border cell id as the adjoining cell on the existing boundary edge
-                            e.AdjoiningCell = newId
-
-                            newId += 1
-
-                        Else
-
-                            Throw New Exception()
+                            Throw New Exception("CellType/SideName combination does not exist")
 
                         End If
+
+                        'set v1 and v2 using the values returned from the dictionary
+                        v1 = value.Item1
+                        v2 = value.Item2
+
+                        'add new border cell
+                        Dim bc As New BorderCell(newId, v1, v2, borderCellEdge)
+
+                        'set the new border cell index as the adjoining cell on the existing boundary edge
+                        e.AdjoiningCell = data.CellList.IndexOf(data.CellList.Find(Function(c) c.Id = newId))
+
+                        newId += 1
 
                     End If
 
@@ -123,26 +119,24 @@ Namespace Factories
                         Dim value As Tuple(Of Integer?, Integer?) = Nothing
 
                         'check if the key exists in the dictionary
-                        If nodeAssignment.TryGetValue(key, value) Then
-
-                            Dim result As Tuple(Of Integer?, Integer?) = value
-
-                            'set v1 and v2 using the values returned from the dictionary
-                            v2 = result.Item1
-                            v3 = result.Item2
-
-                            Dim bc As New BorderCell(newId, v2, v3, this_edge, BorderType.Airfoil)
-
-                            'set the new border cell id as the adjoining cell on the existing boundary edge
-                            e.AdjoiningCell = newId
-
-                            newId += 1
-
-                        Else
+                        If nodeAssignment.TryGetValue(key, value) = False Then
 
                             Throw New Exception()
 
                         End If
+
+                        Dim result As Tuple(Of Integer?, Integer?) = value
+
+                        'set v1 and v2 using the values returned from the dictionary
+                        v2 = result.Item1
+                        v3 = result.Item2
+
+                        Dim bc As New BorderCell(newId, v2, v3, this_edge, BorderType.Airfoil)
+
+                        'set the new border cell id as the adjoining cell on the existing boundary edge
+                        e.AdjoiningCell = data.CellList.IndexOf(data.CellList.Find(Function(c) c.Id = newId))
+
+                        newId += 1
 
                     End If
 

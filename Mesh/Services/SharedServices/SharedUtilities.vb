@@ -7,29 +7,6 @@ Namespace Services
     Public Class SharedUtilities
 
         ''' <summary>
-        ''' Returns an array of the side types of the edges of the given cell
-        ''' </summary>
-        ''' <param name="t"></param>
-        ''' <returns></returns>
-        Friend Shared Function GetSideTypes(t As Cell) As Array
-
-            Dim nSides = GetNumberSides(t)
-            Dim s(nSides) As SideType
-            Dim i As Integer = 0
-
-            For Each e As Edge In t.Edges
-
-                s(i) = e.SideType
-
-                i += 1
-
-            Next
-
-            Return s.ToArray
-
-        End Function
-
-        ''' <summary>
         ''' Returns the side types of a cell as an array
         ''' </summary>
         ''' <param name="t"></param>
@@ -45,22 +22,6 @@ Namespace Services
             Next
 
             Return sides.ToArray()
-
-        End Function
-
-        ''' <summary>
-        ''' Returns the number of sides possessed by a cell as determined by its CellType
-        ''' </summary>
-        ''' <param name="t"></param>
-        ''' <returns></returns>
-        Friend Shared Function GetNumberSides(t As Cell) As Integer
-
-            Dim sideMap = Dictionaries.SideMap()
-            Dim value As Integer = Nothing
-
-            If Not sideMap.TryGetValue(t.CellType, value) Then Throw New Exception("Invalid CellType")
-
-            Return value
 
         End Function
 

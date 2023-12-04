@@ -51,12 +51,14 @@ Namespace Services
 
             'Loop through each node in parallel
             Parallel.ForEach(data.SmoothNode(), Sub(node)
+
                                                     'set variables and counters
                                                     Dim n = 0
                                                     Dim thisr As New Vector2
 
                                                     'find the cells that contain this node
                                                     For Each cell In data.SmoothCell(node.Id)
+
                                                         n += 1
                                                         Dim n1 = cell.V1
                                                         Dim n2 = cell.V2

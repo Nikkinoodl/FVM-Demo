@@ -228,7 +228,6 @@ Namespace Services
                 Dim nodeTypeCollection As Boolean() = data.GetNodeSurfaceAsArray(nodes)
                 Dim positionVectors As Vector2() = data.GetPositionVectorsAsArray(nodes)
 
-
                 Dim centerNodes As New List(Of Integer)
 
                 For Each e As Edge In data.CellList(t).Edges
@@ -510,7 +509,7 @@ next_cell:
                 Dim v31 As Integer = result.vP
 
                 'side types in the existing triangle
-                Dim s() As SideType = GetSideTypes(cell)
+                Dim s() As SideType = GetSideTypesAsArray(cell)
 
                 factory.ReplaceTriWithQuad(t, newId, nodes(0), v12, vC, v31, s(2),,, s(1))
                 factory.AddQuad(newId + 1, nodes(1), v23, vC, v12, s(0),,, s(2))
@@ -717,7 +716,7 @@ Next_Cell:
                 Next
 
                 'side types in the existing triangle
-                Dim s() As SideType = GetSideTypes(cell)
+                Dim s() As SideType = GetSideTypesAsArray(cell)
 
                 If farfield.Gridtype = GridType.Quads Then
 
@@ -1015,7 +1014,7 @@ Next_Cell:
         Private Function DivideCells(t As Integer, e As Edge, newid As Integer, vP As Integer, n As Integer()) As Integer
 
             'side types in the existing triangle
-            Dim s() As SideType = GetSideTypes(data.CellList(t))
+            Dim s() As SideType = GetSideTypesAsArray(data.CellList(t))
 
             'refer to the diagram at the SplitCells sub for better understanding of what is being done.
             Select Case e.SideName
@@ -1098,7 +1097,7 @@ Next_Cell:
         Private Function DivideCellsEquilateral(t As Integer, newid As Integer, n As Integer(), m As List(Of Integer)) As Integer
 
             'side types in the existing triangle
-            Dim s() As SideType = GetSideTypes(data.CellList(t))
+            Dim s() As SideType = GetSideTypesAsArray(data.CellList(t))
 
             'replace the original cell
             factory.ReplaceCell(t, newid, n(0), m(2), m(1),, s(1), s(2))
@@ -1122,7 +1121,7 @@ Next_Cell:
         Private Function DivideCellsQuads(t As Integer, newid As Integer, n As Integer(), m As List(Of Integer), c As Integer) As Integer
 
             'side types in the existing triangle
-            Dim s() As SideType = GetSideTypes(data.CellList(t))
+            Dim s() As SideType = GetSideTypesAsArray(data.CellList(t))
 
             'replace the original cell
             factory.ReplaceCellQuad(t, newid, n(0), m(0), c, m(3), s(0),,, s(3))

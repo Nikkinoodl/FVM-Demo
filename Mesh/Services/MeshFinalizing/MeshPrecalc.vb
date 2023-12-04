@@ -22,23 +22,17 @@ Namespace Services
 
             Parallel.ForEach(data.CalcCells, Sub(t)
 
-                                                 Dim nSides As Integer = GetNumberSides(t)
-                                                 Dim n(nSides - 1) As Integer
+                                                 'get cell nodes and calculate number of sides
+                                                 Dim n = GetNodes(t)
+                                                 Dim nSides = n.Length
 
-                                                 n = GetNodes(t)
+                                                 'position vectors
+                                                 Dim r = data.GetPositionVectorsAsArray(n)
 
-                                                 Dim r(nSides - 1) As Vector2
-                                                 Dim e(nSides - 1) As Edge
+                                                 'edges
+                                                 Dim e = t.Edges.ToArray
 
-                                                 'position vectors for all cell nodes
-                                                 For i As Integer = 0 To nSides - 1
-
-                                                     r(i) = data.NodeV(n(i)).R
-                                                     e(i) = t.Edges(i)
-
-                                                 Next
-
-                                                 'Use a list of tuples to hold node pairs for this cell
+                                                 'use a list of tuples to hold node pairs for this cell
                                                  Dim nodePairs As New List(Of (nA As Integer, nB As Integer, r As Vector2, e As Edge))
 
                                                  If nSides = 3 Then  'special processing for triangles
@@ -65,7 +59,6 @@ Namespace Services
                                                      Next
 
                                                  End If
-
 
                                                  For Each nodePair In nodePairs
 

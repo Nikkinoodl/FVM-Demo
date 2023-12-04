@@ -1,7 +1,6 @@
 ﻿using Core.Common;
 using Core.Domain;
 using System.Numerics;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Core.Data
 {
@@ -13,7 +12,7 @@ namespace Core.Data
         /// The sequence in which triangular cell nodes should be ordered when one side is horizontal
         /// </summary>
         /// <param name="nodes"></param>
-        /// <param name="pV"></param>
+        /// <param name="position vectors"></param>
         /// <returns></returns>
         public static List<Tuple<bool, (int, int, int)>> OrderedNodes(int[] nodes, Vector2[] pV)
         {
@@ -73,23 +72,7 @@ namespace Core.Data
             };
         }
 
-        /// <summary>
-        /// Number of sides possessed by each CellType
-        /// </summary>
-        /// <returns></returns>
-        public static Dictionary<CellType, int> SideMap()
-        {
-            return new Dictionary<CellType, int>
-            {
-                {CellType.triangle, 3},
-                {CellType.quad, 4},
-                {CellType.pent, 5},
-                {CellType.hex, 6},
-                {CellType.oct, 8}
-            };
-        }
-
-        /// <summary>
+       /// <summary>
         /// The vertices which lie at either end of a cell edge
         /// </summary>
         /// <param name="t"></param>

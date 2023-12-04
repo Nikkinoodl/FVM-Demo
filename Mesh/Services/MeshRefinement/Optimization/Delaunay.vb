@@ -31,11 +31,11 @@ Namespace Services
             '
             ' 1. v2 is np
             '
-            '                       v2---------v3      2
-            '                        \         /     /    \
-            '                         \       /    /        \
-            '                          \     /   /            \
-            '                             v1    1 -------------3
+            '                       v2---------v3    2
+            '                        \         /   /   \
+            '                         \       /   /     \
+            '                          \     /   /       \
+            '                             v1    1 --------3
             '
             '                           adj         this
             ' 
@@ -111,8 +111,8 @@ Namespace Services
 
             For Each config In configurations
 
-                'Cycle through cells.
-                'To avoid confusion, note that t is the index of the cell, not the Id
+                'cycle through cells.
+                'to avoid confusion, note that t is the index of the cell, not the Id
                 For t = 0 To numcells - 1
 
                     Dim cell = data.CellList(t)
@@ -120,23 +120,18 @@ Namespace Services
                     'find SideType of joining side
                     Dim side = JoiningSide(config, cell)
 
-                    'exclude if joining side is boundary or surface
+                    'exclude cell if joining side is boundary or surface
                     If (side = SideType.boundary Or side = SideType.surface) Then Continue For
 
-                    'get this cell vertex nodes
-                    'GetCellData(t)
-                    'Dim nodes As CellNodes = data.GetNodeDetails(t)
+                    'get this cell vertex nodes and identify adjacent cells
                     Dim nodes = GetNodes(cell)
-
-                    'identify adjacent cells
                     Dim adjacentCells = data.AdjacentCells(config, nodes)
 
                     'make sure we're only doing this if there is an adjacent cell on this side
                     If adjacentCells.Count() = 0 Then Continue For
 
-                    'identify which node will be np
+                    'identify which node will be np and get the index of the first adjacent cell
                     Dim np = ProcessAdjacent(config, adjacentCells.First)
-
                     Dim t2 = data.CellList.IndexOf(adjacentCells.First)
 
                     'get position vectors
@@ -190,27 +185,43 @@ Namespace Services
             Dim s2 = GetSideTypesAsArray(data.CellList(t2))
 
             Select Case configuration
+
                 Case 1
+
                     factory.UpdateCell(t, np, n(1), n(2), s1(0), SideType.none, s2(0))
                     factory.UpdateCell(t2, np, n(2), n(0), s1(1), s2(2), SideType.none)
+
                 Case 2
+
                     factory.UpdateCell(t, np, n(2), n(0), s1(1), SideType.none, s2(1))
                     factory.UpdateCell(t2, np, n(0), n(1), s1(2), s2(0), SideType.none)
+
                 Case 3
+
                     factory.UpdateCell(t, np, n(0), n(1), s1(2), SideType.none, s2(2))
                     factory.UpdateCell(t2, np, n(1), n(2), s1(0), s2(1), SideType.none)
+
                 Case 4
+
                     factory.UpdateCell(t, np, n(1), n(2), s1(0), SideType.none, s2(1))
                     factory.UpdateCell(t2, np, n(2), n(0), s1(1), s2(0), SideType.none)
+
                 Case 5
+
                     factory.UpdateCell(t, np, n(2), n(0), s1(1), SideType.none, s2(2))
                     factory.UpdateCell(t2, np, n(0), n(1), s1(2), s2(1), SideType.none)
+
                 Case 6
+
                     factory.UpdateCell(t, np, n(0), n(1), s1(2), SideType.none, s2(0))
                     factory.UpdateCell(t2, np, n(1), n(2), s1(0), s2(2), SideType.none)
+
                 Case Else
+
                     Throw New Exception
+
             End Select
+
         End Sub
 
     End Class
