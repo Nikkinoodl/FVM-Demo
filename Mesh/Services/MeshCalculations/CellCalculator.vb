@@ -1,6 +1,5 @@
 ﻿Imports System.Numerics
 Imports Core.Common
-Imports Core.Data
 Imports Core.Domain
 Imports Core.Interfaces
 Imports Mesh.Services.SharedUtilities
@@ -35,30 +34,18 @@ Namespace Services
         ''' <param name="t"></param>
         Public Sub CalculateLength(t As Cell) Implements ICellCalculator.CalculateLength
 
-            Dim n() As Integer = GetNodes(t)
+            Dim n() As Integer = GetNodesAsArray(t)
             Dim nSides = n.Length()
             Dim r() = data.GetPositionVectorsAsArray(n)
 
             CalculateCellCenter(t, r, nSides)
 
-            'triangles get special processing because of side naming convention
-            If t.CellType = CellType.triangle Then
+            If t.CellType = CellType.triangle Then 'triangles get special processing because of side naming convention
 
-                'calculate edge vectors
-                t.Edge1.Lv = r(2) - r(1)
-                t.Edge2.Lv = r(0) - r(2)
-                t.Edge3.Lv = r(1) - r(0)
+                CalculateTriangleEdgeLengths(t, r)
 
-                For i As Integer = 0 To nSides - 1
+            Else                'use a shared utility sub for non-triangular cells
 
-                    'lengths
-                    t.Edges(i).L = t.Edges(i).Lv.Length()
-
-                Next
-
-            Else
-
-                'use a shared utility sub for non-triangular cells
                 CalculateEdgeLengths(t, r, nSides)
 
             End If
@@ -83,25 +70,16 @@ Namespace Services
         ''' </summary>
         Public Sub CalculateMidPoint(t As Cell) Implements ICellCalculator.CalculateMidPoint
 
-            Dim n() As Integer = GetNodes(t)
+            Dim n() As Integer = GetNodesAsArray(t)
             Dim nSides = n.Length()
             Dim r() = data.GetPositionVectorsAsArray(n)
 
-            'triangles get special processing because of side naming convention
-            If nSides = 3 Then
+            If t.CellType = CellType.triangle Then   'triangles get special processing because of side naming convention
 
                 FindTriangleMidPoints(t, r)
 
-                'For i As Integer = 0 To nSides - 1
+            Else                                      'all other cells
 
-                '    'use shared utility sub for triangle calcs
-                '    t.Edges(i).R = FindMidPoint(t.Edges(i), r)
-
-                'Next
-
-            Else
-
-                'use shared utility sub for non-triangle calcs
                 FindMidPoints(t, r, nSides)
 
             End If
@@ -115,7 +93,7 @@ Namespace Services
 
             Parallel.ForEach(data.CellList, Sub(t)
 
-                                                Dim n() As Integer = GetNodes(t)
+                                                Dim n() As Integer = GetNodesAsArray(t)
                                                 Dim nSides = n.Length()
                                                 Dim r() = data.GetPositionVectorsAsArray(n)
 
@@ -144,13 +122,13 @@ Namespace Services
         End Sub
 
         ''' <summary>
-        ''' Calculates the outward facing normals for each edge in each cell. Note that this 
-        ''' assumes all cell nodes are assigned in a clockwise order.
+        ''' Calculates the outward facing normals for each edge in each cell (border cells are excluded).
+        ''' IMPORTANT: this assumes all cell nodes are assigned in a clockwise order.
         ''' </summary>
         Public Sub CalculateFaceNormals() Implements ICellCalculator.CalculateFaceNormals
             Parallel.ForEach(data.CalcCells, Sub(t)
 
-                                                 'Rotate counter clockwise by 90 degrees by (x, y) => (-y, x)
+                                                 'rotate counter clockwise by 90 degrees by (x, y) => (-y, x)
                                                  'and normalize to unit vector
                                                  For Each e As Edge In t.Edges
 

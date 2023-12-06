@@ -332,26 +332,16 @@ namespace Core.Data
         }
 
         /// <summary>
-        /// Sorts cells in the repository to set a calc order for the mesh, working from (X) left to right
-        /// and (Y) top to bottom
-        /// </summary>
-        public void SortCells()
-        {
-
-            Repository.CellList.Sort((t1, t2) => { int ret = t1.R.X.CompareTo(t2.R.X);
-                                                        return ret != 0 ? ret : t2.R.Y.CompareTo(t1.R.Y);
-                                                 });
-        }
-
-        /// <summary>
-        /// Finds the adjacent cell and side to a given node pair
+        /// Finds the cell and edge which are adjacent to the given node pair
         /// </summary>
         /// <param name="nA"></param>
         /// <param name="nB"></param>
         /// <returns>Id, SideName</returns>
-        public (int?, SideName?) AdjacentCellEdge((int nA, int nB, Vector2 r, Edge e) nodePair, int this_t)
+        public (int?, SideName?) AdjacentCellEdge((int nA, int nB, Edge e) nodePair, int this_t)
         {
-            //boundary and surface edges may not have a matching element/edge, so we need to be prepared to return nulls
+
+            //boundary and surface edges do not have a matching element/edge, so we need to be prepared to return nulls
+            //in the event that they have been included
             SideName? sideName;
             (int?, SideName?) result;
 
@@ -362,18 +352,21 @@ namespace Core.Data
 
             if (t_adj != null)
             {
-                //matching sides is easy because we can match on the mid point position vectors
-                //of the edges in this cell
+
+                //find the matching side by comparing the mid-point position vector of the nodepair edge with the
+                //mid-point position vector of each side in t_adj
                 sideName = (from Edge e in t_adj.Edges
-                            where e.R == nodePair.r
+                            where e.R == nodePair.e.R
                             select e.SideName).FirstOrDefault();
 
-                result = (Repository.CellList.IndexOf(t_adj), sideName);
+                result = (CellList.IndexOf(t_adj), sideName);
 
             }
             else
             {
+
                 result = (null, null);
+
             }
 
             return result;

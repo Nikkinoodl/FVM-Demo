@@ -56,6 +56,21 @@ namespace Core.Data
         }
 
         /// <summary>
+        /// The edge vector calculations for a triangular cell
+        /// </summary>
+        /// <param name="r"></param>
+        /// <returns></returns>
+        public static Dictionary<SideName, Func<Vector2>> EdgeVectorsTriangle(Vector2[] r)
+        {
+            return new Dictionary<SideName, Func<Vector2>>
+            {
+                {SideName.S1, () => r[2] - r[1]},
+                {SideName.S2, () => r[0] - r[2]},
+                {SideName.S3, () => r[1] - r[0]}
+            };
+        }
+
+        /// <summary>
         /// The vertex properties of each cell type
         /// </summary>
         /// <param name="t"></param>
@@ -81,9 +96,9 @@ namespace Core.Data
         {
             return new Dictionary<Tuple<CellType, SideName>, Tuple<int?, int?>>()
             {
-                {Tuple.Create(CellType.triangle, SideName.S1), Tuple.Create(t.V2, t.V3)},
+                {Tuple.Create(CellType.triangle, SideName.S1), Tuple.Create(t.V3, t.V2)},
                 {Tuple.Create(CellType.triangle, SideName.S2), Tuple.Create(t.V1, t.V3)},
-                {Tuple.Create(CellType.triangle, SideName.S3), Tuple.Create(t.V1, t.V2)},
+                {Tuple.Create(CellType.triangle, SideName.S3), Tuple.Create(t.V2, t.V1)},
                 {Tuple.Create(CellType.quad, SideName.S1), Tuple.Create(t.V2, t.V1)},
                 {Tuple.Create(CellType.quad, SideName.S2), Tuple.Create(t.V3, t.V2)},
                 {Tuple.Create(CellType.quad, SideName.S3), Tuple.Create(t.V4, t.V3)},
@@ -111,8 +126,9 @@ namespace Core.Data
         }
 
         /// <summary>
-        /// The relation between SideName and cellnodetypes can be used to determine 
-        /// whether a new node on the edge lies on the boundary or interior of the farfield
+        /// The relation between sidename and surface flags on existing nodes can be used to determine 
+        /// whether a new node on the edge lies on an airfoil surface boundary or in the interior of the
+        /// farfield
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>

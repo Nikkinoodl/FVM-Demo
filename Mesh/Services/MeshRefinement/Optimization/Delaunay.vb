@@ -124,7 +124,7 @@ Namespace Services
                     If (side = SideType.boundary Or side = SideType.surface) Then Continue For
 
                     'get this cell vertex nodes and identify adjacent cells
-                    Dim nodes = GetNodes(cell)
+                    Dim nodes = GetNodesAsArray(cell)
                     Dim adjacentCells = data.AdjacentCells(config, nodes)
 
                     'make sure we're only doing this if there is an adjacent cell on this side

@@ -153,18 +153,12 @@ namespace Core.Interfaces
         List<Cell> CalcCells();
 
         /// <summary>
-        /// Sorts cells in the repository to set a calc order for the mesh, working from left to right
-        /// and bottom to top
-        /// </summary>
-        void SortCells();
-
-        /// <summary>
         /// Finds the adjacent cell and side to a given node pair
         /// </summary>
         /// <param name="nA"></param>
         /// <param name="nB"></param>
         /// <returns>Id, SideName</returns>
-        (int?, SideName?) AdjacentCellEdge((int nA, int nB, Vector2 r, Edge e) nodePair, int this_t);
+        (int?, SideName?) AdjacentCellEdge((int nA, int nB, Edge e) nodePair, int this_t);
 
         /// <summary>
         /// Returns a list of cells with given nodes used in Delaunay triangulation

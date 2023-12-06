@@ -87,7 +87,7 @@ Namespace Services
                 Dim longSide As Edge = data.FindLongestSide(cell)
 
                 'get node ids and details for the current cell
-                Dim nodes = GetNodes(cell)
+                Dim nodes = GetNodesAsArray(cell)
                 Dim nodeTypeCollection As Boolean() = data.GetNodeSurfaceAsArray(nodes)
                 Dim positionVectors As Vector2() = data.GetPositionVectorsAsArray(nodes)
 
@@ -126,7 +126,7 @@ Namespace Services
                 Dim cell = data.CellList(t)
 
                 'Get node ids and details for this cell
-                Dim nodes = GetNodes(cell)
+                Dim nodes = GetNodesAsArray(cell)
                 Dim nodeTypeCollection As Boolean() = data.GetNodeSurfaceAsArray(nodes)
                 Dim positionVectors As Vector2() = data.GetPositionVectorsAsArray(nodes)
 
@@ -162,7 +162,7 @@ Namespace Services
                         If HasVerticalSide(newCell) <> True Then Continue For
 
                         'nodes = data.GetNodeDetails(c)
-                        nodes = GetNodes(newCell)
+                        nodes = GetNodesAsArray(newCell)
 
                         positionVectors = data.GetPositionVectorsAsArray(nodes)
 
@@ -224,7 +224,7 @@ Namespace Services
                 Dim cell = data.CellList(t)
 
                 'get node ids and details for this cell
-                Dim nodes = GetNodes(cell)
+                Dim nodes = GetNodesAsArray(cell)
                 Dim nodeTypeCollection As Boolean() = data.GetNodeSurfaceAsArray(nodes)
                 Dim positionVectors As Vector2() = data.GetPositionVectorsAsArray(nodes)
 
@@ -281,7 +281,7 @@ Namespace Services
 
                 Dim cell = data.CellList(t)
 
-                Dim nodes = GetNodes(cell)
+                Dim nodes = GetNodesAsArray(cell)
                 Dim nodeTypeCollection As Boolean() = data.GetNodeSurfaceAsArray(nodes)
 
                 'equilateral cells with edges on the left and right farfield boundaries
@@ -368,7 +368,7 @@ next_cell:
                 Dim cell = data.CellList(t)
 
                 'get node ids and details for this cell
-                Dim nodes = GetNodes(cell)
+                Dim nodes = GetNodesAsArray(cell)
                 Dim nodeTypeCollection As Boolean() = data.GetNodeSurfaceAsArray(nodes)
                 Dim positionVectors As Vector2() = data.GetPositionVectorsAsArray(nodes)
 
@@ -554,7 +554,7 @@ Next_Cell:
                 Dim cell = data.CellList(t)
 
                 'get node ids and details for this cell
-                Dim nodes = GetNodes(cell)
+                Dim nodes = GetNodesAsArray(cell)
                 Dim nodeTypeCollection As Boolean() = data.GetNodeSurfaceAsArray(nodes)
                 Dim positionVectors As Vector2() = data.GetPositionVectorsAsArray(nodes)
 
@@ -839,7 +839,7 @@ Next_Cell:
             For Each c As Cell In cluster
 
                 'read cell nodes into array
-                Dim nArray() As Integer = GetNodes(c)
+                Dim nArray() As Integer = GetNodesAsArray(c)
 
                 'arrays for vectors
                 Dim rArray(3) As Vector2
@@ -914,7 +914,7 @@ Next_Cell:
             For Each c As Cell In cluster
 
                 'read cell nodes into array
-                Dim nArray() As Integer = GetNodes(c)
+                Dim nArray() As Integer = GetNodesAsArray(c)
 
                 'array for node position vectors
                 Dim rArray(3) As Vector2
@@ -1063,7 +1063,7 @@ Next_Cell:
                 Dim cell = data.CellList(t)
 
                 'Get node ids and details for this cell
-                Dim nodes = GetNodes(cell)
+                Dim nodes = GetNodesAsArray(cell)
                 Dim positionVectors As Vector2() = data.GetPositionVectorsAsArray(nodes)
 
                 For Each e As Edge In cell.Edges

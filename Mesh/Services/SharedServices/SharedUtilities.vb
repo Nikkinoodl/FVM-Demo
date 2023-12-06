@@ -30,7 +30,7 @@ Namespace Services
         ''' </summary>
         ''' <param name="t"></param>
         ''' <returns></returns>
-        Friend Shared Function GetNodes(t As Cell) As Integer()
+        Friend Shared Function GetNodesAsArray(t As Cell) As Integer()
 
             Dim nodeMap = Dictionaries.NodeMap(t)
             Dim value As Integer?() = Nothing
@@ -132,7 +132,30 @@ Namespace Services
         End Sub
 
         ''' <summary>
-        ''' Calculates length of all edges on a non-triangular cell
+        ''' Calculates edge vectors and lengths of a triangular cell
+        ''' </summary>
+        ''' <param name="t"></param>
+        ''' <param name="r"></param>
+        Friend Shared Sub CalculateTriangleEdgeLengths(t As Cell, r As Vector2())
+
+            Dim sideCalculations = Dictionaries.EdgeVectorsTriangle(r)
+            Dim value As Func(Of Vector2) = Nothing
+
+            For Each e As Edge In t.Edges
+
+                If Not sideCalculations.TryGetValue(e.SideName, value) Then
+                    Throw New Exception("Invalid SideName")
+                End If
+
+                e.Lv = value.Invoke()
+                e.L = e.Lv.Length()
+
+            Next
+
+        End Sub
+
+        ''' <summary>
+        ''' Calculates edge vectors and length of all edges on a non-triangular cell
         ''' </summary>
         ''' <param name="t"></param>
         ''' <param name="r"></param>

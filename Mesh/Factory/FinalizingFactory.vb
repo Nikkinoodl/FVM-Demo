@@ -1,9 +1,7 @@
-﻿Imports System.Xml.XPath
-Imports Core.Common
+﻿Imports Core.Common
 Imports Core.Data
 Imports Core.Domain
 Imports Core.Interfaces
-Imports Mesh.Services.SharedUtilities
 
 Namespace Factories
 
@@ -33,6 +31,7 @@ Namespace Factories
         ''' <param name="farfield"></param>
         Public Sub AddBorderCells(farfield As Farfield) Implements IFinalizingFactory.AddBorderCells
 
+            'start with selection of cells that have an edge with SideType.Boundary
             Dim boundaryCells As List(Of Cell) = data.BoundaryCell
             Dim newId = data.MaxCellId + 1
 
@@ -45,6 +44,7 @@ Namespace Factories
                         Dim v1 As Integer
                         Dim v2 As Integer
 
+                        'new border cell that will adjoin the boundary cell
                         Dim borderCellEdge As New Edge(SideName.S1, SideType.border) With {
                             .R = e.R,
                             .L = e.L,
@@ -60,7 +60,7 @@ Namespace Factories
                         'check if the key exists in the dictionary
                         If nodeAssignment.TryGetValue(key, value) = False Then
 
-                            Throw New Exception("CellType/SideName combination does not exist")
+                            Throw New Exception("CellType/SideName combination does not exist in dictionary")
 
                         End If
 
@@ -71,7 +71,7 @@ Namespace Factories
                         'add new border cell
                         Dim bc As New BorderCell(newId, v1, v2, borderCellEdge)
 
-                        'set the new border cell index as the adjoining cell on the existing boundary edge
+                        'link the new border cell and the boundary cell edge
                         e.AdjoiningCell = data.CellList.IndexOf(data.CellList.Find(Function(c) c.Id = newId))
 
                         newId += 1
