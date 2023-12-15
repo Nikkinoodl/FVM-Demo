@@ -3,7 +3,6 @@ Imports Core.Common
 Imports System.Numerics
 Imports Core.DataCollections
 Imports Core.Interfaces
-Imports System.Windows.Forms.VisualStyles
 
 Namespace Factories
 

@@ -79,6 +79,7 @@ namespace Core.Data
         {
             return new Dictionary<CellType, int?[]>
             {
+                {CellType.line, new int?[] {t.V1, t.V2}},
                 {CellType.triangle, new int?[] {t.V1, t.V2, t.V3}},
                 {CellType.quad, new int?[] {t.V1, t.V2, t.V3, t.V4}},
                 {CellType.pent, new int?[] {t.V1, t.V2, t.V3, t.V4, t.V5}},

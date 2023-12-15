@@ -7,7 +7,9 @@ Namespace Services
         Private ReadOnly preparer As IDataPreparer
 
         Public Sub New(dataPreparer As IDataPreparer)
+
             preparer = dataPreparer
+
         End Sub
 
         ''' <summary>

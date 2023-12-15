@@ -158,7 +158,7 @@ namespace Core.Interfaces
         /// <param name="nA"></param>
         /// <param name="nB"></param>
         /// <returns>Id, SideName</returns>
-        (int?, SideName?) AdjacentCellEdge((int nA, int nB, Edge e) nodePair, int this_t);
+        (int?, SideName?) AdjacentCellEdge((int nA, int nB, Edge targetEdge) nodePair, int this_t);
 
         /// <summary>
         /// Returns a list of cells with given nodes used in Delaunay triangulation

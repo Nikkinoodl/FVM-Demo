@@ -34,8 +34,8 @@ namespace CFDSolv
         {
 
             //get values for combo box
-            ComboBox1.DataSource = Enum.GetValues(typeof(GridType));
-            comboBox2.DataSource = Enum.GetValues(typeof(Tiling));
+            TextBoxGrid.DataSource = Enum.GetValues(typeof(GridType));
+            TextBoxTiling.DataSource = Enum.GetValues(typeof(Tiling));
 
             //get settings
             settings.CreateSettings();
@@ -50,9 +50,9 @@ namespace CFDSolv
             //populate text boxes with farfield settings
             TextBoxHeight.Text = farfield.Height.ToString();
             TextBoxWidth.Text = farfield.Width.ToString();
-            TextBoxSmoothingCycles.Text = farfield.Smoothingcycles.ToString();
-            ComboBox1.SelectedItem = settings.Gridtype;
-            comboBox2.SelectedItem = settings.Tiling;
+            TextBoxSmoothing.Text = farfield.Smoothingcycles.ToString();
+            TextBoxGrid.SelectedItem = settings.Gridtype;
+            TextBoxTiling.SelectedItem = settings.Tiling;
 
             WindowState = FormWindowState.Maximized;
 
@@ -64,7 +64,7 @@ namespace CFDSolv
 
             ToolTip1.SetToolTip(TextBoxWidth, "The width of the farfield in meters");
             ToolTip2.SetToolTip(TextBoxHeight, "The height of the farfield in meters");
-            ToolTip10.SetToolTip(TextBoxSmoothingCycles, "Number of iterations of the smoothing routine");
+            ToolTip10.SetToolTip(TextBoxSmoothing, "Number of iterations of the smoothing routine");
 
             //set buttons to default
             ResetButtonStatus();
@@ -85,7 +85,7 @@ namespace CFDSolv
 
             UpdateGLSize();
 
-            //draw the Grid based on cells
+            //draw the grid based on cells
             int? n1, n2, n3, n4, n5, n6, n7, n8;
 
             //UI layer dealing directly with the repository
@@ -100,8 +100,7 @@ namespace CFDSolv
                 n7 = cell.V7;
                 n8 = cell.V8;
 
-                // This is old school OpenGl 1.0
-                // Wire frame
+                //this is OpenGl 1.0
                 GL.Begin(PrimitiveType.LineLoop);
                 GL.Color3(255, 255, 255);
                 GL.Vertex2(data.NodeV(n1).R.X, data.NodeV(n1).R.Y);
@@ -169,7 +168,7 @@ namespace CFDSolv
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Button2_Click(object sender, EventArgs e)
+        private void ButtonDelaunay_Click(object sender, EventArgs e)
         {
 
             StatusMessage(MeshConstants.MSGDELAUNAY);
@@ -188,7 +187,7 @@ namespace CFDSolv
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Button3_Click(object sender, EventArgs e)
+        private void ButtonRefine_Click(object sender, EventArgs e)
         {
 
             StatusMessage(MeshConstants.MSGDIVIDE);
@@ -207,7 +206,7 @@ namespace CFDSolv
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Button4_Click(object sender, EventArgs e)
+        private void ButtonSmooth_Click(object sender, EventArgs e)
         {
 
             StatusMessage(MeshConstants.MSGSMOOTH);
@@ -226,7 +225,7 @@ namespace CFDSolv
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Button6_Click(object sender, EventArgs e)
+        private void ButtonBuild_Click(object sender, EventArgs e)
         {
 
             StatusMessage(MeshConstants.MSGINITIALIZE);
@@ -234,7 +233,7 @@ namespace CFDSolv
             //lock down the input boxes
             TextBoxWidth.Enabled = false;
             TextBoxHeight.Enabled = false;
-            ComboBox1.Enabled = false;
+            TextBoxGrid.Enabled = false;
 
             //save settings
             Settings.WriteSettings(farfield);
@@ -246,20 +245,20 @@ namespace CFDSolv
             //enable buttons for irregular grids
             if (farfield.Gridtype == GridType.Triangles)
             {
-                Button2.Enabled = true;
-                Button4.Enabled = true;
-                Button7.Enabled = true;
+                ButtonDelaunay.Enabled = true;
+                ButtonSmooth.Enabled = true;
+                ButtonRedistribute.Enabled = true;
             }
             else
             {
-                Button2.Enabled = false;
-                Button4.Enabled = false;
-                Button7.Enabled = false;
+                ButtonDelaunay.Enabled = false;
+                ButtonSmooth.Enabled = false;
+                ButtonRedistribute.Enabled = false;
             }
 
             //enable buttons for all grids
-            Button3.Enabled = true;
-            Button9.Enabled = true;
+            ButtonRefine.Enabled = true;
+            ButtonFinalize.Enabled = true;
 
             //repaint
             EventCompletion();
@@ -271,7 +270,7 @@ namespace CFDSolv
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Button7_Click(object sender, EventArgs e)
+        private void ButtonRedistribute_Click(object sender, EventArgs e)
         {
 
             StatusMessage(MeshConstants.MSGREDISTRIBUTE);
@@ -290,20 +289,26 @@ namespace CFDSolv
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Button9_Click(object sender, EventArgs e)
+        private void ButtonFinalize_Click(object sender, EventArgs e)
         {
 
             //disable buttons to prevent further editing
-            Button2.Enabled = false;
-            Button3.Enabled = false;
-            Button4.Enabled = false;
-            Button6.Enabled = false;
-            Button7.Enabled = false;
-            Button9.Enabled = false;
+            ButtonDelaunay.Enabled = false;
+            ButtonRefine.Enabled = false;
+            ButtonSmooth.Enabled = false;
+            ButtonBuild.Enabled = false;
+            ButtonRedistribute.Enabled = false;
+            ButtonFinalize.Enabled = false;
 
             //only allow CFD or RESET
-            Button8.Enabled = true;
-            button10.Enabled = true;
+            ButtonCFD.Enabled = true;
+            ButtonReset.Enabled = true;
+
+            //allow smoothing on irregular triangle grid
+            if (farfield.Gridtype == GridType.Triangles)
+            {
+                ButtonSmooth.Enabled = true;
+            }
 
             //save settings
             Settings.WriteSettings(farfield);
@@ -325,7 +330,7 @@ namespace CFDSolv
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Button8_MouseClick(object sender, MouseEventArgs e)
+        private void ButtonCFD_Click(object sender, MouseEventArgs e)
         {
 
             //update settings.xml
@@ -342,7 +347,7 @@ namespace CFDSolv
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Button10_Click(object sender, EventArgs e)
+        private void ButtonReset_Click(object sender, EventArgs e)
         {
 
             //reset lists of nodes and cells
@@ -355,8 +360,8 @@ namespace CFDSolv
             //unlock the input boxes
             TextBoxWidth.Enabled = true;
             TextBoxHeight.Enabled = true;
-            ComboBox1.Enabled = true;
-            comboBox2.Enabled = true;
+            TextBoxGrid.Enabled = true;
+            TextBoxTiling.Enabled = true;
 
         }
 
@@ -367,7 +372,7 @@ namespace CFDSolv
 
         private void TextBoxSmoothingCycles_Validating(object sender, CancelEventArgs e)
         {
-            farfield.Smoothingcycles = ValidateEntry<short>(ref TextBoxSmoothingCycles, settings.Smoothingcycles);
+            farfield.Smoothingcycles = ValidateEntry<short>(ref TextBoxSmoothing, settings.Smoothingcycles);
         }
 
         private void TextBoxHeight_Validating(object sender, CancelEventArgs e)
@@ -375,14 +380,14 @@ namespace CFDSolv
             farfield.Height = ValidateEntry<float>(ref TextBoxHeight, settings.Height);
         }
 
-        private void ComboBox1_Validating(object sender, CancelEventArgs e)
+        private void TextBoxGrid_Validating(object sender, CancelEventArgs e)
         {
-            farfield.Gridtype = (GridType)ComboBox1.SelectedItem;
+            farfield.Gridtype = (GridType)TextBoxGrid.SelectedItem;
         }
 
-        private void comboBox2_Validating(object sender, CancelEventArgs e)
+        private void TextBoxTiling_Validating(object sender, CancelEventArgs e)
         {
-            farfield.Tiling = (Tiling)comboBox2.SelectedItem;
+            farfield.Tiling = (Tiling)TextBoxTiling.SelectedItem;
         }
 
         /// <summary>
@@ -418,16 +423,16 @@ namespace CFDSolv
         {
 
             //allow initial build and reset
-            Button6.Enabled = true;
-            button10.Enabled = true;
+            ButtonBuild.Enabled = true;
+            ButtonReset.Enabled = true;
 
             //disable all other buttons
-            Button2.Enabled = false;
-            Button3.Enabled = false;
-            Button4.Enabled = false;
-            Button7.Enabled = false;
-            Button8.Enabled = false;
-            Button9.Enabled = false;
+            ButtonDelaunay.Enabled = false;
+            ButtonRefine.Enabled = false;
+            ButtonSmooth.Enabled = false;
+            ButtonRedistribute.Enabled = false;
+            ButtonCFD.Enabled = false;
+            ButtonFinalize.Enabled = false;
 
         }
 

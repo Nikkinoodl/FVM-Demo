@@ -27,16 +27,28 @@ namespace Core.Domain
         public int? V3 { get; set; }
 
         /// <summary>
-        /// Optional node ids for use with cells with n > 3 sides
+        /// Optional node id for use with cells with n > 3 sides
         /// </summary>
         public int? V4 { get; set; }
 
+        /// <summary>
+        /// Optional node id for use with cells with n > 4 sides
+        /// </summary>
         public int? V5 { get; set; }
 
+        /// <summary>
+        /// Optional node id for use with cells with n > 5 sides
+        /// </summary>
         public int? V6 { get; set; }
 
+        /// <summary>
+        /// Optional node id for use with cells with n > 6 sides
+        /// </summary>
         public int? V7 { get; set; }
 
+        /// <summary>
+        /// Optional node id for use with cells with n > 7 sides
+        /// </summary>
         public int? V8 { get; set; }
 
         /// <summary>
@@ -79,20 +91,32 @@ namespace Core.Domain
         public Edge? Edge3 { get; set; }
 
         /// <summary>
-        /// Optional cell edges for n > 3 sided cells
+        /// Optional cell edge for n > 3 sided cells
         /// </summary>
         public Edge? Edge4 { get; set; }
 
+        /// <summary>
+        /// Optional cell edge for n > 4 sided cells
+        /// </summary>
         public Edge? Edge5 { get; set; }
 
+        /// <summary>
+        /// Optional cell edge for n > 5 sided cells
+        /// </summary>
         public Edge? Edge6 { get; set; }
 
+        /// <summary>
+        /// Optional cell edge for n > 6 sided cells
+        /// </summary>
         public Edge? Edge7 { get; set; }
 
+        /// <summary>
+        /// Optional cell edge for n > 7 sided cells
+        /// </summary>
         public Edge? Edge8 { get; set; }    
 
         /// <summary>
-        /// List of cell edges. Added on cell creation.
+        /// Ordered list of cell edges. Added on cell creation.
         /// </summary>
         public List<Edge> Edges { get; set; }
 
@@ -124,6 +148,9 @@ namespace Core.Domain
         /// </summary>
         public float B { get; set; }
 
+        /// <summary>
+        /// A spare property used for experimentation and debugging
+        /// </summary>
         public float Test { get; set; }  
 
         /// <summary>
@@ -137,7 +164,8 @@ namespace Core.Domain
         public bool BorderCell { get; set; }
 
         /// <summary>
-        /// Identifies the type of border cell, so that it is easier to set boundary conditions by type
+        /// Identifies the type of border cell, so that it is easier to set boundary conditions by type. A 
+        /// placeholder in the event that we must distinguish between boundary and surface types
         /// </summary>
         public BorderType? BorderCellType { get; set; }
 

@@ -11,30 +11,30 @@
         private void InitializeComponent()
         {
             Panel1 = new Panel();
-            label4 = new Label();
-            comboBox2 = new ComboBox();
+            LabelTiling = new Label();
+            TextBoxTiling = new ComboBox();
             label1 = new Label();
             label15 = new Label();
             label14 = new Label();
             label13 = new Label();
-            label12 = new Label();
-            ComboBox1 = new ComboBox();
-            button10 = new Button();
-            Button9 = new Button();
-            Label10 = new Label();
+            LabelGrid = new Label();
+            TextBoxGrid = new ComboBox();
+            ButtonReset = new Button();
+            ButtonFinalize = new Button();
+            LabelStatus = new Label();
             TextBoxStatus = new TextBox();
-            Button8 = new Button();
-            Button2 = new Button();
+            ButtonCFD = new Button();
+            ButtonDelaunay = new Button();
             TextBoxHeight = new TextBox();
-            Button3 = new Button();
+            ButtonRefine = new Button();
             TextBoxWidth = new TextBox();
-            Button4 = new Button();
-            Button7 = new Button();
-            Label3 = new Label();
-            Button6 = new Button();
-            Label2 = new Label();
-            TextBoxSmoothingCycles = new TextBox();
-            Label11 = new Label();
+            ButtonSmooth = new Button();
+            ButtonRedistribute = new Button();
+            LabelHeight = new Label();
+            ButtonBuild = new Button();
+            LabelWidth = new Label();
+            TextBoxSmoothing = new TextBox();
+            LabelSmoothing = new Label();
             OpenFileDialog1 = new OpenFileDialog();
             GlControl = new OpenTK.WinForms.GLControl();
             Panel1.SuspendLayout();
@@ -44,53 +44,53 @@
             // 
             Panel1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             Panel1.BorderStyle = BorderStyle.FixedSingle;
-            Panel1.Controls.Add(label4);
-            Panel1.Controls.Add(comboBox2);
+            Panel1.Controls.Add(LabelTiling);
+            Panel1.Controls.Add(TextBoxTiling);
             Panel1.Controls.Add(label1);
             Panel1.Controls.Add(label15);
             Panel1.Controls.Add(label14);
             Panel1.Controls.Add(label13);
-            Panel1.Controls.Add(label12);
-            Panel1.Controls.Add(ComboBox1);
-            Panel1.Controls.Add(button10);
-            Panel1.Controls.Add(Button9);
-            Panel1.Controls.Add(Label10);
+            Panel1.Controls.Add(LabelGrid);
+            Panel1.Controls.Add(TextBoxGrid);
+            Panel1.Controls.Add(ButtonReset);
+            Panel1.Controls.Add(ButtonFinalize);
+            Panel1.Controls.Add(LabelStatus);
             Panel1.Controls.Add(TextBoxStatus);
-            Panel1.Controls.Add(Button8);
-            Panel1.Controls.Add(Button2);
+            Panel1.Controls.Add(ButtonCFD);
+            Panel1.Controls.Add(ButtonDelaunay);
             Panel1.Controls.Add(TextBoxHeight);
-            Panel1.Controls.Add(Button3);
+            Panel1.Controls.Add(ButtonRefine);
             Panel1.Controls.Add(TextBoxWidth);
-            Panel1.Controls.Add(Button4);
-            Panel1.Controls.Add(Button7);
-            Panel1.Controls.Add(Label3);
-            Panel1.Controls.Add(Button6);
-            Panel1.Controls.Add(Label2);
-            Panel1.Controls.Add(TextBoxSmoothingCycles);
-            Panel1.Controls.Add(Label11);
+            Panel1.Controls.Add(ButtonSmooth);
+            Panel1.Controls.Add(ButtonRedistribute);
+            Panel1.Controls.Add(LabelHeight);
+            Panel1.Controls.Add(ButtonBuild);
+            Panel1.Controls.Add(LabelWidth);
+            Panel1.Controls.Add(TextBoxSmoothing);
+            Panel1.Controls.Add(LabelSmoothing);
             Panel1.Location = new Point(1328, 6);
             Panel1.Margin = new Padding(4);
             Panel1.Name = "Panel1";
             Panel1.Size = new Size(322, 848);
             Panel1.TabIndex = 0;
             // 
-            // label4
+            // LabelTiling
             // 
-            label4.AutoSize = true;
-            label4.Location = new Point(21, 438);
-            label4.Name = "label4";
-            label4.Size = new Size(40, 20);
-            label4.TabIndex = 44;
-            label4.Text = "Type";
+            LabelTiling.AutoSize = true;
+            LabelTiling.Location = new Point(21, 438);
+            LabelTiling.Name = "LabelTiling";
+            LabelTiling.Size = new Size(40, 20);
+            LabelTiling.TabIndex = 44;
+            LabelTiling.Text = "Type";
             // 
-            // comboBox2
+            // TextBoxTiling
             // 
-            comboBox2.FormattingEnabled = true;
-            comboBox2.Location = new Point(111, 435);
-            comboBox2.Name = "comboBox2";
-            comboBox2.Size = new Size(143, 28);
-            comboBox2.TabIndex = 43;
-            comboBox2.Validating += comboBox2_Validating;
+            TextBoxTiling.FormattingEnabled = true;
+            TextBoxTiling.Location = new Point(111, 435);
+            TextBoxTiling.Name = "TextBoxTiling";
+            TextBoxTiling.Size = new Size(143, 28);
+            TextBoxTiling.TabIndex = 43;
+            TextBoxTiling.Validating += TextBoxTiling_Validating;
             // 
             // label1
             // 
@@ -132,53 +132,53 @@
             label13.TabIndex = 39;
             label13.Text = "1. Start Build";
             // 
-            // label12
+            // LabelGrid
             // 
-            label12.AutoSize = true;
-            label12.Location = new Point(20, 76);
-            label12.Name = "label12";
-            label12.Size = new Size(72, 20);
-            label12.TabIndex = 38;
-            label12.Text = "Base Grid";
+            LabelGrid.AutoSize = true;
+            LabelGrid.Location = new Point(20, 76);
+            LabelGrid.Name = "LabelGrid";
+            LabelGrid.Size = new Size(72, 20);
+            LabelGrid.TabIndex = 38;
+            LabelGrid.Text = "Base Grid";
             // 
-            // ComboBox1
+            // TextBoxGrid
             // 
-            ComboBox1.FormattingEnabled = true;
-            ComboBox1.Location = new Point(111, 73);
-            ComboBox1.Name = "ComboBox1";
-            ComboBox1.Size = new Size(143, 28);
-            ComboBox1.TabIndex = 37;
-            ComboBox1.Validating += ComboBox1_Validating;
+            TextBoxGrid.FormattingEnabled = true;
+            TextBoxGrid.Location = new Point(111, 73);
+            TextBoxGrid.Name = "TextBoxGrid";
+            TextBoxGrid.Size = new Size(143, 28);
+            TextBoxGrid.TabIndex = 37;
+            TextBoxGrid.Validating += TextBoxGrid_Validating;
             // 
-            // button10
+            // ButtonReset
             // 
-            button10.Location = new Point(18, 612);
-            button10.Name = "button10";
-            button10.Size = new Size(106, 28);
-            button10.TabIndex = 36;
-            button10.Text = "RESET";
-            button10.UseVisualStyleBackColor = true;
-            button10.Click += Button10_Click;
+            ButtonReset.Location = new Point(18, 612);
+            ButtonReset.Name = "ButtonReset";
+            ButtonReset.Size = new Size(106, 28);
+            ButtonReset.TabIndex = 36;
+            ButtonReset.Text = "RESET";
+            ButtonReset.UseVisualStyleBackColor = true;
+            ButtonReset.Click += ButtonReset_Click;
             // 
-            // Button9
+            // ButtonFinalize
             // 
-            Button9.Location = new Point(18, 536);
-            Button9.Name = "Button9";
-            Button9.Size = new Size(97, 28);
-            Button9.TabIndex = 33;
-            Button9.Text = "Finalize";
-            Button9.UseVisualStyleBackColor = true;
-            Button9.Click += Button9_Click;
+            ButtonFinalize.Location = new Point(18, 536);
+            ButtonFinalize.Name = "ButtonFinalize";
+            ButtonFinalize.Size = new Size(97, 28);
+            ButtonFinalize.TabIndex = 33;
+            ButtonFinalize.Text = "Finalize";
+            ButtonFinalize.UseVisualStyleBackColor = true;
+            ButtonFinalize.Click += ButtonFinalize_Click;
             // 
-            // Label10
+            // LabelStatus
             // 
-            Label10.AutoSize = true;
-            Label10.Location = new Point(12, 691);
-            Label10.Margin = new Padding(4, 0, 4, 0);
-            Label10.Name = "Label10";
-            Label10.Size = new Size(49, 20);
-            Label10.TabIndex = 22;
-            Label10.Text = "Status";
+            LabelStatus.AutoSize = true;
+            LabelStatus.Location = new Point(12, 691);
+            LabelStatus.Margin = new Padding(4, 0, 4, 0);
+            LabelStatus.Name = "LabelStatus";
+            LabelStatus.Size = new Size(49, 20);
+            LabelStatus.TabIndex = 22;
+            LabelStatus.Text = "Status";
             // 
             // TextBoxStatus
             // 
@@ -193,26 +193,26 @@
             TextBoxStatus.TabIndex = 21;
             TextBoxStatus.TabStop = false;
             // 
-            // Button8
+            // ButtonCFD
             // 
-            Button8.Location = new Point(122, 536);
-            Button8.Name = "Button8";
-            Button8.Size = new Size(97, 28);
-            Button8.TabIndex = 32;
-            Button8.Text = "CFD";
-            Button8.UseVisualStyleBackColor = true;
-            Button8.MouseClick += Button8_MouseClick;
+            ButtonCFD.Location = new Point(122, 536);
+            ButtonCFD.Name = "ButtonCFD";
+            ButtonCFD.Size = new Size(97, 28);
+            ButtonCFD.TabIndex = 32;
+            ButtonCFD.Text = "CFD";
+            ButtonCFD.UseVisualStyleBackColor = true;
+            ButtonCFD.MouseClick += ButtonCFD_Click;
             // 
-            // Button2
+            // ButtonDelaunay
             // 
-            Button2.Location = new Point(26, 328);
-            Button2.Margin = new Padding(4);
-            Button2.Name = "Button2";
-            Button2.Size = new Size(97, 28);
-            Button2.TabIndex = 25;
-            Button2.Text = "Delaunay";
-            Button2.UseVisualStyleBackColor = true;
-            Button2.Click += Button2_Click;
+            ButtonDelaunay.Location = new Point(26, 328);
+            ButtonDelaunay.Margin = new Padding(4);
+            ButtonDelaunay.Name = "ButtonDelaunay";
+            ButtonDelaunay.Size = new Size(97, 28);
+            ButtonDelaunay.TabIndex = 25;
+            ButtonDelaunay.Text = "Delaunay";
+            ButtonDelaunay.UseVisualStyleBackColor = true;
+            ButtonDelaunay.Click += ButtonDelaunay_Click;
             // 
             // TextBoxHeight
             // 
@@ -223,16 +223,16 @@
             TextBoxHeight.TabIndex = 2;
             TextBoxHeight.Validating += TextBoxHeight_Validating;
             // 
-            // Button3
+            // ButtonRefine
             // 
-            Button3.Location = new Point(26, 292);
-            Button3.Margin = new Padding(4);
-            Button3.Name = "Button3";
-            Button3.Size = new Size(97, 28);
-            Button3.TabIndex = 26;
-            Button3.Text = "Refine";
-            Button3.UseVisualStyleBackColor = true;
-            Button3.Click += Button3_Click;
+            ButtonRefine.Location = new Point(26, 292);
+            ButtonRefine.Margin = new Padding(4);
+            ButtonRefine.Name = "ButtonRefine";
+            ButtonRefine.Size = new Size(97, 28);
+            ButtonRefine.TabIndex = 26;
+            ButtonRefine.Text = "Refine";
+            ButtonRefine.UseVisualStyleBackColor = true;
+            ButtonRefine.Click += ButtonRefine_Click;
             // 
             // TextBoxWidth
             // 
@@ -243,77 +243,77 @@
             TextBoxWidth.TabIndex = 1;
             TextBoxWidth.Validating += TextBoxWidth_Validating;
             // 
-            // Button4
+            // ButtonSmooth
             // 
-            Button4.Location = new Point(130, 292);
-            Button4.Margin = new Padding(4);
-            Button4.Name = "Button4";
-            Button4.Size = new Size(87, 28);
-            Button4.TabIndex = 27;
-            Button4.Text = "Smooth";
-            Button4.UseVisualStyleBackColor = true;
-            Button4.Click += Button4_Click;
+            ButtonSmooth.Location = new Point(130, 292);
+            ButtonSmooth.Margin = new Padding(4);
+            ButtonSmooth.Name = "ButtonSmooth";
+            ButtonSmooth.Size = new Size(87, 28);
+            ButtonSmooth.TabIndex = 27;
+            ButtonSmooth.Text = "Smooth";
+            ButtonSmooth.UseVisualStyleBackColor = true;
+            ButtonSmooth.Click += ButtonSmooth_Click;
             // 
-            // Button7
+            // ButtonRedistribute
             // 
-            Button7.Location = new Point(130, 328);
-            Button7.Margin = new Padding(4);
-            Button7.Name = "Button7";
-            Button7.Size = new Size(89, 28);
-            Button7.TabIndex = 31;
-            Button7.Text = "Redistrib";
-            Button7.UseVisualStyleBackColor = true;
-            Button7.Click += Button7_Click;
+            ButtonRedistribute.Location = new Point(130, 328);
+            ButtonRedistribute.Margin = new Padding(4);
+            ButtonRedistribute.Name = "ButtonRedistribute";
+            ButtonRedistribute.Size = new Size(89, 28);
+            ButtonRedistribute.TabIndex = 31;
+            ButtonRedistribute.Text = "Redistrib";
+            ButtonRedistribute.UseVisualStyleBackColor = true;
+            ButtonRedistribute.Click += ButtonRedistribute_Click;
             // 
-            // Label3
+            // LabelHeight
             // 
-            Label3.AutoSize = true;
-            Label3.Location = new Point(18, 39);
-            Label3.Margin = new Padding(4, 0, 4, 0);
-            Label3.Name = "Label3";
-            Label3.Size = new Size(73, 20);
-            Label3.TabIndex = 14;
-            Label3.Text = "Height/m";
+            LabelHeight.AutoSize = true;
+            LabelHeight.Location = new Point(18, 39);
+            LabelHeight.Margin = new Padding(4, 0, 4, 0);
+            LabelHeight.Name = "LabelHeight";
+            LabelHeight.Size = new Size(73, 20);
+            LabelHeight.TabIndex = 14;
+            LabelHeight.Text = "Height/m";
             // 
-            // Button6
+            // ButtonBuild
             // 
-            Button6.Location = new Point(22, 148);
-            Button6.Margin = new Padding(4);
-            Button6.Name = "Button6";
-            Button6.Size = new Size(134, 28);
-            Button6.TabIndex = 30;
-            Button6.Text = "Build Grid";
-            Button6.UseVisualStyleBackColor = true;
-            Button6.Click += Button6_Click;
+            ButtonBuild.Location = new Point(22, 148);
+            ButtonBuild.Margin = new Padding(4);
+            ButtonBuild.Name = "ButtonBuild";
+            ButtonBuild.Size = new Size(134, 28);
+            ButtonBuild.TabIndex = 30;
+            ButtonBuild.Text = "Build Grid";
+            ButtonBuild.UseVisualStyleBackColor = true;
+            ButtonBuild.Click += ButtonBuild_Click;
             // 
-            // Label2
+            // LabelWidth
             // 
-            Label2.AutoSize = true;
-            Label2.Location = new Point(23, 5);
-            Label2.Margin = new Padding(4, 0, 4, 0);
-            Label2.Name = "Label2";
-            Label2.Size = new Size(68, 20);
-            Label2.TabIndex = 0;
-            Label2.Text = "Width/m";
+            LabelWidth.AutoSize = true;
+            LabelWidth.Location = new Point(23, 5);
+            LabelWidth.Margin = new Padding(4, 0, 4, 0);
+            LabelWidth.Name = "LabelWidth";
+            LabelWidth.Size = new Size(68, 20);
+            LabelWidth.TabIndex = 0;
+            LabelWidth.Text = "Width/m";
             // 
-            // TextBoxSmoothingCycles
+            // TextBoxSmoothing
             // 
-            TextBoxSmoothingCycles.Location = new Point(167, 242);
-            TextBoxSmoothingCycles.Margin = new Padding(4);
-            TextBoxSmoothingCycles.Name = "TextBoxSmoothingCycles";
-            TextBoxSmoothingCycles.Size = new Size(68, 27);
-            TextBoxSmoothingCycles.TabIndex = 23;
-            TextBoxSmoothingCycles.Validating += TextBoxSmoothingCycles_Validating;
+            TextBoxSmoothing.Location = new Point(167, 242);
+            TextBoxSmoothing.Margin = new Padding(4);
+            TextBoxSmoothing.Name = "TextBoxSmoothing";
+            TextBoxSmoothing.Size = new Size(68, 27);
+            TextBoxSmoothing.TabIndex = 23;
+            TextBoxSmoothing.Validating += TextBoxSmoothingCycles_Validating;
             // 
-            // Label11
+            // LabelSmoothing
             // 
-            Label11.AutoSize = true;
-            Label11.Location = new Point(26, 242);
-            Label11.Margin = new Padding(4, 0, 4, 0);
-            Label11.Name = "Label11";
-            Label11.Size = new Size(127, 20);
-            Label11.TabIndex = 24;
-            Label11.Text = "Smoothing Cycles";
+            LabelSmoothing.AutoSize = true;
+            LabelSmoothing.Location = new Point(26, 242);
+            LabelSmoothing.Margin = new Padding(4, 0, 4, 0);
+            LabelSmoothing.Name = "LabelSmoothing";
+            LabelSmoothing.Size = new Size(127, 20);
+            LabelSmoothing.TabIndex = 24;
+            LabelSmoothing.Text = "Smoothing Cycles";
             // 
             // OpenFileDialog1
             // 
@@ -353,32 +353,32 @@
         private Panel Panel1;
         private TextBox TextBoxHeight;
         private TextBox TextBoxWidth;
-        private Label Label11;
-        private Label Label10;
-        private Label Label3;
-        private Label Label2;
+        private Label LabelSmoothing;
+        private Label LabelStatus;
+        private Label LabelHeight;
+        private Label LabelWidth;
         private TextBox TextBoxStatus;
-        private TextBox TextBoxSmoothingCycles;
-        private Button Button2;
-        private Button Button3;
-        private Button Button4;
+        private TextBox TextBoxSmoothing;
+        private Button ButtonDelaunay;
+        private Button ButtonRefine;
+        private Button ButtonSmooth;
         private OpenFileDialog OpenFileDialog1;
-        private Button Button6;
-        private Button Button7;
-        private Button Button8;
+        private Button ButtonBuild;
+        private Button ButtonRedistribute;
+        private Button ButtonCFD;
         private OpenTK.WinForms.GLControl GlControl;
 
         #endregion
 
-        private Button Button9;
-        private Button button10;
-        private ComboBox ComboBox1;
+        private Button ButtonFinalize;
+        private Button ButtonReset;
+        private ComboBox TextBoxGrid;
         private Label label13;
-        private Label label12;
+        private Label LabelGrid;
         private Label label15;
         private Label label14;
-        private Label label4;
-        private ComboBox comboBox2;
+        private Label LabelTiling;
+        private ComboBox TextBoxTiling;
         private Label label1;
     }
 }

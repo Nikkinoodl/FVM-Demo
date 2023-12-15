@@ -7,6 +7,7 @@
     public enum CellType
     {
         none,      //not set
+        line,      //border cell with one edge, side 1 lies between n1 and n2
         triangle,  //triangular cell, side n lies opposite vertex n
         quad,      //quadrangular cell, side n lies between vertex n and vertex n+1
         pent,      //pentagonal cell, side n lies between vertex n and vertex n+1
@@ -60,7 +61,7 @@
         outlet,
 
         /// <summary>
-        /// A edge reserved for use in zero-height border cells used for setting boundary conditions.
+        /// An edge reserved for use in zero-height border cells used for setting boundary conditions.
         /// </summary>
         border
     };

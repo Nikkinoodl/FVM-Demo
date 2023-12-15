@@ -24,17 +24,17 @@ Namespace Services
             'Loop though each edge in parallel
             Parallel.ForEach(edges, Sub(edge)
 
-                                        'Get the ordered (by x or y, according to side) list of nodes
+                                        'get the ordered (by x or y, according to side) list of nodes
                                         Dim sideNodes = data.EdgeBoundary(edge, farfield)
 
-                                        'Get the number of nodes to be redistributed
+                                        'get the number of nodes to be redistributed
                                         Dim nodeCount = sideNodes.Count()
 
                                         'using a simple harmonic distribution
                                         Dim nodeFraction = Function(n) n / (nodeCount + 1)
                                         Dim lengthFraction = Function(n) nodeFraction(n) + 0.01 * Math.Cos(Math.PI * nodeFraction(n))
 
-                                        'Loop through nodes on each edge in turn
+                                        'loop through nodes on each edge in turn
                                         For Each node In sideNodes
 
                                             Dim id = node.Id

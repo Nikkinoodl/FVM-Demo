@@ -20,6 +20,7 @@ namespace Core.Domain
             Complete = false;
             BorderCell = true;
             BorderCellType = borderType;
+            CellType = CellType.line;
             Edge1 = edge1;
             Edges = new List<Edge>
             {

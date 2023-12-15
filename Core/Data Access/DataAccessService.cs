@@ -233,12 +233,18 @@ namespace Core.Data
         public List<Cell> SmoothCell(int thisnode)
         {
 
-            var thisList = CellList
-               .Where(cell => cell.V1 == thisnode || cell.V2 == thisnode || cell.V3 == thisnode)
-               .OrderBy(cell => cell.R.X)
-               .AsParallel().ToList();
+            //var thisList = CellList
+            //   .Where(cell => cell.V1 == thisnode || cell.V2 == thisnode || cell.V3 == thisnode)
+            //   .OrderBy(cell => cell.R.X)
+            //   .AsParallel().ToList();
 
-            return thisList;
+            var cluster = (from t in CellList
+                let values = new[] { t.V1, t.V2, t.V3, t.V4, t.V5, t.V6, t.V7, t.V8 }
+                where values.Contains(thisnode)
+                orderby t.R.X
+                select t).AsParallel().ToList();
+
+            return cluster;
         }
 
         /// <summary>
@@ -337,29 +343,27 @@ namespace Core.Data
         /// <param name="nA"></param>
         /// <param name="nB"></param>
         /// <returns>Id, SideName</returns>
-        public (int?, SideName?) AdjacentCellEdge((int nA, int nB, Edge e) nodePair, int this_t)
+        public (int?, SideName?) AdjacentCellEdge((int nA, int nB, Edge targetEdge) nodePair, int targetCell)
         {
 
-            //boundary and surface edges do not have a matching element/edge, so we need to be prepared to return nulls
-            //in the event that they have been included
-            SideName? sideName;
+            //we may need to return nulls for boundary/surface cells depending on when this function is called
             (int?, SideName?) result;
 
-            Cell? t_adj = (from Cell t in CellList
+            Cell? adjacentCell = (from Cell t in CellList
                            let values = new[] { t.V1, t.V2, t.V3, t.V4, t.V5, t.V6, t.V7, t.V8 }
-                           where values.Contains(nodePair.nA) && values.Contains(nodePair.nB) && t.Id != this_t
+                           where values.Contains(nodePair.nA) && values.Contains(nodePair.nB) && t.Id != targetCell
                            select t).FirstOrDefault();
 
-            if (t_adj != null)
+            if (adjacentCell != null)
             {
 
                 //find the matching side by comparing the mid-point position vector of the nodepair edge with the
-                //mid-point position vector of each side in t_adj
-                sideName = (from Edge e in t_adj.Edges
-                            where e.R == nodePair.e.R
+                //mid-point position vector of each side in adjacentCell
+                SideName? adjacentSide = (from Edge e in adjacentCell.Edges
+                            where e.R == nodePair.targetEdge.R
                             select e.SideName).FirstOrDefault();
 
-                result = (CellList.IndexOf(t_adj), sideName);
+                result = (CellList.IndexOf(adjacentCell), adjacentSide);
 
             }
             else

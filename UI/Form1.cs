@@ -24,17 +24,17 @@ namespace CFDSolv
 
             _farfield = farfield;
 
-            textBox1.Text = "0.001";  //dt
-            textBox2.Text = "5";      //total time
-            textBox3.Text = "6";      //inlet U velocity
+            TextBoxTimestep.Text = "0.001";  //dt
+            TextBoxCalcTime.Text = "5";      //total time
+            TextBoxUVelocity.Text = "6";      //inlet U velocity
 
-            textBox7.Text = "0.15";   //nu
-            textBox8.Text = "1";      //rho
+            TextBoxNu.Text = "0.15";   //nu
+            TextBoxRho.Text = "1";      //rho
 
-            textBox4.Text = "1";      //piter
+            TextBoxPIteration.Text = "1";      //piter
 
-            button1.Enabled = false;
-            button2.Enabled = false;
+            ButtonRun.Enabled = false;
+            ButtonSavePlot.Enabled = false;
 
         }
 
@@ -58,19 +58,19 @@ namespace CFDSolv
             else
                 reynolds = 0;
 
-            label14.Text = "Re: " + reynolds.ToString("0.00");
+            LabelReynolds.Text = "Re: " + reynolds.ToString("0.00");
         }
         private void DisplayCFL(float nu, float u, float dxi, float dt)
         {
             double CFL = Math.Round((u * dt * dxi), 3);
             double vN = Math.Round((2 * nu * dt * dxi * dxi), 3);
 
-            label5.Text = "CFL/v Neumann: " + CFL.ToString("0.000") + " / " + vN.ToString("0.000");
+            LabelCFL.Text = "CFL/v Neumann: " + CFL.ToString("0.000") + " / " + vN.ToString("0.000");
         }
 
         private void DisplayTime(string txt)
         {
-            label6.Text = "Time Elapsed : " + txt;
+            LabelActualElapsed.Text = "Time Elapsed : " + txt;
         }
 
         /// <summary>
@@ -78,12 +78,12 @@ namespace CFDSolv
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button1_Click(object sender, EventArgs e)
+        private void ButtonRun_Click(object sender, EventArgs e)
         {
             StatusMessage(MeshConstants.MSGEMPTY);
 
             //top lid U velocity boundary conditions
-            var u = float.Parse(textBox3.Text);
+            var u = float.Parse(TextBoxUVelocity.Text);
 
             //carried over from rectangular grid - for the purpose of displaying Re, we will
             //just calculate using the farfield width as the length scale
@@ -93,8 +93,8 @@ namespace CFDSolv
             Fluid fluid = new()
             {
                 InletU = u,
-                Nu = float.Parse(textBox7.Text),
-                Rho = float.Parse(textBox8.Text),
+                Nu = float.Parse(TextBoxNu.Text),
+                Rho = float.Parse(TextBoxRho.Text),
                 InletP = 1,
                 InletV = 0
             };
@@ -102,9 +102,9 @@ namespace CFDSolv
             //calc domain is used for times steps and other non-fluid calculation parameters
             CalcDomain calc = new()
             {
-                Tmax = float.Parse(textBox2.Text),
-                Dt = float.Parse(textBox1.Text),
-                Piter = int.Parse(textBox4.Text)
+                Tmax = float.Parse(TextBoxCalcTime.Text),
+                Dt = float.Parse(TextBoxTimestep.Text),
+                Piter = int.Parse(TextBoxPIteration.Text)
             };
 
             //calculate and display Reynolds number
@@ -132,7 +132,7 @@ namespace CFDSolv
             }
 
             //enable the save plot button
-            button2.Enabled = true;
+            ButtonSavePlot.Enabled = true;
 
             StatusMessage(MeshConstants.MSGCFDDONE);
 
@@ -143,14 +143,17 @@ namespace CFDSolv
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Button2_Click(object sender, EventArgs e)
+        private void ButtonSavePlot_Click(object sender, EventArgs e)
         {
             var plotModel = plot1.Model;
 
-            SaveFileDialog f = new();
-            f.AddExtension = true;
-            f.Filter = "Portable Network Graphics|*.png";
-            f.FileName = plotModel.Title + ".png";
+            SaveFileDialog f = new()
+            {
+                AddExtension = true,
+                Filter = "Portable Network Graphics|*.png",
+                FileName = plotModel.Title + ".png"
+            };
+
             if (f.ShowDialog() == DialogResult.OK)
             {
                 var pngExporter = new PngExporter { Width = 800, Height = 800, Resolution = 300 };
@@ -164,40 +167,40 @@ namespace CFDSolv
         /// </summary>
         private void ChangeDisplayType()
         {
-            if (radioButton1.Checked == true && pmCollection != null)
+            if (RadioButtonU.Checked == true && pmCollection != null)
             {
                 plot1.Model = pmCollection.uModel;
                 plot1.Refresh();
             }
-            if (radioButton2.Checked == true && pmCollection != null)
+            if (RadioButtonV.Checked == true && pmCollection != null)
             {
                 plot1.Model = pmCollection.vModel;
                 plot1.Refresh();
             }
-            if (radioButton3.Checked == true && pmCollection != null)
+            if (RadioButtonP.Checked == true && pmCollection != null)
             {
                 plot1.Model = pmCollection.pModel;
                 plot1.Refresh();
             }
-            if (radioButton4.Checked == true && pmCollection != null)
+            if (RadioButtonTest.Checked == true && pmCollection != null)
             {
                 plot1.Model = pmCollection.tModel;
                 plot1.Refresh();
             }
         }
-        private void RadioButton1_Click(object sender, EventArgs e)
+        private void RadioButtonU_Click(object sender, EventArgs e)
         {
             ChangeDisplayType();
         }
-        private void RadioButton2_Click(object sender, EventArgs e)
+        private void RadioButtonV_Click(object sender, EventArgs e)
         {
             ChangeDisplayType();
         }
-        private void RadioButton3_Click(object sender, EventArgs e)
+        private void RadioButtonP_Click(object sender, EventArgs e)
         {
             ChangeDisplayType();
         }
-        private void RadioButton4_Click(object sender, EventArgs e)
+        private void RadioButtonTest_Click(object sender, EventArgs e)
         {
             ChangeDisplayType();
         }
@@ -207,7 +210,7 @@ namespace CFDSolv
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Button3_Click(object sender, EventArgs e)
+        private void ButtonPreCalc_Click(object sender, EventArgs e)
         {
 
             Finalize finalize = Program.container.GetInstance<Finalize>();
@@ -216,45 +219,45 @@ namespace CFDSolv
             StatusMessage(MeshConstants.MSGPRECALC);
 
             //enable the CFD button and lock down the others
-            button1.Enabled = true;
-            button3.Enabled = false;
-            button2.Enabled = false;
+            ButtonRun.Enabled = true;
+            ButtonPreCalc.Enabled = false;
+            ButtonSavePlot.Enabled = false;
         }
 
-        private void TextBox1_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        private void TextBoxTimestep_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
             float fallback = 0.001F;
-            textBox1.Text = ValidateEntry<float>(ref textBox1, fallback).ToString();
+            TextBoxTimestep.Text = ValidateEntry<float>(ref TextBoxTimestep, fallback).ToString();
         }
 
-        private void TextBox2_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        private void TextBoxCalcTime_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
             float fallback = 5F;
-            textBox2.Text = ValidateEntry<float>(ref textBox2, fallback).ToString();
+            TextBoxCalcTime.Text = ValidateEntry<float>(ref TextBoxCalcTime, fallback).ToString();
         }
 
-        private void TextBox3_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        private void TextBoxUVelocity_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
             float fallback = 6F;
-            textBox3.Text = ValidateEntry<float>(ref textBox3, fallback).ToString();
+            TextBoxUVelocity.Text = ValidateEntry<float>(ref TextBoxUVelocity, fallback).ToString();
         }
 
-        private void TextBox4_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        private void TextBoxPIteration_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
             short fallback = 1;
-            textBox4.Text = ValidateEntry<short>(ref textBox4, fallback).ToString();
+            TextBoxPIteration.Text = ValidateEntry<short>(ref TextBoxPIteration, fallback).ToString();
         }
 
-        private void TextBox7_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        private void TextBoxNu_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
             float fallback = 0.15F;
-            textBox7.Text = ValidateEntry<float>(ref textBox7, fallback).ToString();
+            TextBoxNu.Text = ValidateEntry<float>(ref TextBoxNu, fallback).ToString();
         }
 
-        private void TextBox8_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        private void TextBoxRho_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
             float fallback = 1F;
-            textBox8.Text = ValidateEntry<float>(ref textBox8, fallback).ToString();
+            TextBoxRho.Text = ValidateEntry<float>(ref TextBoxRho, fallback).ToString();
         }
 
         /// <summary>

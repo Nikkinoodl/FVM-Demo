@@ -44,7 +44,7 @@ Namespace Services
 
                 CalculateTriangleEdgeLengths(t, r)
 
-            Else                'use a shared utility sub for non-triangular cells
+            Else                                    'all other cells
 
                 CalculateEdgeLengths(t, r, nSides)
 

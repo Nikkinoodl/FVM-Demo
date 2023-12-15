@@ -21,25 +21,23 @@ Namespace Logic
 
         Public Sub Logic(farfield As Farfield)
 
-
-            'Some changes to cells prior to starting CFD
-            'Find edge midpoints
+            'find edge midpoints
             calculator.CalculateMidPoints()
 
-            'Remove any 'complete' flags on the cells
+            'remove any 'complete' flags on the cells
             setter.SetCompleteStatus()
 
-            'Calculate Areas
+            'calculate Areas
             calculator.CalculateAreas()
 
-            'Calculate face vectors and face normals
+            'calculate face vectors and face normals
             calculator.CalculateFaceVectors()
             calculator.CalculateFaceNormals()
 
-            'Add zero-height border cells for setting boundary conditions
+            'add zero-height border cells for setting boundary conditions
             cellBuilder.CreateBorderCells(farfield)
 
-            'Find adjoining cell and face for each edge
+            'find adjoining cell and face for each edge
             meshprecalc.FindAdjoiningCells()
 
         End Sub

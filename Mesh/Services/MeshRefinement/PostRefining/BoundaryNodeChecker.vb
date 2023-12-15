@@ -1,5 +1,4 @@
 ﻿Imports Core.Common
-Imports Core.Interfaces
 Imports Mesh.Factories
 
 Namespace Services

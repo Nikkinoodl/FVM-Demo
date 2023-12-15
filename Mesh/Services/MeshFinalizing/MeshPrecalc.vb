@@ -1,10 +1,13 @@
-﻿Imports System.Numerics
-Imports Core.Common
+﻿Imports Core.Common
 Imports Core.Domain
 Imports Core.Interfaces
 Imports Mesh.Services.SharedUtilities
 
 Namespace Services
+
+    ''' <summary>
+    ''' Methods that complete the grid. They must be performed after all elements have been constructed
+    ''' </summary>
     Public Class MeshPrecalc : Implements IMeshPrecalc
 
         Private ReadOnly data As IDataAccessService
@@ -20,80 +23,85 @@ Namespace Services
         ''' </summary>
         Public Sub FindAjoiningCells() Implements IMeshPrecalc.FindAdjoiningCells
 
-            Parallel.ForEach(data.CalcCells, Sub(t)
+            Parallel.ForEach(data.CellList, Sub(t)
 
-                                                 'get cell nodes and calculate number of sides
-                                                 Dim n = GetNodesAsArray(t)
-                                                 Dim nSides = n.Length
+                                                'get cell nodes and calculate number of sides
+                                                Dim n = GetNodesAsArray(t)
+                                                Dim nSides = n.Length
 
-                                                 'position vectors
-                                                 Dim r = data.GetPositionVectorsAsArray(n)
+                                                'edges
+                                                Dim e = t.Edges.ToArray
 
-                                                 'edges
-                                                 Dim e = t.Edges.ToArray
+                                                'use a list of tuples to hold node pairs for this cell
+                                                Dim nodePairs As New List(Of (nA As Integer, nB As Integer, targetEdge As Edge))
 
-                                                 'use a list of tuples to hold node pairs for this cell
-                                                 Dim nodePairs As New List(Of (nA As Integer, nB As Integer, e As Edge))
+                                                If nSides = 3 Then  'special processing for triangles
 
-                                                 If nSides = 3 Then  'special processing for triangles
+                                                    nodePairs.Add((n(2), n(1), e(0)))    'side1 spanned by nodes N3 and N2
+                                                    nodePairs.Add((n(0), n(2), e(1)))    'side2 spanned by nodes N1 and N3
+                                                    nodePairs.Add((n(1), n(0), e(2)))    'side3 spanned by nodes N2 and N1
 
-                                                     nodePairs.Add((n(2), n(1), e(0)))    'side1 spanned by nodes N3 and N2
-                                                     nodePairs.Add((n(0), n(2), e(1)))    'side2 spanned by nodes N1 and N3
-                                                     nodePairs.Add((n(1), n(0), e(2)))    'side3 spanned by nodes N2 and N1
+                                                ElseIf nSides > 3 Then   'all other cells
 
-                                                 Else               'all other cells
+                                                    For i As Integer = 0 To nSides - 1
 
-                                                     For i As Integer = 0 To nSides - 1
+                                                        'node pairs
+                                                        If i = 0 Then    'close the loop on the cell
 
-                                                         'node pairs
-                                                         If i = 0 Then    'close the loop on the cell
+                                                            nodePairs.Add((n(i), n(nSides - 1), e(nSides - 1)))
 
-                                                             nodePairs.Add((n(i), n(nSides - 1), e(nSides - 1)))
+                                                        Else
 
-                                                         Else
+                                                            nodePairs.Add((n(i), n(i - 1), e(i - 1)))
 
-                                                             nodePairs.Add((n(i), n(i - 1), e(i - 1)))
+                                                        End If
 
-                                                         End If
+                                                    Next
 
-                                                     Next
+                                                Else        'border cells
 
-                                                 End If
+                                                    nodePairs.Add((n(1), n(0), e(0)))
 
-                                                 For Each nodePair In nodePairs
+                                                End If
 
-                                                     'get the matching cell index and edge
-                                                     Dim result As (t_adj As Integer?, sideName As SideName?)
+                                                For Each nodePair In nodePairs
 
-                                                     result = data.AdjacentCellEdge(nodePair, t.Id)
+                                                    'get the matching cell index and edge
+                                                    Dim result As (adjacentCell As Integer?, adjacentSide As SideName?)
 
-                                                     If result.t_adj IsNot Nothing Then
+                                                    result = data.AdjacentCellEdge(nodePair, t.Id)
 
-                                                         'update this modepair edge with neighbor's details if one exists
-                                                         nodePair.e.AdjoiningCell = result.t_adj
-                                                         nodePair.e.AdjoiningEdge = result.sideName
+                                                    'each cell should have at least one adjacent cell
+                                                    If result.adjacentCell IsNot Nothing Then
 
-                                                         'vector between cell centers
-                                                         nodePair.e.Rk = data.CellList(result.t_adj).R - t.R
+                                                        'update this nodepair edge with neighbor's details if one exists
+                                                        nodePair.targetEdge.AdjoiningCell = result.adjacentCell
+                                                        nodePair.targetEdge.AdjoiningEdge = result.adjacentSide
 
-                                                         'weighting will be 0.5 on regular shaped cells and 1.0 on boundary cells
-                                                         nodePair.e.W = nodePair.e.Rp.Length() / nodePair.e.Rk.Length()
+                                                        'skip any border cells at this point
+                                                        If t.BorderCell = True Then Continue For
 
-                                                         'ratio of edge length to distance vetween cell centers
-                                                         nodePair.e.Lk = nodePair.e.L / nodePair.e.Rk.Length()
+                                                        'vector between cell centers
+                                                        nodePair.targetEdge.Rk = data.CellList(result.adjacentCell).R - t.R
 
-                                                         'the sum of Lk's over the cell is used in the FVM pressure calc
-                                                         t.Lk += nodePair.e.Lk
+                                                        'weighting will be 0.5 on regular shaped cells and 1.0 on boundary cells
+                                                        nodePair.targetEdge.W = nodePair.targetEdge.Rp.Length() / nodePair.targetEdge.Rk.Length()
 
-                                                     Else
+                                                        'ratio of edge length to distance vetween cell centers
+                                                        nodePair.targetEdge.Lk = nodePair.targetEdge.L / nodePair.targetEdge.Rk.Length()
 
-                                                         Debug.WriteLine("Error matching edges at cell: " & t.Id)
+                                                        'the sum of Lk's over the cell is used in the FVM pressure calc
+                                                        t.Lk += nodePair.targetEdge.Lk
 
-                                                     End If
+                                                    Else
 
-                                                 Next
+                                                        Debug.WriteLine("Error matching edges at cell: " & t.Id)
 
-                                             End Sub)
+                                                    End If
+
+                                                Next
+
+                                            End Sub)
         End Sub
 
     End Class

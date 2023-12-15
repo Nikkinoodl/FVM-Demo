@@ -1,5 +1,6 @@
 ﻿Imports Core.Interfaces
 Imports Core.Domain
+Imports Mesh.Services.SharedUtilities
 Imports System.Numerics
 
 Namespace Services
@@ -14,7 +15,7 @@ Namespace Services
         End Sub
 
         ''' <summary>
-        ''' Evens out the distribution of irregular triangular grid nodes
+        ''' Evens out the distribution of grid nodes
         ''' </summary>
         Public Sub SmoothGrid() Implements IGridSmoother.SmoothGrid
 
@@ -46,31 +47,53 @@ Namespace Services
             '                                   D            
             '
 
-            'Takes each node in turn, finds the cells that contain this node and re-centers the node
-            'in relation to the other nodes of these cells
+            'Takes each node in turn, finds the cluster of cells that contain this node and re-centers
+            'the node in relation to the cluster. This above diagram shows four adjoinging triangles,
+            'but the method can be used for any type of cells.
 
-            'Loop through each node in parallel
+            'loop through each node in parallel
             Parallel.ForEach(data.SmoothNode(), Sub(node)
 
-                                                    'set variables and counters
-                                                    Dim n = 0
-                                                    Dim thisr As New Vector2
+                                                    'get cell cluster and count
+                                                    Dim cluster = data.SmoothCell(node.Id)
+                                                    Dim cellCount = cluster.Count()
+
+                                                    'cell average position vector
+                                                    Dim cellR(cellCount) As Vector2
+
+                                                    'cluster average position vector
+                                                    Dim aggregateR As New Vector2
+
+                                                    Dim i = 0
 
                                                     'find the cells that contain this node
-                                                    For Each cell In data.SmoothCell(node.Id)
+                                                    For Each cell In cluster
 
-                                                        n += 1
-                                                        Dim n1 = cell.V1
-                                                        Dim n2 = cell.V2
-                                                        Dim n3 = cell.V3
+                                                        cellR(i) = Vector2.Zero
+
+                                                        Dim cellNodes = GetNodesAsArray(cell)
+                                                        Dim r = data.GetPositionVectorsAsArray(cellNodes)
+                                                        Dim size = cellNodes.Length
 
                                                         'aggregate the position vector of all nodes
-                                                        thisr = data.Nodelist(n1).R + data.Nodelist(n2).R + data.Nodelist(n3).R + thisr
+                                                        For j As Integer = 0 To size - 1
+
+                                                            cellR(i) += r(j)
+
+                                                        Next
+
+                                                        'average by the number of nodes in cell
+                                                        cellR(i) /= size
+
+                                                        'add to the cluster aggregate
+                                                        aggregateR += cellR(i)
+
+                                                        i += 1
 
                                                     Next
 
-                                                    'Update node position vector
-                                                    data.Nodelist(node.Id).R = thisr / (3 * n)
+                                                    'average across the number of cells in the cluster
+                                                    node.R = aggregateR / cellCount
 
                                                 End Sub)
             'Next

@@ -10,7 +10,7 @@ namespace Core.Domain
         public Cell() { }
 
         /// <summary>
-        /// Creates a cell where n, edges are supplied as arrays. CellType is inferred.
+        /// Creates a cell where vertices, edges are supplied as arrays. CellType is inferred.
         /// </summary>
         /// <param name="id"></param>
         /// <param name="n"></param>
@@ -40,7 +40,6 @@ namespace Core.Domain
             Complete = false;
             CellType = value;
             Edges = new List<Edge>();
-
 
             // Create arrays of properties
             var nodeProperties = new[] { "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8" };
