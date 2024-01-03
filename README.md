@@ -6,7 +6,7 @@ incompressible Navier-Stokes equations for a lid-cavity problem.
 The application allows grids of different types to be generated (e.g. irregular triangles, equilateral triangles, rectangular) and uses the
 same grid-agnostic FVM solver for all grid types. A newly added feature allows grids to be transformed via 2D Conway tiling operations: kis, join, kis+join and trunc.
 
-Stable solutions are much easier to find on regular grids (play around with mesh granularity, lid velocity, density and viscosity) than on irregular grids, and also on grids which tend to have consistent cell sizes. An equilateral triangle mesh with kis tiling is especially robust at coarse mesh sizes.
+Stable solutions are much easier to find on regular grids (play around with mesh granularity, lid velocity, density and viscosity) than on irregular grids, and also on grids which tend to have consistent cell sizes. In its present state the solution does not account for numerical diffusion perpendicular to face normals, so solutions are difficult to achieve on grids that have cells with non-regular geometries.
 
 The code is well commented, so it can be read easily if you are looking for help with building your own FVM methods. The solution to the pressure equation,
 in particular, will be useful as it is not often well covered in online materials.
