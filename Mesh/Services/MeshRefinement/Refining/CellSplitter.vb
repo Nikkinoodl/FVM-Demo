@@ -353,7 +353,7 @@ next_cell:
         ''' Refines a triangular mesh by performing a join tiling. Each cell is divided by joining the midpoint of
         ''' each side to a new node at the cell center.
         ''' </summary>
-        Public Sub DivideJoin(farfield As Farfield) Implements ICellSplitter.DivideJoin
+        Public Sub DivideOrtho(farfield As Farfield) Implements ICellSplitter.DivideOrtho
 
             Dim numcells = data.CellList.Count()
             Dim n = data.Nodelist.Count()

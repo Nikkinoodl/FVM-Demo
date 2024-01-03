@@ -82,7 +82,7 @@
     {
         Triangles,          //triangles, irregular
         Equilateral,        //triangles, equilateral
-        Quads                //quads, squares, rectangles and 4-sided irregular shapes
+        Quads               //quadrilles
     }
 
     /// <summary>
@@ -92,10 +92,9 @@
     {
         None,               //base grid
         Kis,                //join nodes to center of cell
-        Join,               //join edge centers to center of cell
-        KisAndJoin,         //apply both kis and join (like tetrakis on square cell)
-        Trunc,              //truncate cell vertices
-        TruncAndCombine     //truncate cell vertices, combine offcuts into single cells
+        Ortho,              //join edge centers to center of cell
+        Meta,               //apply both kis and ortho
+        Trunc               //truncate cell vertices
     }
 
     /// <summary>

@@ -30,7 +30,7 @@ Namespace Services
         ''' each side to a new node at the cell center.
         ''' </summary>
         ''' <param name="farfield"></param>
-        Sub DivideJoin(farfield As Farfield)
+        Sub DivideOrtho(farfield As Farfield)
 
         ''' <summary>
         ''' Refines a mesh by performing a trunc tiling. Each cell is divided by truncating it at each node.

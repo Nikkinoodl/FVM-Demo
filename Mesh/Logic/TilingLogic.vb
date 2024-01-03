@@ -20,25 +20,27 @@ Namespace Logic
 
             calculator.CalculateMidPoints()
 
-            'tiling logic is independent of the grid type
             If farfield.Tiling = Tiling.Kis Then
 
+                'kis tiling logic is independent of grid type
                 splitter.DivideKis(farfield)
 
-            ElseIf farfield.Tiling = Tiling.Join Then
+            ElseIf farfield.Tiling = Tiling.Ortho Then
 
+                'ortho tiling logic for quad grids reuses an existing method which
                 If farfield.Gridtype = GridType.Quads Then
 
                     splitter.DivideRectangularCells()
 
                 Else
 
-                    splitter.DivideJoin(farfield)
+                    splitter.DivideOrtho(farfield)
 
                 End If
 
-            ElseIf farfield.Tiling = Tiling.KisAndJoin Then
+            ElseIf farfield.Tiling = Tiling.Meta Then
 
+                'meta tiling logic is independent of grid type
                 splitter.DivideKis(farfield)
 
                 checker.CheckBoundaryNodes(farfield)
@@ -48,10 +50,8 @@ Namespace Logic
 
             ElseIf farfield.Tiling = Tiling.Trunc Then
 
-                splitter.DivideTrunc(farfield)
-
-            ElseIf farfield.Tiling = Tiling.TruncAndCombine Then
-
+                'the initial step of trunc tiling logic is independent of grid type, but is not
+                'available for irregular grids as we can't control the size of resulting polygons
                 If farfield.Gridtype = GridType.Triangles Then
 
                     MsgBox("Unable to perform this tiling on irregular triangle grids")
@@ -63,6 +63,8 @@ Namespace Logic
                 splitter.DivideTrunc(farfield)
                 checker.CheckBoundaryNodes(farfield)
 
+                'the offcuts from congruent cells are combined using different methods depending
+                'on the initial cell type
                 If farfield.Gridtype = GridType.Quads Then
 
                     splitter.CombineQuadGrid(farfield)

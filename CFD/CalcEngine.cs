@@ -4,6 +4,7 @@ using Core.Domain;
 using Core.Interfaces;
 using System.Diagnostics;
 using System.Numerics;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 
 namespace CFD
 {
@@ -46,7 +47,7 @@ namespace CFD
             {
 
                 //momentum calcs in parallel
-                Parallel.ForEach(_data.CalcCells(), p =>
+                Parallel.ForEach(_data.CalcCells(), cell =>
                 {
                     float convectionU = 0;
                     float diffusionU = 0;
@@ -54,49 +55,53 @@ namespace CFD
                     float diffusionV = 0;
 
                     //Loop through the cell edges.
-                    foreach (Edge e in p.Edges)
+                    foreach (Edge e in cell.Edges)
                     {
+
                         //U
                         //interpolate for face values using weighting (ignore any numerical diffusion perpendicular to face normal)
-                        float phiIpU = _data.CellList[e.AdjoiningCell].Vel.X * e.W + p.Vel.X * (1 - e.W);
+                        float phiIpU = _data.CellList[e.AdjoiningCell].Vel.X * e.W + cell.Vel.X * (1 - e.W);
 
                         //diffusion calculated as nu * div.grad(phi) boundary geometry is taken into account
-                        diffusionU += (_data.CellList[e.AdjoiningCell].Vel.X - p.Vel.X) * e.Lk;
+                        diffusionU += (_data.CellList[e.AdjoiningCell].Vel.X - cell.Vel.X) * e.Lk;
 
                         //calculate convection terms using Green-Gauss without interpolating velocity as div.(U phi)
-                        convectionU += Vector2.Dot(p.Vel * phiIpU, e.N) * e.L;
+                        convectionU += Vector2.Dot(cell.Vel * phiIpU, e.N) * e.L;
 
                         //V
                         //interpolate for face values using weighting (ignore any numerical diffusion perpendicular to face normal)
-                        float phiIpV = _data.CellList[e.AdjoiningCell].Vel.Y * e.W + p.Vel.Y * (1 - e.W);
+                        float phiIpV = _data.CellList[e.AdjoiningCell].Vel.Y * e.W + cell.Vel.Y * (1 - e.W);
 
                         //diffusion calculated as nu * div.grad(phi) boundary geometry is taken into account
-                        diffusionV += (_data.CellList[e.AdjoiningCell].Vel.Y - p.Vel.Y) * e.Lk;
+                        diffusionV += (_data.CellList[e.AdjoiningCell].Vel.Y - cell.Vel.Y) * e.Lk;
 
                         //calculate convection terms using Green-Gauss without interpolating velocity as div.(U phi)
-                        convectionV += Vector2.Dot(p.Vel * phiIpV, e.N) * e.L;
+                        convectionV += Vector2.Dot(cell.Vel * phiIpV, e.N) * e.L;
                     }
 
                     //predictor step uStar and Vstar. We divide by area here so it is only done in one place.
-                    p.VelStar = new Vector2(p.Vel.X + (diffusionU * fluid.Nu - convectionU) * calc.Dt * p.AreaI, p.Vel.Y + (diffusionV * fluid.Nu - convectionV) * calc.Dt * p.AreaI);
+                    cell.VelStar = new Vector2(cell.Vel.X + (diffusionU * fluid.Nu - convectionU) * calc.Dt * cell.AreaI, cell.Vel.Y + (diffusionV * fluid.Nu - convectionV) * calc.Dt * cell.AreaI);
 
                 });
 
                 //Pressure calculations//
                 //PPE:  del p = (rho/dt) * divergence_vel_star calculated with central differencing
-                Parallel.ForEach(_data.CalcCells(), p =>
+                Parallel.ForEach(_data.CalcCells(), cell =>
                 {
+
                     //RHS of PPE
                     float b = 0;
 
-                    foreach (Edge e in p.Edges)
+                    foreach (Edge e in cell.Edges)
                     {
+                        
                         //Vector2 velStarIP;
                         b += Vector2.Dot(_data.CellList[e.AdjoiningCell].VelStar * e.W, e.N) * e.L;
                     }
 
-                    // [**] division by area here
-                    p.B = b * fluid.Rho * dti;
+                    // division by area here is cancelled out with later multiplication by area,
+                    // see [**] below
+                    cell.B = b * fluid.Rho * dti;
 
                 });
 
@@ -108,18 +113,20 @@ namespace CFD
                     Parallel.ForEach(_data.CellList, cell => { cell.PN = cell.P; });
 
                     //on a regular grid, the calc for p is the exact equivalent of the calc for p in a difference equation 
-                    Parallel.ForEach(_data.CalcCells(), p =>
+                    Parallel.ForEach(_data.CalcCells(), cell =>
                     {
                         float pTerm = 0;
 
-                        foreach (Edge e in p.Edges)
+                        foreach (Edge e in cell.Edges)
                         {
+
                             //note that the ratio Lk takes cell and boundary geometry into into account
                             pTerm += _data.CellList[e.AdjoiningCell].PN * e.Lk;
+
                         }
 
-                        // [**] cancels out with multiplication by area here
-                        p.P = (pTerm - p.B) / p.Lk;
+                        // [**] earlier division by area is cancelled out with multiplication by area here
+                        cell.P = (pTerm - cell.B) / cell.Lk;
 
                     });
 
@@ -129,19 +136,19 @@ namespace CFD
                 }
 
                 //corrector step is only applied to non-border cells
-                Parallel.ForEach(_data.CalcCells(), p =>
+                Parallel.ForEach(_data.CalcCells(), cell =>
                 {
                     //reconstruct gradP at cell center with new P values
                     Vector2 gradP = Vector2.Zero;
 
-                    foreach (Edge e in p.Edges)
+                    foreach (Edge e in cell.Edges)
                     {
                         //since we don't need to derive the second derivative, we use face values for P
                         gradP += _data.CellList[e.AdjoiningCell].P * e.W * e.L * e.N;
                     }
 
                     //do corrector step
-                    p.Vel = p.VelStar - gradP * calc.Dt * p.AreaI * rhoi;
+                    cell.Vel = cell.VelStar - gradP * calc.Dt * cell.AreaI * rhoi;
 
                 });
             }
