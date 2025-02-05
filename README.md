@@ -49,11 +49,11 @@ The resulting grid will look something like this:
 ![Refine-1](https://github.com/user-attachments/assets/d8044139-82d0-44c2-958c-b219894d8de8)
 
 
-Each time you click **[Refine]**, the grid will be redrawn and will appear more granular. You can repeat the **[Refine]** operation as many times as you like, but to start I'd recommend making the grid like the example below.
+Each time you click **[Refine]**, the grid will be redrawn and will appear more granular. You can repeat the **[Refine]** operation as many times as you like, but to start I'd recommend making the grid like the example below. Skip **3.Extended Tiling** for now.
 
-When you are satisfied with the grid, you must click **[Finalize]**.  This performs some pre-processing of the grid geometry and prepares for the CFD calculations. Once the grid is finalized, you can proceed with CFD calculations.
+When you are satisfied with the grid, go to **4.Commit** and click **[Finalize]**.  This performs some pre-processing of the grid geometry and prepares for the CFD calculations. Once the grid is finalized, you can proceed with CFD calculations.
 
-A finalized grid can be only re-built by clicking on the **[Reset]** button, other wise, otherwise you can re-start the grid at anytime by clicking on **[Build]**.
+A finalized grid can be only re-built by clicking on the **[Reset]** button, otherwise you can re-start the grid at anytime by clicking on **[Build]**.
 
 ![Refine-3](https://github.com/user-attachments/assets/9f5c97d2-3271-4b35-b9be-400433f77b89)
 
@@ -68,7 +68,7 @@ When the finalization process is finished, hit the **[CFD]** button and a new sc
 You are now ready to perform some computational fluid dynamics. Before you doing anything else, click the **[Precalc]** button. This does some preprocessing which makes the 
 subsequent calculations much faster.
 
-For a first run, I recommend keeping the parameters in the boxes unchanged, except for **Calc Time**. If you have kept all the default values unchanged and the grid is the same granularity as shown, you should be able to get the soution to converge. However, I thinl it is always a good idea to do a trial run first and for this I would suggest setting **Calc Time** to, say, 0.1s. The program execution time should be fast (in the order of a few milliseconds).
+For a first run, I recommend keeping the parameters in the boxes unchanged, except for **Calc Time**. If you have kept all the default values unchanged and the grid is the same granularity as shown, you should be able to get the soution to converge. However, I think it is always a good idea to do a trial run first and so I would suggest setting **Calc Time** to, say, 0.1s. The program execution time should be fast (in the order of a few milliseconds).
 
 To perform a calculation simply click the **[Run]** button.
 
@@ -81,12 +81,12 @@ The result should look something like this:
 
 
 From here, you can play around with the parameters at will and run new CFD solutions without the need to rebuild the grid each time. Extending the execution time will often result in a smoother
-solution. Sometimes will cause the CDF solution will "blow up"--that is, it can become numerically unstable and the CFD run will terminate prematurely. You can try re-running with different parameters in that case, although it often indicates that the grid doesn't work for these particular fluid characteristics.
+solution. Sometimes this will cause the CDF solution to "blow up"--that is, it can become numerically unstable and the CFD run will terminate prematurely. You can sometimes find a stable solution with different parameters, but it often indicates that the grid doesn't work for these particular fluid characteristics.
 
 ![CDF-4](https://github.com/user-attachments/assets/d7581d38-887e-45b2-827b-9bbc8e5a2f0b)
 
 
-Clicking the U, V and P radio buttons will display different plots without running the code. **U** shows the horizontal velocities, **V**" shows the vertical velocities and **P** shows the pressures in
+Clicking the **U**, **V** and **P** radio buttons will display different plots without running the code. **U** shows the horizontal velocities, **V**" shows the vertical velocities and **P** shows the pressures in
 the cavity. **Test** is reserved for debugging purposes and can be used for special plots if you need to modify the code.
 
 ![CFD-5](https://github.com/user-attachments/assets/fabee2f1-06b0-4274-8feb-5b79cd32a377)
