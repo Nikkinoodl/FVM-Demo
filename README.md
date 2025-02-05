@@ -53,7 +53,7 @@ Each time you click **[Refine]**, the grid will be redrawn and will appear more 
 
 When you are satisfied with the grid, you must click **[Finalize]**.  This performs some pre-processing of the grid geometry and prepares for the CFD calculations. Once the grid is finalized, you can proceed with CFD calculations.
 
-Once the grid is finalized it can be only re-started by clicking on the **[Reset]** button, other wise, otherwise you can re-start the grid at anytime by clicking on **[Build]**.
+A finalized grid can be only re-built by clicking on the **[Reset]** button, other wise, otherwise you can re-start the grid at anytime by clicking on **[Build]**.
 
 ![Refine-3](https://github.com/user-attachments/assets/9f5c97d2-3271-4b35-b9be-400433f77b89)
 
