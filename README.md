@@ -20,7 +20,9 @@ To get started, open the solution in Visual Studio and run the UI project:
 
 ![FVM-start](https://github.com/user-attachments/assets/abbbd6dd-4494-47f6-8b02-ad10760f9713)
 
-You will be presented with a form that has a display area to the left and an input form on the right hand side.
+You will be presented with a form that has a display area to the left and an input form on the right hand side. This form is used to constrush the mesh or grid on which the FVM calculations are made. The white box on the left hand side represents the cavity in which the fluid flow is being modelled.
+
+To start, we only have three things to input: the cavity height, the cavity width and the type of grid we want to build.
 
 ![Fullscreen-start](https://github.com/user-attachments/assets/d665ea31-eb83-4389-834b-d45df6ec990e)
 
@@ -29,13 +31,13 @@ You will be presented with a form that has a display area to the left and an inp
 To build a grid, simply enter the cavity dimensions (in meters) in the Height and Width boxes and select the base grid type from the dropdown menu. You are presented with an option for
 different types of grid options: triangular, equilateral or square. I would suggest starting with an equilateral or square grid.
 
-Go to Section 1. and click [Build]. For your first try at building a grid, you
+Go the form section labelled **1.Start Build** and click **[Build Grid]**. For a first try at building a grid, you
 should keep the grid simple and regular. The starting grid will be drawn and this usually consists of a single figure--in this case, a triangle.
 
 ![Initial-build](https://github.com/user-attachments/assets/6f8ef458-aacf-483b-bab6-09a94dbef6ea)
 
 
-Now go to Section 2. and click [Refine].  The grid will be redrawn with a finer mesh.
+Now go to the form section labelled **2.Optimize** and click **[Refine]**.  The grid will be redrawn with a finer mesh.
 
 ![Form-start](https://github.com/user-attachments/assets/5717d433-e4c5-4e8c-bcee-79e5556981c6)
 
@@ -45,21 +47,28 @@ The resulting grid will look something like this:
 ![Refine-1](https://github.com/user-attachments/assets/d8044139-82d0-44c2-958c-b219894d8de8)
 
 
-Each time you click [Refine], the grid will become more granular. You can repeat the [Refine] operation as many times as you like, but to start I'd recommend making the grid like the example below. When you are satisfied with the grid, you must click [Finalize].  This performs some pre-processing of the grid geometry and prepares for the CFD calculations. Once the grid is finalized, you must click the [Reset] button if you want to re-start the build, otherwise you can re-start the grid at anytime by clicking on [Build].
+Each time you click **[Refine]**, the grid will be redrawn and will appear more granular. You can repeat the **[Refine]** operation as many times as you like, but to start I'd recommend making the grid like the example below.
+
+When you are satisfied with the grid, you must click **[Finalize]**.  This performs some pre-processing of the grid geometry and prepares for the CFD calculations. Once the grid is finalized, you can proceed with CFD calculations.
+
+Once the grid is finalized it can be only re-started by clicking on the **[Reset]** button, other wise, otherwise you can re-start the grid at anytime by clicking on **[Build]**.
 
 ![Refine-3](https://github.com/user-attachments/assets/9f5c97d2-3271-4b35-b9be-400433f77b89)
 
 
 ## Starting the CFD Simulation
 
-When the finalization process is finished, hit the [CFD] button and a new screen will open:
+When the finalization process is finished, hit the **[CFD]** button and a new screen will open:
 
 ![CFD-1](https://github.com/user-attachments/assets/821db714-ce8c-45f0-a19a-aa0a8e3722d4)
 
 
-You are now ready to perform some computational fluid dynamics. First click the [Precalc] button: this does some further preprocessing which makes the 
-subsequent calculations much faster. For a first run, I recommend keeping the parameters in the boxes unchanged, except for Calc Time. I would suggest setting this to, say, 0.1s and performing a trial run. 
-The program execution time should be fast (in the order of a few milliseconds). To perform a calculation simply click the [Run] button.
+You are now ready to perform some computational fluid dynamics. Before you doing anything else, click the **[Precalc]** button. This does some preprocessing which makes the 
+subsequent calculations much faster.
+
+For a first run, I recommend keeping the parameters in the boxes unchanged, except for **Calc Time**. If you have kept all the default values unchanged and the grid is the same granularity as shown, you should be able to get the soution to converge. However, I thinl it is always a good idea to do a trial run first and for this I would suggest setting **Calc Time** to, say, 0.1s. The program execution time should be fast (in the order of a few milliseconds).
+
+To perform a calculation simply click the **[Run]** button.
 
 ![CFD-2](https://github.com/user-attachments/assets/39c671a8-7ec0-4e17-97b1-73d2c12970e6)
 
@@ -70,25 +79,25 @@ The result should look something like this:
 
 
 From here, you can play around with the parameters at will and run new CFD solutions without the need to rebuild the grid each time. Extending the execution time will often result in a smoother
-solution, and sometimes will cause the CDF solution to "blow up"--that is, it can become numerically unstable and the CFD run will terminate prematurely. You can try re-running with different parameters in that case, although it often indicates that the grid doesn't work for these particular fluid characteristics.
+solution. Sometimes will cause the CDF solution will "blow up"--that is, it can become numerically unstable and the CFD run will terminate prematurely. You can try re-running with different parameters in that case, although it often indicates that the grid doesn't work for these particular fluid characteristics.
 
 ![CDF-4](https://github.com/user-attachments/assets/d7581d38-887e-45b2-827b-9bbc8e5a2f0b)
 
 
-Clicking the U, V and P radio buttons will display different plots without running the code. "U" shows the horizontal velocities, "V" shows the vertical velocities and "P" shows the pressures in
-the cavity. "Test" is reserved for debugging purposes and can be used for special plots if you need to modify the code.
+Clicking the U, V and P radio buttons will display different plots without running the code. **U** shows the horizontal velocities, **V**" shows the vertical velocities and **P** shows the pressures in
+the cavity. **Test** is reserved for debugging purposes and can be used for special plots if you need to modify the code.
 
 ![CFD-5](https://github.com/user-attachments/assets/fabee2f1-06b0-4274-8feb-5b79cd32a377)
 
 
 ## Saving the Plots
 
-Save a plot directly to file by clicking [Save Plot]
+Save a plot directly to file by clicking **[Save Plot]**. A dialog box will open up from where you can set the folder and file name.
 
 ![Save-Plot](https://github.com/user-attachments/assets/1ba6439a-d650-4314-871b-743e70cf95b1)
 
 
 ## Return to the Grid Building Screen
 
-To refine the grid, simply close the CFD window. As noted earlier, the [Reset] button must be clicked before the grid can be rebuilt and
+To refine the grid, simply close the CFD window. As noted earlier, the **[Reset]** button must be clicked before the grid can be rebuilt: it
 is not possible to refine an existing grid at this stage.
