@@ -35,7 +35,7 @@ should keep the grid simple and regular. The starting grid will be drawn and thi
 ![Initial-build](https://github.com/user-attachments/assets/6f8ef458-aacf-483b-bab6-09a94dbef6ea)
 
 
-No go to Section 2. and click [Refine].  The grid will be redrawn with a finer mesh.
+Now go to Section 2. and click [Refine].  The grid will be redrawn with a finer mesh.
 
 ![Form-start](https://github.com/user-attachments/assets/5717d433-e4c5-4e8c-bcee-79e5556981c6)
 
@@ -45,22 +45,21 @@ The resulting grid will look something like this:
 ![Refine-1](https://github.com/user-attachments/assets/d8044139-82d0-44c2-958c-b219894d8de8)
 
 
-Each time you click [Refine], the grid will become more granular. You can repeat the [Refine] operation as many times as you like, but to start I'd recommend not creating a grid much finer than the example below. When you are satisfied with the grid, you must click [Finalize].  This performs some pre-processing of the grid geometry which has the
-benefit of making the following CFD calculation much faster. Once the grid is finalized, you must click the [Reset] button if you want to re-start the build.
+Each time you click [Refine], the grid will become more granular. You can repeat the [Refine] operation as many times as you like, but to start I'd recommend making the grid like the example below. When you are satisfied with the grid, you must click [Finalize].  This performs some pre-processing of the grid geometry and prepares for the CFD calculations. Once the grid is finalized, you must click the [Reset] button if you want to re-start the build, otherwise you can re-start the grid at anytime by clicking on [Build].
 
 ![Refine-3](https://github.com/user-attachments/assets/9f5c97d2-3271-4b35-b9be-400433f77b89)
 
 
 ## Starting the CFD Simulation
 
-When this finalization process is finished, hit the [CFD] button and a new screen will open:
+When the finalization process is finished, hit the [CFD] button and a new screen will open:
 
 ![CFD-1](https://github.com/user-attachments/assets/821db714-ce8c-45f0-a19a-aa0a8e3722d4)
 
 
-You are now ready to perform some computational fluid dynamics. First click the [Precalc] button: this does some further preprocessing of the geometry which makes the 
-subsequent calculations much faster. For a first run, it is recommended to keep the default parameters in the boxes, although you can set the calculation time in the Calc Time box to, say, 0.1s. 
-This will have the benefit of making the program execution time very fast (in the order of a few milliseconds). To perform a calculation simply click the [Run] button.
+You are now ready to perform some computational fluid dynamics. First click the [Precalc] button: this does some further preprocessing which makes the 
+subsequent calculations much faster. For a first run, I recommend keeping the parameters in the boxes unchanged, except for Calc Time. I would suggest setting this to, say, 0.1s and performing a trial run. 
+The program execution time should be fast (in the order of a few milliseconds). To perform a calculation simply click the [Run] button.
 
 ![CFD-2](https://github.com/user-attachments/assets/39c671a8-7ec0-4e17-97b1-73d2c12970e6)
 
@@ -71,20 +70,20 @@ The result should look something like this:
 
 
 From here, you can play around with the parameters at will and run new CFD solutions without the need to rebuild the grid each time. Extending the execution time will often result in a smoother
-solution, and sometimes will cause the CDF solution to "blow up"--that is, it can become numerically unstable and the CFD run will terminate prematurely. You can try re-running with different parameters in that case, although it often indicates that the grid you have built isn't working for the fluid characteristics you're working with.
+solution, and sometimes will cause the CDF solution to "blow up"--that is, it can become numerically unstable and the CFD run will terminate prematurely. You can try re-running with different parameters in that case, although it often indicates that the grid doesn't work for these particular fluid characteristics.
 
 ![CDF-4](https://github.com/user-attachments/assets/d7581d38-887e-45b2-827b-9bbc8e5a2f0b)
 
 
-Clicking the U, V and P radio buttons will display different plots. "U" shows the horizontal velocities, "V" shows the vertical velocities and "P" shows the pressures in
-the cavity. "Test" is reserved for debugging purposes or can be used for special plots if you need to modify the code.
+Clicking the U, V and P radio buttons will display different plots without running the code. "U" shows the horizontal velocities, "V" shows the vertical velocities and "P" shows the pressures in
+the cavity. "Test" is reserved for debugging purposes and can be used for special plots if you need to modify the code.
 
 ![CFD-5](https://github.com/user-attachments/assets/fabee2f1-06b0-4274-8feb-5b79cd32a377)
 
 
 ## Saving the Plots
 
-You can save a plot directly to file by clicking [Save Plot]
+Save a plot directly to file by clicking [Save Plot]
 
 ![Save-Plot](https://github.com/user-attachments/assets/1ba6439a-d650-4314-871b-743e70cf95b1)
 
