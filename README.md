@@ -1,10 +1,12 @@
 # FVM-Demo
 
 This Windows Forms/C#/VB/.NET 7 application uses the cell-centered finite volume method (FVM) to generate fluid flow simulations by solving the
-incompressible Navier-Stokes equations for a lid-cavity problem. 
+incompressible Navier-Stokes equations for a 2D lid-cavity problem. 
 
 The application allows grids of different types to be generated (e.g. irregular triangles, equilateral triangles, rectangular) and uses the
 same grid-agnostic FVM solver for all grid types. What makes this project unique is a feature that allows grids to be transformed via 2D Conway tiling operations: kis, join, kis+join and trunc.
+
+In the code, boundary conditions are enforced by lining the edges of the cavity with zero-thickness cells, essentially enabling parameters to be set on a 1D cell with a single edge.  
 
 Stable solutions are much easier to find on regular grids (play around with mesh granularity, lid velocity, density and viscosity) than on irregular grids, and also on grids which tend to have consistent cell sizes. In its present state the solution does not account for numerical diffusion perpendicular to face normals, so solutions are difficult to achieve on grids that have cells with non-regular geometries.
 
@@ -20,7 +22,7 @@ To get started, open the solution in Visual Studio and run the UI project:
 
 ![FVM-start](https://github.com/user-attachments/assets/abbbd6dd-4494-47f6-8b02-ad10760f9713)
 
-You will be presented with a form that has a display area to the left and an input form on the right hand side. This form is used to constrush the mesh or grid on which the FVM calculations are made. The white box on the left hand side represents the cavity in which the fluid flow is being modelled.
+You will be presented with a form that has a display area to the left and an input form on the right hand side. This form is used to construct the mesh or grid on which the FVM calculations are made. The white box on the left hand side represents the cavity in which the fluid flow is being modelled.
 
 To start, we only have three things to input: the cavity height, the cavity width and the type of grid we want to build.
 
