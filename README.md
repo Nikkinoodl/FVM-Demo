@@ -51,7 +51,7 @@ benefit of making the following CFD calculation much faster. Once the grid is fi
 ![Refine-3](https://github.com/user-attachments/assets/9f5c97d2-3271-4b35-b9be-400433f77b89)
 
 
-## Starting the CFD SImulation
+## Starting the CFD Simulation
 
 When this finalization process is finished, hit the [CFD] button and a new screen will open:
 
