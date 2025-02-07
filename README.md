@@ -18,7 +18,7 @@ Linear equations are solved step-by-step using the SIMPLE predictor-corrector me
 
 ## Running the Application
 
-To get started, open the solution in Visual Studio and run the UI project:
+To get started, open the solution in Visual Studio and run the UI project (press the unfilled arrow button on the menu bar, or select from the menu options):
 
 ![FVM-start](https://github.com/user-attachments/assets/abbbd6dd-4494-47f6-8b02-ad10760f9713)
 
@@ -39,7 +39,8 @@ should keep the grid simple and regular. The starting grid will be drawn and thi
 ![Initial-build](https://github.com/user-attachments/assets/6f8ef458-aacf-483b-bab6-09a94dbef6ea)
 
 
-Now go to the form section labelled **2.Optimize** and click **[Refine]**.  The grid will be redrawn with a finer mesh.
+Now go to the form section labelled **2.Optimize** and click **[Refine]**. The grid will be redrawn with a finer mesh. The other buttons in this area, plus the smoothing cycles input box are used only for
+irregular triangle grids.
 
 ![Form-start](https://github.com/user-attachments/assets/5717d433-e4c5-4e8c-bcee-79e5556981c6)
 
@@ -53,7 +54,7 @@ Each time you click **[Refine]**, the grid will be redrawn and will appear more 
 
 When you are satisfied with the grid, go to **4.Commit** and click **[Finalize]**.  This performs some pre-processing of the grid geometry and prepares for the CFD calculations. Once the grid is finalized, you can proceed with CFD calculations.
 
-A finalized grid can be only re-built by clicking on the **[Reset]** button, otherwise you can re-start the grid at anytime by clicking on **[Build]**.
+NOTE: A finalized grid can be only re-built by clicking on the **[Reset]** button, otherwise you can re-start the grid at anytime by clicking on **[Build]**.
 
 ![Refine-3](https://github.com/user-attachments/assets/9f5c97d2-3271-4b35-b9be-400433f77b89)
 
@@ -86,7 +87,7 @@ solution. Sometimes this will cause the CDF solution to "blow up"--that is, it c
 ![CDF-4](https://github.com/user-attachments/assets/d7581d38-887e-45b2-827b-9bbc8e5a2f0b)
 
 
-Clicking the **U**, **V** and **P** radio buttons will display different plots without running the code. **U** shows the horizontal velocities, **V**" shows the vertical velocities and **P** shows the pressures in
+Clicking the **U**, **V** and **P** radio buttons will display different plots without running the code. **U** shows the horizontal velocities, **V** shows the vertical velocities and **P** shows the pressures in
 the cavity. **Test** is reserved for debugging purposes and can be used for special plots if you need to modify the code.
 
 ![CFD-5](https://github.com/user-attachments/assets/fabee2f1-06b0-4274-8feb-5b79cd32a377)
