@@ -13,6 +13,10 @@ in particular, will be useful as it is not often well covered in online material
 
 Linear equations are solved step-by-step using the SIMPLE predictor-corrector method and central differencing. No matrix methods are used, but parallelization is used throughout.
 
+For a full overview of the finite volume method and its implementation in this project, please read the following project document:
+
+[Finite Volume Overview](https://github.com/Nikkinoodl/FVM-Demo/blob/master/Finite-Volume-Method-Overview.md)
+
 The images show sample plots at Reynolds Number 80 on an equilateral triangle grid with kis and join tiling:
 
 ![Equilateral Kis Join](https://github.com/Nikkinoodl/FVM-Demo/assets/17559271/3ab80cbf-6973-4ede-828d-1c6fcf10ffec)
