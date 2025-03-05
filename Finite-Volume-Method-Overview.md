@@ -1,9 +1,7 @@
-<<<<<<< HEAD
-
 # 1. Computational Fluid Dynamics Using the Finite Volume Method
 Author: Simon Bland
 
-Date: February 2025
+Date: March 2025
 
 # 2. Summary
 
