@@ -279,13 +279,11 @@ Namespace Services
         ''' <returns></returns>
         Friend Shared Function CheckInCircle(r1 As Vector2, rP As Vector2, rCenter As Vector2) As Boolean
 
-            Dim rad, p As Double
-
             'circumcircle radius
-            rad = Vector2.Distance(rCenter, r1)
+            Dim rad = Vector2.Distance(rCenter, r1)
 
             'distance from cell center to rP
-            p = Vector2.Distance(rP, rCenter)
+            Dim p = Vector2.Distance(rP, rCenter)
 
             'compare and return true if in circumcircle
             Return p < rad
@@ -300,10 +298,8 @@ Namespace Services
         ''' <returns></returns>
         Friend Shared Function CalcAngleToYAxis(r As Vector2, n As Node) As Single
 
-            Dim dot, det As Single
-
-            dot = Vector2.Dot(r - n.R, Vector2.UnitY)
-            det = (r - n.R).X * 1
+            Dim dot = Vector2.Dot(r - n.R, Vector2.UnitY)
+            Dim det = (r - n.R).X * 1
 
             Return Math.Atan2(det, dot)
 
@@ -317,10 +313,8 @@ Namespace Services
         ''' <returns></returns>
         Friend Shared Function CalcAngleToYAxis(r As Vector2, rC As Vector2) As Single
 
-            Dim dot, det As Single
-
-            dot = Vector2.Dot(r - rC, Vector2.UnitY)
-            det = (r - rC).X * 1
+            Dim dot = Vector2.Dot(r - rC, Vector2.UnitY)
+            Dim det = (r - rC).X * 1
 
             Return Math.Atan2(det, dot)
 
@@ -365,7 +359,7 @@ Namespace Services
         End Function
 
         ''' <summary>
-        ''' For Delaunay Triangulation, sets target vertex of the adjoining cell that will be tested
+        ''' For Delaunay Triangulation, gets target vertex of the adjoining cell that will be tested
         ''' to see if it lies inside the circumcircle
         ''' </summary>
         ''' <param name="configuration"></param>
