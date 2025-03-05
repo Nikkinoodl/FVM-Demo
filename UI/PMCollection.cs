@@ -3,6 +3,8 @@ using OxyPlot.Axes;
 using OxyPlot.Series;
 using Core.Domain;
 using Core.DataCollections;
+using Microsoft.VisualBasic.ApplicationServices;
+using System.Collections.Generic;
 
 namespace UI
 {
@@ -17,10 +19,11 @@ namespace UI
         {
 
             //u, v and p plots are all based on scatter series plots so they can be set up together
-            ScatterSeries seriesU = new() { };
-            ScatterSeries seriesV = new();
-            ScatterSeries seriesP = new();
-            ScatterSeries seriesT = new();
+            //HeatMapSeries heatU = new();
+            var seriesU = new ScatterSeries { };
+            var seriesV = new ScatterSeries { };
+            var seriesP = new ScatterSeries { };
+            var seriesT = new ScatterSeries { };
 
             foreach (Cell p in Repository.CellList)
             {
