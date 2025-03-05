@@ -53,14 +53,14 @@ namespace CFD
 
             List<Cell> borderCells;
 
-            string[] borders = { "left", "bottom", "right" };
+            string[] borders = ["left", "bottom", "right"];
 
             foreach (string b in borders)
             {
                 //select all zero-height border cells on the farfield boundary
                 borderCells = _data.GetElementsByBoundary(b, farfield);
 
-                //then match the pressure to the adjoining cell, forcing gradP to be zero
+                //then match the pressure to the adjoining cell, forcing gradP normal to the boundary to be zero
                 foreach (Cell c in borderCells)
                 {
                     foreach (Edge e in c.Edges)
