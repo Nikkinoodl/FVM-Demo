@@ -27,7 +27,7 @@ Namespace Logic
 
             ElseIf farfield.Tiling = Tiling.Ortho Then
 
-                'ortho tiling logic for quad grids reuses an existing method which
+                'ortho tiling logic for quad grids reuses an existing method
                 If farfield.Gridtype = GridType.Quads Then
 
                     splitter.DivideRectangularCells()
