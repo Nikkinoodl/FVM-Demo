@@ -475,7 +475,7 @@ The following definitions may be helpful when reading though this section:
 
 For cells:
 
-```Csharp
+```C#
 /// <summary>
 /// Inverse of the cell area
 /// </summary>
@@ -489,7 +489,7 @@ public float Lk { get; set; }
 
 For edges:
 
-```Csharp
+```C#
 /// <summary>
 /// edge length
 /// </summary>
@@ -516,8 +516,7 @@ We do some additional pre-calculation in the code to make computations less expe
 for example constants and variables used in division are inverted
 to enable multiplication instead. These are performed immediately on running the CFD solution.
 
-In C#:
-```Csharp
+```C#
 
 //pre-inversion of some values to reduce calc time
 float dti = 1 / calc.Dt;
@@ -534,7 +533,7 @@ are best obtained by interpolating a value for the first derivative at the
 integation points, then using the divergence theorem to obtain the second derivative.
 
 In C#:
-```Csharp
+```C#
 
 //Loop through the cell edges.
 foreach (Edge e in cell.Edges)
@@ -566,7 +565,7 @@ $\mathbf u^*$ in (13) is calculated by combining the terms above.
 
 In C#:
 
-```Csharp
+```C#
 
 //predictor step uStar and Vstar. We divide by area here so it is only done in one place.
 cell.VelStar = new Vector2(cell.Vel.X + (diffusionU * fluid.Nu - convectionU) * calc.Dt * cell.AreaI, cell.Vel.Y + (diffusionV * fluid.Nu - convectionV) * calc.Dt * cell.AreaI);
@@ -577,7 +576,7 @@ Calculating the right-hand side of the Pressure Poisson equation.
 
 In C#:
 
-```Csharp
+```C#
 
 foreach (Edge e in cell.Edges)
 {
@@ -596,7 +595,7 @@ cell.B = b * fluid.Rho * dti;
 Then pressures are cloned:
 
 In C#:
-```Csharp
+```C#
 
 //all cells (including borders) need P clone
 Parallel.ForEach(_data.CellList, cell => { cell.PN = cell.P; });
@@ -605,7 +604,7 @@ Parallel.ForEach(_data.CellList, cell => { cell.PN = cell.P; });
 
 Then the new values for pressure are calculated.
 
-```Csharp
+```C#
 
 float pTerm = 0;
 
@@ -626,7 +625,7 @@ After the Neumann boundary condition reset,
 we then calculate $\nabla p$ using the divergence theorem and then perform
 the corrector step, yielding new values for $\mathbf u$.
 
-```Csharp
+```C#
 
 foreach (Edge e in cell.Edges)
 {
