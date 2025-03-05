@@ -15,10 +15,9 @@ in particular, will be useful as it is not often well covered in online material
 
 Linear equations are solved step-by-step using the SIMPLE predictor-corrector method and central differencing. No matrix methods are used, but parallelization is used throughout.
 
-For a full overview of the finite volume method and its implementation in this project, please read the following project document:
+Details of the FVM method and its implementation in this poject are documented in the following project file:
 
-[Finite Volume Overview](https://github.com/Nikkinoodl/FVM-Demo/blob/master/Finite-Volume-Method-Overview.md)
-
+[Finite-Volume-Method-Overview.md](https://github.com/Nikkinoodl/FVM-Demo/blob/master/Finite-Volume-Method-Overview.md)
 
 ## Running the Application
 

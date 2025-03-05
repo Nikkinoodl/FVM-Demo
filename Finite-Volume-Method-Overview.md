@@ -651,3 +651,4 @@ by Prof. Clovis Maliska of SINMEC, the Federal University of Santa Catarina - Br
 
 1. [Alvarez and Nobe](https://colab.research.google.com/github/josealvarez97/The-Ultimate-Guide-to-Write-Your-First-CFD-Solver/blob/main/The_Ultimate_Guide_to_Write_Your_First_CFD_Solver.ipynb)
 2. [Maliska-SINMEC](https://www.youtube.com/watch?v=8S0KdGJq3LI)
+
