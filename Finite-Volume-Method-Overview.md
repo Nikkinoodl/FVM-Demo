@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 # 1. Computational Fluid Dynamics Using the Finite Volume Method
 Author: Simon Bland
@@ -62,16 +63,16 @@ We can write a conservation equation for a property $\phi$ in one of the cells.
 
 ```math
 \frac{\partial (\rho\phi)}{\partial t} + \nabla\cdot(\rho \mathbf u \phi) =
-\nabla \cdot (\Gamma \nabla \phi) + S\\_\phi
+\nabla \cdot (\Gamma \nabla \phi) + S_\phi
 ```
 
 Where $\rho$ is density, t is time, $\mathbf u$ is the velocity vector.
 
 
 We can use this equation to describe any conserved property, e.g.:
-1. $\phi = 1, \Gamma = 0, S\\_\phi= 0 \implies$ mass conservation
-2. $\phi = u, \Gamma = \mu, S\\_\phi= -\nabla p \implies$ momentum (i.e. Navier-Stokes equations)
-3. $\phi = C_pT, \Gamma = \frac {k}{ C\\_p}, S\\_\phi = q \implies$ thermal energy 
+1. $\phi = 1, \Gamma = 0, S_\phi= 0 \implies$ mass conservation
+2. $\phi = u, \Gamma = \mu, S_\phi= -\nabla p \implies$ momentum (i.e. Navier-Stokes equations)
+3. $\phi = C_pT, \Gamma = \frac {k}{ C_p}, S_\phi = q \implies$ thermal energy 
 
 Since the terms of the conservation equations are in divergence form,
 we can integrate across the control volume, i.e.:
@@ -80,7 +81,7 @@ we can integrate across the control volume, i.e.:
 \underbrace{\int_{v}\frac{\partial (\rho \phi)}{\partial t}dv}_{transient} +
 \underbrace{\int_{v}\nabla\cdot(\rho \mathbf u \phi)dv}_{advection} =
 \underbrace{\int_{v}\nabla\cdot(\Gamma^{\phi}\nabla\phi)dv}_{diffusion} +
-\underbrace{\int_{v}S\\_{\phi}dv}_{source} \qquad (1)
+\underbrace{\int_{v}S_{\phi}dv}_{source} \qquad (1)
 ```
 
 To show how this equation can be solved iteratively,
@@ -90,14 +91,14 @@ we need to introduce two concepts: gradient reconstruction and interpolation.
 
 In this domain we have a two dimensional area and a two dimensional surface
 (the cell outline) instead of a three dimensional volume and a three dimensional surface.
-Going forward, we will reduce the coresponding Lebesque Measures by one,
+Going forward, we will reduce the corresponding Lebesque Measures by one degree,
 replacing volume $v$ and surface $s$ with area $a$ and side length $l$.
 
 Let's consider a triangular element with center at point P.
 We use a variable f to represent the face and k to refer to the side number.
-The center of each side is a point $C\\_k$ and the length of each side is $L\\_k$.
+The center of each side is a point $C_k$ and the length of each side is $L_k$.
 
-Each vector $\Delta \mathbf L\\_k$ represents the scalar product
+Each vector $\Delta \mathbf L_k$ represents the scalar product
 of the side length and the outward-facing side unit normal vector.
 
 ![A 2D finite volume element](./grad-reconstuction.png)
@@ -112,9 +113,9 @@ Applying the divergence theorem:
 \nabla \phi \approx {1 \over A} \int_l \phi dl
 ```
 ```math
-\nabla \phi_p = {1 \over A_p} \sum_{k=1}^{N_f} \phi_{C_k} \Delta \mathbf L_{f\\_k} \qquad (2)
+\nabla \phi_p = {1 \over A_p} \sum_{k=1}^{N_f} \phi_{C_k} \Delta \mathbf L_{f_k} \qquad (2)
 ```
-Where $A\\_p$ is the area of the element.
+Where $A_p$ is the area of the element.
 
 The result shows that the gradient of our conserved property at the cell center
 can be derived from the sum of the fluxes of our conserved property across the edges
@@ -175,7 +176,7 @@ Here, $n$ represents the $n^{th}$ timestep, t is time.
 
 ## 5.2. Advection Term
 
-This term shows the transport of $\phi\\_p$ by $\mathbf u$:
+This term shows the transport of $\phi_p$ by $\mathbf u$:
 
 ```math
 \int_{a}\nabla\cdot(\rho \mathbf u \phi)da = \int_l \rho \mathbf u \phi \cdot \mathbf {\hat n} dl
