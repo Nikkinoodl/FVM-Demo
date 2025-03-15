@@ -108,10 +108,10 @@ Applying the divergence theorem:
 ```
 
 ```math
-\nabla \phi \approx {1 \over A} \int_l \phi dl
+\nabla \phi = {1 \over A} \int_l \phi dl
 ```
 ```math
-\nabla \phi_p = {1 \over A_p} \sum_{k=1}^{N_f} \phi_{C_k} \Delta \mathbf L_{f_k} \qquad (2)
+\nabla \phi_p \approx {1 \over A_p} \sum_{k=1}^{N_f} \phi_{C_k} \Delta \mathbf L_{f_k} \qquad (2)
 ```
 Where $A_p$ is the area of the element.
 
